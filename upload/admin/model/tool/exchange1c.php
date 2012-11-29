@@ -333,7 +333,7 @@ class ModelToolExchange1c extends Model {
 			$name	= $attribute->Наименование;
 			
 			$data = array(
-				'attribute_group_id'	=>	7,
+				'attribute_group_id'	=>	50,
 				'sort_order'			=> 	0,
 			);
 			
@@ -386,9 +386,9 @@ class ModelToolExchange1c extends Model {
 
 			foreach ($results as $result) {
 				$data['product_image'][] = array(
-										'image' => $result['image'],
-										'sort_order' => $result['sort_order']
-									);
+					'image' => $result['image'],
+					'sort_order' => $result['sort_order']
+				);
 			}
 
 			$data = array_merge($data, array('product_discount' => $this->model_catalog_product->getProductDiscounts($product_id)));
