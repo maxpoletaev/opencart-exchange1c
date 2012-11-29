@@ -6,12 +6,11 @@ class ModelToolExchange1c extends Model {
 	private $REFERENCE_VALUES = array();
 	private $ATTRIBUTE_VALUES = array();
 
+
 	public function parseOffers() {
 
 		$importFile = DIR_CACHE . 'exchange1c/offers.xml';
-
 		$xml = simplexml_load_file($importFile);
-
 		$data = array();
 
 		foreach( $xml->ПакетПредложений->Предложения->Предложение as $offer ){
@@ -102,7 +101,8 @@ class ModelToolExchange1c extends Model {
 		$xml = simplexml_load_file($importFile);
 		$data = array();
 
-		//$this->load->model('dataexchange/exchange1c');
+		// Для автогенерации ЧПУ
+		// TODO: Проверка на сществование
 		$this->load->model('module/deadcow_seo');
 		
 		// Группы
@@ -110,10 +110,9 @@ class ModelToolExchange1c extends Model {
 		$this->model_module_deadcow_seo->generateCategories('[category_name]', 'Russian');
 		
 
-		//
-		if ($xml->Классификатор->Свойства) $ATTRIBUTE_VALUES = $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
-
 		// Свойства
+		if ($xml->Классификатор->Свойства) $ATTRIBUTE_VALUES = $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
+		
 		if($xml->Классификатор->Свойства->Свойство){
 			foreach($xml->Классификатор->Свойства->Свойство as $property){
 				$PROPERTIES[(string)$property->Ид] = (string)$property->Наименование;
@@ -180,13 +179,13 @@ class ModelToolExchange1c extends Model {
 										$manufacturer_keyword = str_replace("/","-", $manufacturer_keyword);
 										$data_manufacturer = array('name' => $manufacturer_name ,'sort_order' => 0, 'keyword' => $manufacturer_keyword, 'manufacturer_store' => array( 0 => 0));
 										$data_manufacturer['manufacturer_description'] = array(
-																	1 => array(
-																		'meta_keyword' =>  '',
-																		'meta_description' => '',
-																		'description' => '',
-																		'seo_title'	=>  '',
-																		'seo_h1' => ''
-																	),
+											1 => array(
+												'meta_keyword' =>  '',
+												'meta_description' => '',
+												'description' => '',
+												'seo_title'	=>  '',
+												'seo_h1' => ''
+											),
 										);
 										$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
 										$data['manufacturer_id'] = $manufacturer_id;
@@ -303,6 +302,24 @@ class ModelToolExchange1c extends Model {
 		unset($xml);
 
 
+	}
+
+	// Заполняет продуктами родительские категории
+	// TODO: оптимизация запросов
+	public function fillParentCats() {
+		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
+		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
+		
+		if ($query->num_rows) {
+			foreach ($query->rows as $row) {
+				$category = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id'])->row;
+				
+				if ($category['parent_id'] != 0) {
+					$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $category['parent_id'] . ', `main_category` = 0');
+				}
+			}
+		}
+		
 	}
 	
 	
