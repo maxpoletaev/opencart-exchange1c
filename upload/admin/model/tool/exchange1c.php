@@ -102,12 +102,11 @@ class ModelToolExchange1c extends Model {
 		$data = array();
 
 		// Для автогенерации ЧПУ
-		// TODO: Проверка на сществование
-		$this->load->model('module/deadcow_seo');
+		//$this->load->model('module/deadcow_seo');
 		
 		// Группы
 		if($xml->Классификатор->Группы) $this->insertCategory($xml->Классификатор->Группы->Группа);
-		$this->model_module_deadcow_seo->generateCategories('[category_name]', 'Russian');
+		//$this->model_module_deadcow_seo->generateCategories('[category_name]', 'Russian');
 		
 
 		// Свойства
@@ -236,7 +235,7 @@ class ModelToolExchange1c extends Model {
 			}
 		}
 
-		$this->model_module_deadcow_seo->generateProducts('[product_name]', 'Russian');
+		//$this->model_module_deadcow_seo->generateProducts('[product_name]', 'Russian');
 
 		unset($xml);
 	}
