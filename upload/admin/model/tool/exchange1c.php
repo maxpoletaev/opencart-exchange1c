@@ -311,10 +311,11 @@ class ModelToolExchange1c extends Model {
 		
 		if ($query->num_rows) {
 			foreach ($query->rows as $row) {
-				$category = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id'])->row;
-				
-				if ($category['parent_id'] != 0) {
-					$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $category['parent_id'] . ', `main_category` = 0');
+				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id']);
+				if ($query->num_rows) {
+					if ($query->row['parent_id'] != 0) {
+						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $query->row['parent_id'] . ', `main_category` = 0');
+					}
 				}
 			}
 		}
