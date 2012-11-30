@@ -157,13 +157,18 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		// Проверяем логин и пароль на доступ
+		
+		
 		if( ! isset($_SERVER['PHP_AUTH_USER']) OR ! isset($_SERVER['PHP_AUTH_PW']) ) {
 			echo "failure\n";
 			echo "no login/password";
 			exit;
 		}
 		
+
 		// Авторизуем
+		
+		
 		if( $_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username') ) {
 			echo "failure\n";
 			echo "error login";
