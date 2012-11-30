@@ -5,14 +5,18 @@ define('VERSION', '1.5.4.1');
 // Configuration
 require_once('../admin/config.php');
 
+// VirtualQMOD
+require_once('../vqmod/vqmod.php');
+$vqmod = new VQMod();
+
 // Startup
-require_once(DIR_SYSTEM . 'startup.php');
+require_once($vqmod->modCheck(DIR_SYSTEM . 'startup.php'));
 
 // Application Classes
-require_once(DIR_SYSTEM . 'library/currency.php');
-require_once(DIR_SYSTEM . 'library/user.php');
-require_once(DIR_SYSTEM . 'library/weight.php');
-require_once(DIR_SYSTEM . 'library/length.php');
+require_once($vqmod->modCheck(DIR_SYSTEM . 'library/currency.php'));
+require_once($vqmod->modCheck(DIR_SYSTEM . 'library/user.php'));
+require_once($vqmod->modCheck(DIR_SYSTEM . 'library/weight.php'));
+require_once($vqmod->modCheck(DIR_SYSTEM . 'library/length.php'));
 
 // Registry
 $registry = new Registry();

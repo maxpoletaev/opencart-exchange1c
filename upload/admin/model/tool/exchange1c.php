@@ -236,7 +236,6 @@ class ModelToolExchange1c extends Model {
 		}
 
 		//$this->model_module_deadcow_seo->generateProducts('[product_name]', 'Russian');
-
 		unset($xml);
 	}
 
@@ -265,6 +264,8 @@ class ModelToolExchange1c extends Model {
 
 		return $data;
 	}
+
+
 	// Функция добавляет корневую категорию и всех детей
 	private function insertCategory($xml, $parent = 0) {
 
@@ -299,48 +300,43 @@ class ModelToolExchange1c extends Model {
 		}
 
 		unset($xml);
-
-
-	}
-
-	// Заполняет продуктами родительские категории
-	// TODO: оптимизация запросов
-	public function fillParentCats() {
-		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
-		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
-		
-		if ($query->num_rows) {
-			foreach ($query->rows as $row) {
-				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id']);
-				if ($query->num_rows) {
-					if ($query->row['parent_id'] != 0) {
-						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $query->row['parent_id'] . ', `main_category` = 0');
-					}
-				}
-			}
-		}
-		
 	}
 	
 	
-	/**
-	 * Функция добавления атрибутов
-	 */
+	// Создает атрибуты из свойств
 	private function insertAttribute($xml) {
 		$this->load->model('catalog/attribute');
+		$this->load->model('catalog/attribute_group');
+
+
+		$attribute_group = $this->model_catalog_attribute_group->getAttributeGroup(50);
+		
+		if (!$attribute_group) {
+
+			$attribute_group_description[1] = array (
+				'name'	=> 'Свойства'
+			);
+
+			$data = array (
+				'sort_order' 		 => 0,
+				'attribute_group_description' => $attribute_group_description
+			);
+
+			$this->model_catalog_attribute_group->addAttributeGroup($data);
+		}
 		
 		foreach ($xml as $attribute) {
 			$id 	= (string)$attribute->Ид;
 			$name	= $attribute->Наименование;
 			
-			$data = array(
-				'attribute_group_id'	=>	50,
+			$data = array (
+				'attribute_group_id'	=>	1,
 				'sort_order'			=> 	0,
 			);
 			
 			$data['attribute_description'][1]['name'] = (string)$name;
 			
-			// если атрибут уже был добавлен, то возвращаем старый id, если атрибута нет, то создаем его и возвращаем его id
+			// Если атрибут уже был добавлен, то возвращаем старый id, если атрибута нет, то создаем его и возвращаем его id
 			$current_attribute = $this->db->query('SELECT attribute_id FROM ' . DB_PREFIX . 'attribute_to_1c WHERE 1c_attribute_id = "' . $id . '"');
 			if ( !$current_attribute->num_rows ) {
 				$attribute_id = $this->model_catalog_attribute->addAttribute($data);
@@ -373,8 +369,9 @@ class ModelToolExchange1c extends Model {
 		$this->load->model('catalog/product');
 		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
+		$data = array();
+
 		if ($query->num_rows) {
-			$data = array();
 
 			$data = $query->row;
 
@@ -423,22 +420,21 @@ class ModelToolExchange1c extends Model {
 			),
 		);
 		
-		// Теги пока втопку.
+		// Теги пока втопку
 		$data['product_tag'] = array();
 
 		// Модель
 		$data['model'] = (isset($product['model'])) ?$product['model'] : (isset($data['model'])? $data['model']: '');
 
-		// SKU
+		// Артикул
 		$data['sku'] = (isset($product['sku'])) ?$product['sku'] : (isset($data['sku'])? $data['sku']: '');
 
-		// UPC
+		// Какие-то ненужные штуки
 		$data['upc'] = (isset($product['upc'])) ?$product['upc'] : (isset($data['upc'])? $data['upc']: '');
-		
-		$data['ean'] = '';
-		$data['jan'] = '';
-		$data['isbn'] = '';
-		$data['mpn'] = '';
+		$data['ean'] = (isset($product['ean'])) ?$product['ean'] : (isset($data['ean'])? $data['ean']: '');
+		$data['jan'] = (isset($product['jan'])) ?$product['jan'] : (isset($data['jan'])? $data['jan']: '');
+		$data['isbn'] = (isset($product['isbn'])) ?$product['isbn'] : (isset($data['isbn'])? $data['isbn']: '');
+		$data['mpn'] = (isset($product['mpn'])) ?$product['mpn'] : (isset($data['mpn'])? $data['mpn']: '');
 
 		// Points
 		$data['points'] = (isset($product['points'])) ?$product['points'] : (isset($data['points'])? $data['points']: 0);
@@ -458,8 +454,7 @@ class ModelToolExchange1c extends Model {
 		// Доп. изображения
 
 		$data['product_image'] = (isset($product['product_image'])) ?$product['product_image'] : (isset($data['product_image'])? $data['product_image']: array());
-		//$data['product_image'] = (isset($product['product_image'])) ?$product['product_image'] : array();
-		//isset($data['product_image']) ? 1: array();
+
 		$this->load->model('tool/image');
 
 		$data['preview'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
@@ -514,8 +509,8 @@ class ModelToolExchange1c extends Model {
 
 		$data['product_download'] = (isset($product['product_download'])) ?$product['product_download'] : (isset($data['product_download'])? $data['product_download']: array());
 
-		if( isset($product['category_1c_id']) AND isset($this->CAT[$product['category_1c_id']]) ) {
-			$data['product_category'] = array( (int)$this->CAT[$product['category_1c_id']] );
+		if( isset($product['category_1c_id']) AND isset($this->CAT[$product['category_1c_id']])) {
+			$data['product_category'] = array((int)$this->CAT[$product['category_1c_id']]);
 			$data['main_category_id'] = (int)$this->CAT[$product['category_1c_id']];
 		} else {
 			$data['product_category'] = isset($data['product_category']) ? $data['product_category']: array();
@@ -608,36 +603,38 @@ class ModelToolExchange1c extends Model {
 
 	}
 
-	// --- Специальные функции
-	private function getProductIdBy1CProductId($id) {}
-
+	// Специальные функции
 	private function getProductIdBy1CProductName($name) {
 		$sql = 'SELECT p.product_id FROM ' . DB_PREFIX . 'product p LEFT JOIN ' . DB_PREFIX . 'product_description pd ON (p.product_id = pd.product_id) WHERE pd.name LIKE "'.$this->db->escape($name).'"';
-
 		$query = $this->db->query($sql);
-
-		//var_dump($query);
-
 		if( ! $query->num_rows) return 0;
-
 		return (int)$query->row['product_id'];
 	}
 
 
+	// Заполняет продуктами родительские категории (не используется)
+	public function fillParentCats() {
+		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
+		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
+		
+		if ($query->num_rows) {
+			foreach ($query->rows as $row) {
+				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id']);
+				if ($query->num_rows) {
+					if ($query->row['parent_id'] != 0) {
+						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $query->row['parent_id'] . ', `main_category` = 0');
+					}
+				}
+			}
+		}
+	}
 
-
-
-	// Утилиты 
+	// Создает таблицы, нужные для работы
 	public function checkDbSheme() {
 
-		// 
 		$query = $this->db->query('SHOW TABLES LIKE "' . DB_PREFIX . 'product_to_1c"');
 
-		if( ! $query->num_rows ) {
-			// Меняем тип таблицы чтоб поддерживались внешние ключи
-			//$this->db->query('ALTER TABLE  `'. DB_PREFIX .'product` ENGINE = INNODB');
-			// Создаем БД
-
+		if(!$query->num_rows) {
 			$this->db->query(
 					'CREATE TABLE
 						`' . DB_PREFIX . 'product_to_1c` (
@@ -651,14 +648,9 @@ class ModelToolExchange1c extends Model {
 		}
 
 
-		// 
 		$query = $this->db->query('SHOW TABLES LIKE "' . DB_PREFIX . 'category_to_1c"');
 
-		if( ! $query->num_rows ) {
-			// Меняем тип таблицы чтоб поддерживались внешние ключи
-			//$this->db->query('ALTER TABLE  `'. DB_PREFIX .'category` ENGINE = INNODB');
-			// Создаем БД
-
+		if(!$query->num_rows) {
 			$this->db->query(
 					'CREATE TABLE
 						`' . DB_PREFIX . 'category_to_1c` (
@@ -673,11 +665,7 @@ class ModelToolExchange1c extends Model {
 
 		$query = $this->db->query('SHOW TABLES LIKE "' . DB_PREFIX . 'attribute_to_1c"');
 		
-		if( ! $query->num_rows ) {
-			// Меняем тип таблицы чтоб поддерживались внешние ключи
-			//$this->db->query('ALTER TABLE  `'. DB_PREFIX .'category` ENGINE = INNODB');
-			// Создаем БД
-
+		if(!$query->num_rows) {
 			$this->db->query(
 					'CREATE TABLE
 						`' . DB_PREFIX . 'attribute_to_1c` (
@@ -690,9 +678,7 @@ class ModelToolExchange1c extends Model {
 			);			
 		}
 				
-
 		return 0;
-
 	}
 
 }

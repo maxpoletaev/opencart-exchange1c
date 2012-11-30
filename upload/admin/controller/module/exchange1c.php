@@ -20,14 +20,11 @@ class ControllerModuleExchange1c extends Controller {
 		}
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
-		
-		$this->data['text_info'] = $this->language->get('text_info');
-		$this->data['text_homepage'] = $this->language->get('text_homepage');
-		$this->data['text_forum'] = $this->language->get('text_forum');
-		$this->data['text_donate'] = $this->language->get('text_donate');		
+			
 		$this->data['entry_username'] = $this->language->get('entry_username');
 		$this->data['entry_password'] = $this->language->get('entry_password');
-		$this->data['entry_flush_db'] = $this->language->get('entry_flush_db');
+		$this->data['entry_flush_category'] = $this->language->get('entry_flush_category');
+		$this->data['entry_flush_manufacturer'] = $this->language->get('entry_flush_manufacturer');
 		$this->data['entry_flush_quantity'] = $this->language->get('entry_flush_quantity');
 		$this->data['entry_lic_type'] = $this->language->get('entry_lic_type');
 		$this->data['entry_version'] = 0;
@@ -107,10 +104,16 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_status'] = $this->config->get('exchange1c_status');
 		}	
 		
-		if (isset($this->request->post['exchange1c_flush_db'])) {
-			$this->data['exchange1c_flush_db'] = $this->request->post['exchange1c_flush_db'];
+		if (isset($this->request->post['exchange1c_flush_category'])) {
+			$this->data['exchange1c_flush_category'] = $this->request->post['exchange1c_flush_category'];
 		} else {
-			$this->data['exchange1c_flush_db'] = $this->config->get('exchange1c_flush_db');
+			$this->data['exchange1c_flush_category'] = $this->config->get('exchange1c_flush_category');
+		}
+
+		if (isset($this->request->post['exchange1c_flush_manufacturer'])) {
+			$this->data['exchange1c_flush_manufacturer'] = $this->request->post['exchange1c_flush_manufacturer'];
+		} else {
+			$this->data['exchange1c_flush_manufacturer'] = $this->config->get('exchange1c_flush_manufacturer');
 		}
         
         if (isset($this->request->post['exchange1c_flush_quantity'])) {
@@ -118,8 +121,6 @@ class ControllerModuleExchange1c extends Controller {
 		} else {
 			$this->data['exchange1c_flush_quantity'] = $this->config->get('exchange1c_flush_quantity');
 		}
-
-		$this->data['exchange1c_lic_type'] = 'TEST';	
 				
 		$this->template = 'module/exchange1c.tpl';
 		$this->children = array(
@@ -195,54 +196,55 @@ class ControllerModuleExchange1c extends Controller {
 		// Проверяем естль ли БД для хранения промежуточных данных.
 		$this->model_tool_exchange1c->checkDbSheme();
 		
-		// Если в настройках модуля стоит флаг обнулить БД 
-		if($this->config->get('exchange1c_flush_db') ) {
-		
-			// Очищает таблицы от всех товаров
+		// Удаляем товары
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_attribute');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_description');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_discount');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_image');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option_value');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_related');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_reward');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_special');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_1c');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_category');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_download');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_layout');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_store');
+		$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
+
+		// Очищает таблицы категорий
+		if($this->config->get('exchange1c_flush_category')) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category'); 
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_description');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_store');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_1c');
-			// Удаляем товары
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_attribute');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_description');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_discount');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_image');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option_value');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_related');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_reward');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_special');
-			//$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_tag');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_1c');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_category');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_download');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_layout');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_store');
-
-			// Очищаем псевдонимы для товаров и категорий
-			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%category_id=%"');
+		}
 			
-			// Очищает таблицы от всех производителей
-
+		// Очищает таблицы от всех производителей
+		if($this->config->get('exchange1c_flush_manufacturer')) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%manufacturer_id=%"');
-			
-			// Очищаем атрибуты
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_description');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_to_1c');
 		}
+			
+		// Очищает атрибуты
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_description');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_to_1c');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_group');
+		$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_group_description');
+
         
-		//Выставляем кол-во товаров в 0.
-        if($this->config->get('exchange1c_flush_quantity') ) {
-        $this->db->query('UPDATE ' . DB_PREFIX . 'product ' . 'SET quantity = 0');
+		// Выставляем кол-во товаров в 0
+        if($this->config->get('exchange1c_flush_quantity')) {
+        	$this->db->query('UPDATE ' . DB_PREFIX . 'product ' . 'SET quantity = 0');
         }
+
 		$limit = 100000 * 1024;
 	
 		echo "zip=no\n";
