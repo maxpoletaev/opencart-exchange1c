@@ -186,7 +186,7 @@ class ControllerModuleExchange1c extends Controller {
 		echo session_id() ."\n";
 	}
 	
-	public function modeInit() {
+	public function modeCatalogInit() {
 		
 		$this->load->model('tool/exchange1c');
 		
@@ -250,6 +250,13 @@ class ControllerModuleExchange1c extends Controller {
 		echo "zip=no\n";
 		echo "file_limit=".$limit."\n";
 	
+	}
+
+	public function modeSaleInit() {
+		$limit = 100000 * 1024;
+	
+		echo "zip=no\n";
+		echo "file_limit=".$limit."\n";
 	}
 	
 	public function modeFile() {
@@ -345,6 +352,18 @@ class ControllerModuleExchange1c extends Controller {
 		
 		$this->cache->delete('product');
 		
+		return;
+	}
+
+	public function modeSaleQuery() {
+
+		$this->load->model('tool/exchange1c');
+		$sales = $this->model_tool_exchange1c->saleQuery();
+
+		if ($sales) { 
+			echo $sales;
+		}
+
 		return;
 	}
 	

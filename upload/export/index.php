@@ -136,30 +136,49 @@ $registry->set('user', new User($registry));
 // Front Controller
 $controller = new Front($registry);
 
-// Router
-if (isset($request->get['mode'])) {
 
-	if( $request->get['mode'] == 'checkauth') {
-	
-		$action = new Action('module/exchange1c/modeCheckauth');
+// Router
+if (isset($request->get['mode']) && $request->get['type'] == 'catalog') {
+
+	switch ($request->get['mode']) {
+		case 'checkauth':
+			$action = new Action('module/exchange1c/modeCheckauth');
+		break;
 		
-	} elseif( $request->get['mode'] == 'init') {
-	
-		$action = new Action('module/exchange1c/modeInit');
-		
-	} elseif( $request->get['mode'] == 'file') {
-	
-		$action = new Action('module/exchange1c/modeFile');
-		
-	} elseif( $request->get['mode'] == 'import') {
-	
-		$action = new Action('module/exchange1c/modeImport');
-		
-	} else {
-		echo "success\n";
-		exit;
+		case 'init':
+			$action = new Action('module/exchange1c/modeCatalogInit');
+		break;
+
+		case 'file':
+			$action = new Action('module/exchange1c/modeFile');
+		break;
+
+		case 'import':
+			$action = new Action('module/exchange1c/modeImport');
+		break;
+
+		default:
+			echo "success\n";
 	}
 	
+} else if (isset($request->get['mode']) && $request->get['type'] == 'sale') {
+	
+	switch ($request->get['mode']) {
+		case 'checkauth':
+			$action = new Action('module/exchange1c/modeCheckauth');
+		break;
+		
+		case 'init':
+			$action = new Action('module/exchange1c/modeSaleInit');
+		break;
+
+		case 'query':
+			$action = new Action('module/exchange1c/modeSaleQuery');
+		break;
+
+		default:
+			echo "success\n";
+	}
 
 } else {
 	echo "success\n";
