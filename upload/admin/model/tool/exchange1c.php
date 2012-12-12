@@ -674,13 +674,13 @@ class ModelToolExchange1c extends Model {
 		$product_old = $this->getProductWithAllData($product_id);
 
 		// Работаем с ценой на разные варианты товаров.
-		if ((!empty($product['product_option'])) & ((float)$product_old['price'] != 0)) {
+		if ((!empty($product['product_option'])) && ((float)$product_old['price'] != 0)) {
 
 			$product['product_option'][0]['product_option_value'][0]['price'] = (float)$product['product_option'][0]['product_option_value'][0]['price'] - (float)$product_old['price'];
 			$product['price'] = (float)$product_old['price'];
 			$product['quantity'] = (int)$product['quantity'] + (int)$product_old['quantity'];
 
-		} elseif ((!empty($product['product_option'])) & ((float)$product_old['price'] == 0)){
+		} elseif ((!empty($product['product_option'])) && ((float)$product_old['price'] == 0)){
 
 			$product['product_option'][0]['product_option_value'][0]['price'] = 0;
 		
