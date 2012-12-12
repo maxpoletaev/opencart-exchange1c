@@ -334,11 +334,11 @@ class ModelToolExchange1c extends Model {
 		$data['category_description'] = array(
 				1 => array(
 				'name' =>  $name,
-				'meta_keyword' => (isset($data['category_description'][1]['meta_keywords'])) ? $data['category_description'][1]['meta_keywords'] : '',
+				'meta_keyword' => (isset($data['category_description'][1]['meta_keyword'])) ? $data['category_description'][1]['meta_keyword'] : '',
 				'meta_description' => (isset($data['category_description'][1]['meta_description'])) ? $data['category_description'][1]['meta_description'] : '',
 				'description' => (isset($category->Описание))? (string)$category->Описание : ((isset($data['category_description'][1]['description'])) ? $data['category_description'][1]['description'] : ''),
-				'seo_title'	=> (isset($data['category_description'][1]['title'])) ? $data['category_description'][1]['title'] : '',
-				'seo_h1' => (isset($data['category_description'][1]['h1'])) ? $data['category_description'][1]['h1'] : ''
+				'seo_title'	=> (isset($data['category_description'][1]['seo_title'])) ? $data['category_description'][1]['seo_title'] : '',
+				'seo_h1' => (isset($data['category_description'][1]['seo_h1'])) ? $data['category_description'][1]['seo_h1'] : ''
 			),
 		);
 		$data['status'] = (isset($data['status'])) ? $data['status'] : 1;
