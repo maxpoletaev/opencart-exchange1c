@@ -20,81 +20,116 @@
       <div class="buttons"><a onclick="$('#form').submit();" class="button"><span><?php echo $button_save; ?></span></a><a onclick="location = '<?php echo $cancel; ?>';" class="button"><span><?php echo $button_cancel; ?></span></a></div>
     </div>
     <div class="content">
-      <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
-        <table class="form">
-          
-          <tr>
-            <td><?php echo $entry_username; ?></td>
-            <td><input name="exchange1c_username" type="text" value="<?php echo $exchange1c_username; ?>" /></td>
-          </tr>        
-          <tr>
-            <td><?php echo $entry_password; ?></td>
-            <td><input name="exchange1c_password" type="password" value="<?php echo $exchange1c_password; ?>" /></td>
-          </tr>
-          
-          <tr>
-            <td><?php echo $entry_status; ?></td>
-            <td><select name="exchange1c_status">
-                <?php if ($exchange1c_status) { ?>
-                  <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
-                  <option value="0"><?php echo $text_disabled; ?></option>
-                <?php } else { ?>
-                  <option value="1"><?php echo $text_enabled; ?></option>
-                  <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
-                <?php } ?>
-              </select></td>
-          </tr>
-          
-          <tr>
-            <td><?php echo $entry_flush_category; ?></td>
-            <td><select name="exchange1c_flush_category">
-                <?php if ($exchange1c_flush_category) { ?>
-                <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                <option value="0"><?php echo $text_no; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_yes; ?></option>
-                <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                <?php } ?>
-              </select>
-            </td>
-          </tr>
-          
-          <tr>
-            <td><?php echo $entry_flush_manufacturer; ?></td>
-            <td><select name="exchange1c_flush_manufacturer">
-                <?php if ($exchange1c_flush_manufacturer) { ?>
-                <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                <option value="0"><?php echo $text_no; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_yes; ?></option>
-                <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                <?php } ?>
-              </select>
-            </td>
-          </tr>
-  
-          <tr>
-            <td><?php echo $entry_flush_quantity; ?></td>
-            <td><select name="exchange1c_flush_quantity">
-                <?php if ($exchange1c_flush_quantity) { ?>
-                <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                <option value="0"><?php echo $text_no; ?></option>
-                <?php } else { ?>
-                <option value="1"><?php echo $text_yes; ?></option>
-                <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                <?php } ?>
-              </select></td>
-          </tr>
+      <div id="tabs" class="htabs">
+        <a href="#tab-general"><?php echo $text_tab_general; ?></a>
+        <a href="#tab-product"><?php echo $text_tab_product; ?></a>
+        <a href="#tab-order"><?php echo $text_tab_order; ?></a>
+      </div>
 
-        </table>
+    
+      <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
+        
+        <div id="tab-general">
+          <table class="form">
+            <tr>
+              <td><?php echo $entry_username; ?></td>
+              <td><input name="exchange1c_username" type="text" value="<?php echo $exchange1c_username; ?>" /></td>
+            </tr>        
+            <tr>
+              <td><?php echo $entry_password; ?></td>
+              <td><input name="exchange1c_password" type="password" value="<?php echo $exchange1c_password; ?>" /></td>
+            </tr>
+            
+            <tr>
+              <td><?php echo $entry_status; ?></td>
+              <td><select name="exchange1c_status">
+                  <?php if ($exchange1c_status) { ?>
+                    <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                    <option value="0"><?php echo $text_disabled; ?></option>
+                  <?php } else { ?>
+                    <option value="1"><?php echo $text_enabled; ?></option>
+                    <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                  <?php } ?>
+                </select></td>
+            </tr>
+          </table>
+        </div>
+        
+        <div id="tab-product">
+          <table class="form">
+            <tr>
+              <td><?php echo $entry_flush_product; ?></td>
+              <td><select name="exchange1c_flush_product">
+                  <?php if ($exchange1c_flush_product) { ?>
+                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
+                  <option value="0"><?php echo $text_no; ?></option>
+                  <?php } else { ?>
+                  <option value="1"><?php echo $text_yes; ?></option>
+                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
+                  <?php } ?>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
+              <td><?php echo $entry_flush_category; ?></td>
+              <td><select name="exchange1c_flush_category">
+                  <?php if ($exchange1c_flush_category) { ?>
+                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
+                  <option value="0"><?php echo $text_no; ?></option>
+                  <?php } else { ?>
+                  <option value="1"><?php echo $text_yes; ?></option>
+                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
+                  <?php } ?>
+                </select>
+              </td>
+            </tr>
+            
+            <tr>
+              <td><?php echo $entry_flush_manufacturer; ?></td>
+              <td><select name="exchange1c_flush_manufacturer">
+                  <?php if ($exchange1c_flush_manufacturer) { ?>
+                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
+                  <option value="0"><?php echo $text_no; ?></option>
+                  <?php } else { ?>
+                  <option value="1"><?php echo $text_yes; ?></option>
+                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
+                  <?php } ?>
+                </select>
+              </td>
+            </tr>
+    
+            <tr>
+              <td><?php echo $entry_flush_quantity; ?></td>
+              <td><select name="exchange1c_flush_quantity">
+                  <?php if ($exchange1c_flush_quantity) { ?>
+                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
+                  <option value="0"><?php echo $text_no; ?></option>
+                  <?php } else { ?>
+                  <option value="1"><?php echo $text_yes; ?></option>
+                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
+                  <?php } ?>
+                </select></td>
+            </tr>
+          </table>
+        </div>
+
+        <div id="tab-order">
+          <p><?php echo $text_empty; ?></p>
+        </div>
+        
       </form>
     </div>
     
-    <div>
-      <p>При возникновении вопросов, фичреквестов или проблем, можно получить консультацию или поддержку от автора (нахаляву, да).</p>
-      <p>Так же модуль может быть модифицирован под любую конфигурацию, добавлены любые фишки на вкус и цвет заказчика.</p>
-      <p>Контакты разработчика есть на страничке <a href="http://eth1.ru">http://eth1.ru/</a>.</p>
+    <div style="text-align:center; opacity: .5">
+      <p><a href="http://eth1.ru/lab/opencart-exchange1c.html"><?php echo $text_homepage; ?></a></p>
     </div>
   </div>
 </div>
+
+<script type="text/javascript"><!--
+$('#tabs a').tabs(); 
+//--></script> 
+
+
 <?php echo $footer; ?>

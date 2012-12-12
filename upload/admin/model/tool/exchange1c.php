@@ -10,11 +10,13 @@ class ModelToolExchange1c extends Model {
 	public function saleQuery() {
 
 		$this->load->model('sale/order');
-		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date ('Y-m-d', time()) . '"></КоммерческаяИнформация>';
+		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date('Y-m-d', time()) . '"></КоммерческаяИнформация>';
 
 		$xml = new SimpleXMLElement($root);
 
-		$orders = $this->model_sale_order->getOrders();
+		$orders = $this->model_sale_order->getOrders(array(
+			'filter_order_status_id' => 1 // Выгружаем только заказы со статусом "Ожидание"
+		));
 
 		foreach ($orders as $orders_data) {
 		
@@ -44,6 +46,9 @@ class ModelToolExchange1c extends Model {
 			$xml_user->addChild('Фамилия', $order['payment_lastname']);
 			$xml_user->addChild('Имя', $order['payment_firstname']);
 
+			$xml_addr = $xml_user->addChild('Адрес');
+			$xml_addr->addChild('Представление', $order['shipping_address_1'].', '.$order['shipping_city'].', '.$order['shipping_postcode'].', '.$order['shipping_country']);
+
 			// Товары
 			$xml_products = $doc->addChild('Товары');
 			$products = $this->model_sale_order->getOrderProducts($orders_data['order_id']);
@@ -64,6 +69,7 @@ class ModelToolExchange1c extends Model {
 
 		}
 
+		/*
 		$xml_values = $doc->addChild('ЗначенияРеквизитов');
 
 		$xml_value = $doc->addChild('ЗначениеРеквизита');
@@ -85,10 +91,9 @@ class ModelToolExchange1c extends Model {
 		$xml_value = $doc->addChild('ЗначениеРеквизита');
 		$xml_value->addChild('Наименование', 'Статус заказа');
 		$xml_value->addChild('Значение', '[N] Принят');
+		*/
 
 		$result = iconv('utf-8', 'cp1251', $xml->asXML());
-
-		$this->log->write(var_export($result, true));
 		return $result;
 	}
 
@@ -152,7 +157,7 @@ class ModelToolExchange1c extends Model {
                 $value = array();
                 foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
                     if ($discount->ЗначениеУсловия) {
-                        $value['customer_group_id'] = 8;
+                        $value['customer_group_id'] = 1;
                         $value['quantity'] = (int)$discount->ЗначениеУсловия;
                         $value['priority'] = (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0;
                         $value['price'] = (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100);	
@@ -160,7 +165,7 @@ class ModelToolExchange1c extends Model {
                         $value['date_end'] = (string)$discount->ДатаОкончания;
                         $data['product_discount'][] = $value;
                     } else {
-                        $value['customer_group_id'] = 8;
+                        $value['customer_group_id'] = 1;
                         $value['priority'] = (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0;
                         $value['price'] = (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100);
                         $value['date_start'] = (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01';

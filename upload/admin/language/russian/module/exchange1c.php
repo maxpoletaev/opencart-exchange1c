@@ -6,13 +6,23 @@ $_['heading_title']    = 'Обмен данными с 1C v8.x';
 $_['text_module']      = 'Модули';
 $_['text_success']     = 'Настройки модуля обновлены!';
 
+$_['text_tab_general'] 	= 'Основное';
+$_['text_tab_product']	= 'Выгрузка номенклатуры';
+$_['text_tab_order']	= 'Обмен заказами';
+
+$_['text_empty']	= 'Настроек пока нет';
+$_['text_homepage']	= 'Домашняя страничка модуля';
+
+
 // Entry
 $_['entry_username']   = 'Логин:';
 $_['entry_password']   = 'Пароль:';
 $_['entry_status']     = 'Статус:';
-$_['entry_flush_category']   	 = 'Перезаписывать категории?';
-$_['entry_flush_manufacturer']   = 'Перезаписывать производителей?';
-$_['entry_flush_quantity']       = 'Обнулить количество товаров перед импортом номенклатуры?';
+
+$_['entry_flush_product']   	 = 'Сбрасывать товары?';
+$_['entry_flush_category']   	 = 'Сбрасывать категории?';
+$_['entry_flush_manufacturer']   = 'Сбрасывать производителей?';
+$_['entry_flush_quantity']       = 'Сбрасывать количество товаров?';
 
 
 
