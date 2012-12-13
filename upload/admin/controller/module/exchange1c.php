@@ -31,19 +31,16 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_version'] = 0;
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
-		
-		
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
 		$this->data['text_disabled'] = $this->language->get('text_disabled');
-		
 		$this->data['text_tab_general'] = $this->language->get('text_tab_general');
 		$this->data['text_tab_product'] = $this->language->get('text_tab_product');
 		$this->data['text_tab_order'] = $this->language->get('text_tab_order');
-
 		$this->data['text_empty'] = $this->language->get('text_empty');
 		$this->data['text_homepage'] = $this->language->get('text_homepage');
-
 		$this->data['entry_status'] = $this->language->get('entry_status');
+		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
+		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -91,8 +88,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['action'] = $this->url->link('module/exchange1c', 'token=' . $this->session->data['token'], 'SSL');
 
 		//$this->data['cancel'] = HTTPS_SERVER . 'index.php?route=extension/exchange1c&token=' . $this->session->data['token'];
-		
 		$this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+		
 		if (isset($this->request->post['exchange1c_username'])) {
 			$this->data['exchange1c_username'] = $this->request->post['exchange1c_username'];
 		} else {
@@ -133,6 +130,23 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_flush_quantity'] = $this->request->post['exchange1c_flush_quantity'];
 		} else {
 			$this->data['exchange1c_flush_quantity'] = $this->config->get('exchange1c_flush_quantity');
+		}
+
+		if (isset($this->request->post['exchange1c_order_status'])) {
+			$this->data['exchange1c_order_status'] = $this->request->post['exchange1c_order_status'];
+		} else {
+			$this->data['exchange1c_order_status'] = $this->config->get('exchange1c_order_status');
+		}
+
+		$this->load->model('localisation/order_status');
+
+		$order_statuses = $this->model_localisation_order_status->getOrderStatuses();
+
+		foreach ($order_statuses as $order_status) {
+			$this->data['order_statuses'][] = array(
+				'order_status_id' => $order_status['order_status_id'],
+				'name'			  => $order_status['name']
+			);
 		}
 				
 		$this->template = 'module/exchange1c.tpl';
@@ -370,14 +384,11 @@ class ControllerModuleExchange1c extends Controller {
 		return;
 	}
 
-	public function modeSaleQuery() {
+	public function modeQueryOrders() {
 
 		$this->load->model('tool/exchange1c');
-		$sales = $this->model_tool_exchange1c->saleQuery();
-
-		if ($sales) { 
-			echo $sales;
-		}
+		$orders = $this->model_tool_exchange1c->queryOrders($this->config->get('config_order_status_id'), $this->config->get('exchange1c_order_status'));
+		echo iconv('utf-8', 'cp1251', $orders);
 
 		return;
 	}

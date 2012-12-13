@@ -19,12 +19,13 @@ $_['entry_username']   = 'Логин:';
 $_['entry_password']   = 'Пароль:';
 $_['entry_status']     = 'Статус:';
 
-$_['entry_flush_product']   	 = 'Сбрасывать товары?';
-$_['entry_flush_category']   	 = 'Сбрасывать категории?';
-$_['entry_flush_manufacturer']   = 'Сбрасывать производителей?';
-$_['entry_flush_quantity']       = 'Сбрасывать количество товаров?';
+$_['entry_flush_product']   	 = 'Сбрасывать товары';
+$_['entry_flush_category']   	 = 'Сбрасывать категории';
+$_['entry_flush_manufacturer']   = 'Сбрасывать производителей';
+$_['entry_flush_quantity']       = 'Сбрасывать количество товаров';
+$_['entry_fill_parent_cats']	 = 'Заполнять родительские категории';
 
-
+$_['entry_order_status'] = 'Статус выгруженых заказов';
 
 // Error
 $_['error_permission'] = 'У Вас нет прав для управления этим модулем!';

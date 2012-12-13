@@ -58,64 +58,48 @@
         <div id="tab-product">
           <table class="form">
             <tr>
-              <td><?php echo $entry_flush_product; ?></td>
-              <td><select name="exchange1c_flush_product">
-                  <?php if ($exchange1c_flush_product) { ?>
-                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                  <option value="0"><?php echo $text_no; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_yes; ?></option>
-                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                  <?php } ?>
-                </select>
+              <td><label for="exchange1c_flush_product"><?php echo $entry_flush_product; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_flush_product" name="exchange1c_flush_product" <?php echo ($exchange1c_flush_product == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
 
             <tr>
-              <td><?php echo $entry_flush_category; ?></td>
-              <td><select name="exchange1c_flush_category">
-                  <?php if ($exchange1c_flush_category) { ?>
-                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                  <option value="0"><?php echo $text_no; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_yes; ?></option>
-                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                  <?php } ?>
-                </select>
+              <td><label for="exchange1c_flush_category"><?php echo $entry_flush_category; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_flush_category" name="exchange1c_flush_category" <?php echo ($exchange1c_flush_category == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
             
             <tr>
-              <td><?php echo $entry_flush_manufacturer; ?></td>
-              <td><select name="exchange1c_flush_manufacturer">
-                  <?php if ($exchange1c_flush_manufacturer) { ?>
-                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                  <option value="0"><?php echo $text_no; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_yes; ?></option>
-                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                  <?php } ?>
-                </select>
+              <td><label for="exchange1c_flush_manufacturer"><?php echo $entry_flush_manufacturer; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_flush_manufacturer" name="exchange1c_flush_manufacturer" <?php echo ($exchange1c_flush_manufacturer == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
     
             <tr>
-              <td><?php echo $entry_flush_quantity; ?></td>
-              <td><select name="exchange1c_flush_quantity">
-                  <?php if ($exchange1c_flush_quantity) { ?>
-                  <option value="1" selected="selected"><?php echo $text_yes; ?></option>
-                  <option value="0"><?php echo $text_no; ?></option>
-                  <?php } else { ?>
-                  <option value="1"><?php echo $text_yes; ?></option>
-                  <option value="0" selected="selected"><?php echo $text_no; ?></option>
-                  <?php } ?>
-                </select></td>
+              <td><label for="exchange1c_flush_quantity"><?php echo $entry_flush_quantity; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_flush_quantity" name="exchange1c_flush_quantity" <?php echo ($exchange1c_flush_quantity == 1)? 'checked' : ''; ?>>
+              </td>
             </tr>
           </table>
         </div>
 
         <div id="tab-order">
-          <p><?php echo $text_empty; ?></p>
+          <table class="form">
+            <tr>
+              <td><?php echo $entry_order_status; ?></td>
+              <td>
+                <select name="exchange1c_order_status">
+                  <?php foreach ($order_statuses as $order_status) { ?>
+                    <option value="<?php echo $order_status['order_status_id'];?>" <?php echo ($exchange1c_order_status == $order_status['order_status_id'])? 'selected' : '' ;?>><?php echo $order_status['name']; ?></option>
+                  <?php } ?>
+                </select>
+              </td>
+            </tr>
+          </table>
         </div>
         
       </form>

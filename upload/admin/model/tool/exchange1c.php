@@ -7,15 +7,16 @@ class ModelToolExchange1c extends Model {
 	private $ATTRIBUTE_VALUES = array();
 
 
-	public function saleQuery() {
+	public function queryOrders($query_order_status, $new_order_status) {
 
 		$this->load->model('sale/order');
+
 		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date('Y-m-d', time()) . '"></КоммерческаяИнформация>';
 
 		$xml = new SimpleXMLElement($root);
 
 		$orders = $this->model_sale_order->getOrders(array(
-			'filter_order_status_id' => 1 // Выгружаем только заказы со статусом "Ожидание"
+			'filter_order_status_id' => $query_order_status
 		));
 
 		foreach ($orders as $orders_data) {
@@ -66,6 +67,13 @@ class ModelToolExchange1c extends Model {
 
 			}
 
+			$data = $order;
+
+			$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
+				'order_status_id'	=> $new_order_status,
+				'comment' 			=> '',
+				'notify'			=> false
+			));
 
 		}
 
@@ -93,8 +101,8 @@ class ModelToolExchange1c extends Model {
 		$xml_value->addChild('Значение', '[N] Принят');
 		*/
 
-		$result = iconv('utf-8', 'cp1251', $xml->asXML());
-		return $result;
+		
+		return $xml->asXML();
 	}
 
 	public function parseOffers() {
@@ -284,11 +292,11 @@ class ModelToolExchange1c extends Model {
 									break;
 								
 								case 'h1':
-									$data['h1'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
+									$data['seo_h1'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
 									break;
 								
 								case 'title':
-									$data['title'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
+									$data['seo_title'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
 									break;
 								
 								case 'Сортировка':
@@ -503,11 +511,11 @@ class ModelToolExchange1c extends Model {
 		$data['product_description'] = array(
 			1 => array(
 				'name' => isset($product['name']) ? htmlspecialchars(trim($product['name']),ENT_QUOTES, 'UTF-8'): (isset($data['product_description'][1]['name'])? $data['product_description'][1]['name']: 'Имя не задано'),
-				'meta_keyword' => isset($product['meta_keywords']) ? trim($product['meta_keywords']): (isset($data['product_description'][1]['meta_keywords'])? $data['product_description'][1]['meta_keywords']: ''),
+				'meta_keyword' => isset($product['meta_keyword']) ? trim($product['meta_keyword']): (isset($data['product_description'][1]['meta_keyword'])? $data['product_description'][1]['meta_keyword']: ''),
 				'meta_description' => isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][1]['meta_description'])? $data['product_description'][1]['meta_description']: ''),
 				'description' => isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][1]['description'])? $data['product_description'][1]['description']: ''),
-				'seo_title' => isset($product['title']) ? $product['title']: (isset($data['product_description'][1]['title'])? $data['product_description'][1]['title']: ''),
-				'seo_h1' => isset($product['h1']) ? $product['h1']: (isset($data['product_description'][1]['h1'])? $data['product_description'][1]['h1']: ''),
+				'seo_title' => isset($product['seo_title']) ? $product['seo_title']: (isset($data['product_description'][1]['seo_title'])? $data['product_description'][1]['seo_title']: ''),
+				'seo_h1' => isset($product['seo_h1']) ? $product['seo_h1']: (isset($data['product_description'][1]['seo_h1'])? $data['product_description'][1]['seo_h1']: ''),
 				'tag' => ''
 			),
 		);

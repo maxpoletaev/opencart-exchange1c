@@ -173,7 +173,7 @@ if (isset($request->get['mode']) && $request->get['type'] == 'catalog') {
 		break;
 
 		case 'query':
-			$action = new Action('module/exchange1c/modeSaleQuery');
+			$action = new Action('module/exchange1c/modeQueryOrders');
 		break;
 
 		default:
