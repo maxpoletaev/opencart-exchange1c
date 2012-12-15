@@ -185,9 +185,7 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		// Проверяем логин и пароль на доступ
-		
-		
-		if( ! isset($_SERVER['PHP_AUTH_USER']) OR ! isset($_SERVER['PHP_AUTH_PW']) ) {
+		if(!isset($_SERVER['PHP_AUTH_USER']) OR ! isset($_SERVER['PHP_AUTH_PW'])) {
 			echo "failure\n";
 			echo "no login/password";
 			exit;
@@ -195,14 +193,12 @@ class ControllerModuleExchange1c extends Controller {
 		
 
 		// Авторизуем
-		
-		
-		if( $_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username') ) {
+		if(($this->config->get('exchange1c_username') != '') && ($_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username'))) {
 			echo "failure\n";
 			echo "error login";
 		}
 		
-		if( $_SERVER['PHP_AUTH_PW'] != $this->config->get('exchange1c_password') ) {
+		if(($this->config->get('exchange1c_password') != '') && ($_SERVER['PHP_AUTH_PW'] != $this->config->get('exchange1c_password'))) {
 			echo "failure\n";
 			echo "error password";
 			exit;
@@ -256,7 +252,7 @@ class ControllerModuleExchange1c extends Controller {
 		// Очищает таблицы от всех производителей
 		if($this->config->get('exchange1c_flush_manufacturer')) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
+			//$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%manufacturer_id=%"');
 		}
@@ -314,32 +310,24 @@ class ControllerModuleExchange1c extends Controller {
 		// Получаем данные
 		$DATA = file_get_contents("php://input");
 		
-		if($DATA !== false) 
-		{
-			if($fp = fopen($uplod_file, "wb")) 
-			{
+		if ($DATA !== false) {
+			if ($fp = fopen($uplod_file, "wb")) {
 				$result = fwrite($fp, $DATA);
-				if($result === strlen($DATA))
-				{
+				
+				if ($result === strlen($DATA)) {
 					echo "success\n";
 					
 					chmod($uplod_file , 0777);
 					//echo "success\n";
-				}
-				else
-				{
+				} else {
 					echo "failure\n";
 				}
-			}
-			else
-			{
+			} else {
 				echo "failure\n";
 				echo "Can not open file: $uplod_file\n";
 				echo $cache;
 			}
-		}
-		else
-		{
+		} else {
 			echo "failure\n";
 			echo "No data file\n";
 		}
