@@ -19,16 +19,18 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
+		$this->data['version'] = 'Version 1.3';
+
 		$this->data['heading_title'] = $this->language->get('heading_title');
-			
 		$this->data['entry_username'] = $this->language->get('entry_username');
 		$this->data['entry_password'] = $this->language->get('entry_password');
+		$this->data['entry_allow_ip'] = $this->language->get('entry_allow_ip');
 		$this->data['entry_flush_product'] = $this->language->get('entry_flush_product');
 		$this->data['entry_flush_category'] = $this->language->get('entry_flush_category');
 		$this->data['entry_flush_manufacturer'] = $this->language->get('entry_flush_manufacturer');
 		$this->data['entry_flush_quantity'] = $this->language->get('entry_flush_quantity');
-		$this->data['entry_lic_type'] = $this->language->get('entry_lic_type');
-		$this->data['entry_version'] = 0;
+		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
+		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -40,6 +42,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['text_homepage'] = $this->language->get('text_homepage');
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
+		$this->data['entry_use_utf8'] = $this->language->get('entry_use_utf8');
+		$this->data['entry_notify'] = $this->language->get('entry_notify');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 
 		$this->data['button_save'] = $this->language->get('button_save');
@@ -100,6 +104,12 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_password'] = $this->request->post['exchange1c_password'];
 		} else {
 			$this->data['exchange1c_password'] = $this->config->get('exchange1c_password'); 
+		}
+
+		if (isset($this->request->post['exchange1c_allow_ip'])) {
+			$this->data['exchange1c_allow_ip'] = $this->request->post['exchange1c_allow_ip'];
+		} else {
+			$this->data['exchange1c_allow_ip'] = $this->config->get('exchange1c_allow_ip'); 
 		} 
 		
 		if (isset($this->request->post['exchange1c_status'])) {
@@ -132,10 +142,34 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_flush_quantity'] = $this->config->get('exchange1c_flush_quantity');
 		}
 
+		if (isset($this->request->post['exchange1c_fill_parent_cats'])) {
+			$this->data['exchange1c_fill_parent_cats'] = $this->request->post['exchange1c_fill_parent_cats'];
+		} else {
+			$this->data['exchange1c_fill_parent_cats'] = $this->config->get('exchange1c_fill_parent_cats');
+		}
+
+		if (isset($this->request->post['exchange1c_seo_url'])) {
+			$this->data['exchange1c_seo_url'] = $this->request->post['exchange1c_seo_url'];
+		} else {
+			$this->data['exchange1c_seo_url'] = $this->config->get('exchange1c_seo_url');
+		}
+
 		if (isset($this->request->post['exchange1c_order_status'])) {
 			$this->data['exchange1c_order_status'] = $this->request->post['exchange1c_order_status'];
 		} else {
 			$this->data['exchange1c_order_status'] = $this->config->get('exchange1c_order_status');
+		}
+
+		if (isset($this->request->post['exchange1c_use_utf8'])) {
+			$this->data['exchange1c_use_utf8'] = $this->request->post['exchange1c_use_utf8'];
+		} else {
+			$this->data['exchange1c_use_utf8'] = $this->config->get('exchange1c_use_utf8');
+		}
+
+		if (isset($this->request->post['exchange1c_notify'])) {
+			$this->data['exchange1c_notify'] = $this->request->post['exchange1c_notify'];
+		} else {
+			$this->data['exchange1c_notify'] = $this->config->get('exchange1c_notify');
 		}
 
 		$this->load->model('localisation/order_status');
@@ -177,11 +211,22 @@ class ControllerModuleExchange1c extends Controller {
 	// --- 
 	public function modeCheckauth() {
 	
-		//  Проверяем включен или нет модуль
-		if( ! $this->config->get('exchange1c_status') ) {
+		// Проверяем включен или нет модуль
+		if(!$this->config->get('exchange1c_status')) {
 			echo "failure\n";
 			echo "1c module OFF";
 			exit;
+		}
+
+		// Разрешен ли IP
+		if ($this->config->get('exchange1c_allow_ip') != '') {
+			$ip = $_SERVER['REMOTE_ADDR'];
+			$allow_ips = explode("\r\n", $this->config->get('exchange1c_allow_ip'));
+
+			if (!in_array($ip, $allow_ips)) {
+				echo "failure\n";
+				echo "IP is not allowed";
+			}
 		}
 		
 		// Проверяем логин и пароль на доступ
@@ -252,7 +297,7 @@ class ControllerModuleExchange1c extends Controller {
 		// Очищает таблицы от всех производителей
 		if($this->config->get('exchange1c_flush_manufacturer')) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
-			//$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%manufacturer_id=%"');
 		}
@@ -353,6 +398,17 @@ class ControllerModuleExchange1c extends Controller {
 		if($this->request->get['filename'] == 'import.xml') {
 			
 			$this->model_tool_exchange1c->parseImport();
+
+			if ($this->config->get('exchange1c_fill_parent_cats')) {
+				$this->model_tool_exchange1c->fillParentsCategories();
+			}
+
+			if ($this->config->get('exchange1c_seo_url')) {
+				$this->load->model('module/deadcow_seo');
+				$this->model_module_deadcow_seo->generateCategories('[category_name]', 'Russian');
+				$this->model_module_deadcow_seo->generateProducts('[product_name]', 'Russian');
+			}
+
 			echo "success\n";
 			
 		} elseif($this->request->get['filename'] == 'offers.xml') {
@@ -375,8 +431,13 @@ class ControllerModuleExchange1c extends Controller {
 	public function modeQueryOrders() {
 
 		$this->load->model('tool/exchange1c');
-		$orders = $this->model_tool_exchange1c->queryOrders($this->config->get('config_order_status_id'), $this->config->get('exchange1c_order_status'));
-		echo iconv('utf-8', 'cp1251', $orders);
+		$orders = $this->model_tool_exchange1c->queryOrders($this->config->get('config_order_status_id'), $this->config->get('exchange1c_order_status'), $this->config->get('exchange1c_notify'));
+		
+		if (!$this->config->get('exchange1c_use_utf8')) {
+			echo iconv('utf-8', 'cp1251', $orders);
+		} else {
+			echo $orders;
+		}
 
 		return;
 	}

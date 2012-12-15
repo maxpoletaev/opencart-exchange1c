@@ -52,6 +52,13 @@
                   <?php } ?>
                 </select></td>
             </tr>
+
+            <tr>
+              <td><?php echo $entry_allow_ip; ?></td>
+              <td>
+                <textarea name="exchange1c_allow_ip" style="200px; height: 50px;"><?php echo $exchange1c_allow_ip; ?></textarea>
+              </td>
+            </tr>
           </table>
         </div>
         
@@ -81,7 +88,21 @@
             <tr>
               <td><label for="exchange1c_flush_quantity"><?php echo $entry_flush_quantity; ?></label></td>
               <td>
-                <input type="checkbox" value="1" id="exchange1c_flush_quantity" name="exchange1c_flush_quantity" <?php echo ($exchange1c_flush_quantity == 1)? 'checked' : ''; ?>>
+                <input type="checkbox" value="1" id="exchange1c_flush_quantity" name="exchange1c_flush_squantity" <?php echo ($exchange1c_flush_quantity == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label for="exchange1c_fill_parent_cats"><?php echo $entry_fill_parent_cats; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_fill_parent_cats" name="exchange1c_fill_parent_cats" <?php echo ($exchange1c_fill_parent_cats == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label for="exchange1c_seo_url"><?php echo $entry_seo_url; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_seo_url" name="exchange1c_seo_url" <?php echo ($exchange1c_seo_url == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
           </table>
@@ -89,6 +110,7 @@
 
         <div id="tab-order">
           <table class="form">
+            
             <tr>
               <td><?php echo $entry_order_status; ?></td>
               <td>
@@ -99,6 +121,21 @@
                 </select>
               </td>
             </tr>
+
+            <tr>
+              <td><label for="exchange1c_notify"><?php echo $entry_notify; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_notify" name="exchange1c_notify" <?php echo ($exchange1c_notify == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
+
+            <tr>
+              <td><label for="exchange1c_use_utf8"><?php echo $entry_use_utf8; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_use_utf8" name="exchange1c_use_utf8" <?php echo ($exchange1c_use_utf8 == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
+
           </table>
         </div>
         
@@ -106,7 +143,7 @@
     </div>
     
     <div style="text-align:center; opacity: .5">
-      <p><a href="http://eth1.ru/lab/opencart-exchange1c.html"><?php echo $text_homepage; ?></a></p>
+      <p><?php echo $version; ?> | <a href="http://eth1.ru/lab/opencart-exchange1c.html"><?php echo $text_homepage; ?></a></p>
     </div>
   </div>
 </div>

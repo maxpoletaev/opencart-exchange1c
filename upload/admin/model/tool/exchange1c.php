@@ -7,7 +7,7 @@ class ModelToolExchange1c extends Model {
 	private $ATTRIBUTE_VALUES = array();
 
 
-	public function queryOrders($query_order_status, $new_order_status) {
+	public function queryOrders($query_order_status, $new_order_status, $notify) {
 
 		$this->load->model('sale/order');
 
@@ -72,7 +72,7 @@ class ModelToolExchange1c extends Model {
 			$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
 				'order_status_id'	=> $new_order_status,
 				'comment' 			=> '',
-				'notify'			=> false
+				'notify'			=> $notify
 			));
 
 		}
@@ -199,14 +199,9 @@ class ModelToolExchange1c extends Model {
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();
-
-		// Для автогенерации ЧПУ
-		//$this->load->model('module/deadcow_seo');
 		
 		// Группы
 		if($xml->Классификатор->Группы) $this->insertCategory($xml->Классификатор->Группы->Группа);
-		//$this->model_module_deadcow_seo->generateCategories('[category_name]', 'Russian');
-		
 
 		// Свойства
 		if ($xml->Классификатор->Свойства) $ATTRIBUTE_VALUES = $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
@@ -335,7 +330,6 @@ class ModelToolExchange1c extends Model {
 			}
 		}
 
-		//$this->model_module_deadcow_seo->generateProducts('[product_name]', 'Russian');
 		unset($xml);
 	}
 
@@ -726,21 +720,31 @@ class ModelToolExchange1c extends Model {
 
 
 	// Заполняет продуктами родительские категории (не используется)
-	public function fillParentCats() {
+	public function fillParentsCategories() {
 		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
 		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
 		
 		if ($query->num_rows) {
 			foreach ($query->rows as $row) {
-				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category` WHERE `category_id` = ' . $row['category_id']);
-				if ($query->num_rows) {
-					if ($query->row['parent_id'] != 0) {
-						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $query->row['parent_id'] . ', `main_category` = 0');
+				$parents = $this->findParentsCategories($row['category_id']);
+				foreach ($parents as $parent) {
+					if ($row['category_id'] != $parent && $parent['parent_id'] != 0) {
+						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $parent . ', `main_category` = 0');
 					}
 				}
 			}
 		}
 	}
+
+	private function findParentsCategories($category_id) {
+		$query = $this->db->query('SELECT * FROM `'.DB_PREFIX.'category` WHERE `category_id` = "'.$category_id.'"');
+		if ($query->row['parent_id']){
+			$result = $this->findParentsCategories($query->row['parent_id']);
+		}
+		$result[] = $category_id;
+		return $result;
+	}
+
 
 	// Создает таблицы, нужные для работы
 	public function checkDbSheme() {

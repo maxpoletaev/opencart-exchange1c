@@ -2,6 +2,12 @@
 // Version
 define('VERSION', '1.5.4.1');
 
+if (!file_exists('../vqmod/vqmod.php')) {
+	echo "failure\n";
+	echo "vQmod not installed!";
+	exit;
+}
+
 // Configuration
 require_once('../admin/config.php');
 
