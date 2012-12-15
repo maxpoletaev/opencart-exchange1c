@@ -88,7 +88,7 @@
             <tr>
               <td><label for="exchange1c_flush_quantity"><?php echo $entry_flush_quantity; ?></label></td>
               <td>
-                <input type="checkbox" value="1" id="exchange1c_flush_quantity" name="exchange1c_flush_squantity" <?php echo ($exchange1c_flush_quantity == 1)? 'checked' : ''; ?>>
+                <input type="checkbox" value="1" id="exchange1c_flush_quantity" name="exchange1c_flush_quantity" <?php echo ($exchange1c_flush_quantity == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
 
