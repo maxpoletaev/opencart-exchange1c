@@ -9,7 +9,7 @@ class ModelToolExchange1c extends Model {
 
 		$this->load->model('sale/order');
 
-		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date('Y-m-d', time()) . '"></КоммерческаяИнформация>';
+		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date('Y-m-d', time()) . '" />';
 
 		$xml = new SimpleXMLElement($root);
 
@@ -39,7 +39,7 @@ class ModelToolExchange1c extends Model {
 			// Информация о пользователе
 			$xml_user = $doc->addChild('Контрагенты')->addChild('Контрагент');
 			$xml_user->addChild('Ид', $order['customer_id'] . '#' . $order['email']);
-			$xml_user->addChild('Наименование', $order['payment_firstname']);
+			$xml_user->addChild('Наименование', $order['payment_lastname'] . ' ' . $order['payment_firstname']);
 			$xml_user->addChild('Роль', 'Покупатель');
 			$xml_user->addChild('ПолноеНаименование', $order['payment_lastname'] . ' ' . $order['payment_firstname']);
 			$xml_user->addChild('Фамилия', $order['payment_lastname']);

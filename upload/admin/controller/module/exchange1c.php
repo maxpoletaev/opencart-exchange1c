@@ -19,7 +19,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 1.3';
+		$this->data['version'] = 'Version 121220.git';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
@@ -229,14 +229,6 @@ class ControllerModuleExchange1c extends Controller {
 			}
 		}
 		
-		// Проверяем логин и пароль на доступ
-		if(!isset($_SERVER['PHP_AUTH_USER']) OR ! isset($_SERVER['PHP_AUTH_PW'])) {
-			echo "failure\n";
-			echo "no login/password";
-			exit;
-		}
-		
-
 		// Авторизуем
 		if(($this->config->get('exchange1c_username') != '') && ($_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username'))) {
 			echo "failure\n";
@@ -474,9 +466,8 @@ class ControllerModuleExchange1c extends Controller {
 				
 				unlink($curDir . $name);				
 			} 
-			
+
 			mkdir($curDir . $name );
-			
 			$curDir = $curDir . $name . '/';
 		}
 		
@@ -487,29 +478,20 @@ class ControllerModuleExchange1c extends Controller {
 	
 		$dir = dir($root);
 		
-		while( $file = $dir->read() ) {
-			
-			if($file == '.' OR $file == '..') continue;
-			
-			if( file_exists($root . $file)) {
-				
+		while($file = $dir->read()) {
+			if($file == '.' || $file == '..') continue;
+			if(file_exists($root . $file)) {
 				if(is_file($root . $file)) { unlink($root . $file); continue; }
-				
 				if(is_dir($root . $file)) { $this->cleanDir($root . $file . '/', true); continue; }
-				
 				var_dump($file);	
-			} 
-			
+			}
 			var_dump($file);
 		}
 		
 		if($self) {
-			
 			if(file_exists($root) AND is_dir($root)) { rmdir($root); return 0; }
-			
 			var_dump($root);
 		}
-		
 		return 0;
 	}
 	
