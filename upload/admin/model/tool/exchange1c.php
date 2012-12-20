@@ -2,8 +2,6 @@
 class ModelToolExchange1c extends Model {
 
 	private $CAT = array();
-	private $PROPERTIES = array();
-	private $REFERENCE_VALUES = array();
 	private $ATTRIBUTE_VALUES = array();
 
 
@@ -205,20 +203,6 @@ class ModelToolExchange1c extends Model {
 
 		// Свойства
 		if ($xml->Классификатор->Свойства) $ATTRIBUTE_VALUES = $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
-		
-		if($xml->Классификатор->Свойства->Свойство){
-			foreach($xml->Классификатор->Свойства->Свойство as $property){
-				$PROPERTIES[(string)$property->Ид] = (string)$property->Наименование;
-				if((string)$property->ТипыЗначений){
-					if((string)$property->ТипыЗначений->ТипЗначений->Тип == 'Справочник'){
-						foreach($property->ТипыЗначений->ТипЗначений->ВариантыЗначений->ВариантЗначения as $option_value){
-							$REFERENCE_VALUES[(string)$option_value->Ид] = (string)$option_value->Значение;
-
-						}
-					}
-				}
-			}
-		}
 
 		$this->load->model('catalog/manufacturer');
 
@@ -255,52 +239,56 @@ class ModelToolExchange1c extends Model {
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
 					foreach ($product->ЗначенияСвойств->ЗначенияСвойства as $property) {
-						if (isset($PROPERTIES[(string)$property->Ид])) {
-							switch ($PROPERTIES[(string)$property->Ид]) {
+						if (isset($ATTRIBUTE_VALUES[(string)$property->Ид]['name'])) {
+							switch ($ATTRIBUTE_VALUES[(string)$property->Ид]['name']) {
 								case 'Псевдоним':
-
-									$data['keyword'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
-									break;
+									$data['keyword'] = $property->Значение?(string)$property->Значение:$ATTRIBUTE_VALUES[(string)$property->Ид]['id'];
+								break;
 								
 								case 'Производитель':
-									$manufacturer_name = ($property->Значение ? str_replace("/","-", (string)$property->Значение) : str_replace("/","-", $REFERENCE_VALUES[(string)$property->ИдЗначения]));
+									$manufacturer_name = ($property->Значение ? str_replace("/","-", (string)$property->Значение) : str_replace("/","-", $ATTRIBUTE_VALUES[(string)$property->Ид]['id']));
 									$query = $this->db->query("SELECT manufacturer_id FROM ". DB_PREFIX ."manufacturer WHERE name='". $manufacturer_name ."'");
 									
 									if ($query->num_rows) {
 										$data['manufacturer_id'] = $query->row['manufacturer_id'];
 									} else {
-										$manufacturer_keyword = str_replace("&","and", $manufacturer_name);
-										$manufacturer_keyword = str_replace("/","-", $manufacturer_keyword);
-										$data_manufacturer = array('name' => $manufacturer_name ,'sort_order' => 0, 'keyword' => $manufacturer_keyword, 'manufacturer_store' => array( 0 => 0));
+										$data_manufacturer = array(
+											'name' 				 => $manufacturer_name,
+											'keyword'			 => '',
+											'sort_order' 		 => 0,
+											'manufacturer_store' => array(0 => 0)
+										);
+										
 										$data_manufacturer['manufacturer_description'] = array(
 											1 => array(
-												'meta_keyword' =>  '',
-												'meta_description' => '',
-												'description' => '',
-												'seo_title'	=>  '',
-												'seo_h1' => ''
+												'meta_keyword' 		=> '',
+												'meta_description' 	=> '',
+												'description' 		=> '',
+												'seo_title'			=> '',
+												'seo_h1' 			=> ''
 											),
 										);
+
 										$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
 										$data['manufacturer_id'] = $manufacturer_id;
 									}
-									break;
+								break;
 								
-								case 'h1':
-									$data['seo_h1'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
-									break;
+								case 'oc.seo_h1':
+									$data['seo_h1'] = $property->Значение?(string)$property->Значение : '';
+								break;
 								
-								case 'title':
-									$data['seo_title'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
-									break;
+								case 'oc.seo_title':
+									$data['seo_title'] = $property->Значение?(string)$property->Значение : '';
+								break;
 								
-								case 'Сортировка':
-									$data['sort_order'] = $property->Значение?(string)$property->Значение:$REFERENCE_VALUES[(string)$property->ИдЗначения];
-									break;
+								case 'oc.sort_order':
+									$data['sort_order'] = $property->Значение?(string)$property->Значение : '';
+								break;
 									
 								default:
 									$data['product_attribute'][] = array(
-										'attribute_id' 					=> $ATTRIBUTE_VALUES[(string)$property->Ид],
+										'attribute_id' 					=> $ATTRIBUTE_VALUES[(string)$property->Ид]['id'],
 										'product_attribute_description'	=> array(
 											1 => array(
 												'text' => (string)$property->Значение
@@ -315,7 +303,7 @@ class ModelToolExchange1c extends Model {
 				}
 
 				// Реквезиты продукта
-				if($product->ЗначенияРеквизитов){
+				if($product->ЗначенияРеквизитов) {
 					foreach($product->ЗначенияРеквизитов->ЗначениеРеквизита as $requisite){
 						switch($requisite->Наименование){
 							case 'Вес':
@@ -421,7 +409,7 @@ class ModelToolExchange1c extends Model {
 		
 		foreach ($xml as $attribute) {
 			$id 	= (string)$attribute->Ид;
-			$name	= $attribute->Наименование;
+			$name	= (string)$attribute->Наименование;
 			
 			$data = array (
 				'attribute_group_id'	=>	1,
@@ -432,21 +420,22 @@ class ModelToolExchange1c extends Model {
 			
 			// Если атрибут уже был добавлен, то возвращаем старый id, если атрибута нет, то создаем его и возвращаем его id
 			$current_attribute = $this->db->query('SELECT attribute_id FROM ' . DB_PREFIX . 'attribute_to_1c WHERE 1c_attribute_id = "' . $id . '"');
-			if ( !$current_attribute->num_rows ) {
+			if (!$current_attribute->num_rows) {
 				$attribute_id = $this->model_catalog_attribute->addAttribute($data);
 				$this->db->query('INSERT INTO `' .  DB_PREFIX . 'attribute_to_1c` SET attribute_id = ' . (int)$attribute_id . ', `1c_attribute_id` = "' . $id . '"');
 			} else {
 				$data = $current_attribute->row;
 				$attribute_id = $data['attribute_id'];
 			}
+
+			$ATTRIBUTE_VALUES[$id] = array(
+				'id'   => $attribute_id,
+				'name' => $name
+			);
 			
-			$ATTRIBUTE_VALUES[$id] = $attribute_id;
-			
-		}
-		
+		}	
 		
 		unset($xml);
-		
 		return $ATTRIBUTE_VALUES;
 	}
 
