@@ -1,4 +1,3 @@
-<!-- Created using vQmod XML Generator by UKSB - http://www.opencart-extensions.co.uk //-->
 <modification>
 	<id><![CDATA[exchange1c]]></id>
 	<version><![CDATA[1.0]]></version>
@@ -32,6 +31,20 @@
 		<operation>
 			<search position="before" offset="2"><![CDATA[public function editProduct]]></search>
 			<add><![CDATA[return $product_id;]]></add>
+		</operation>
+	</file>
+
+	<file name="admin/controller/common/header.php">
+		<operation>
+			<search position="after"><![CDATA[$this->data['feed'] = $this->url->link('extension/feed', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add><![CDATA[$this->data['exchange1c'] = $this->url->link('module/exchange1c', 'token=' . $this->session->data['token'], 'SSL');]]></add>
+		</operation>
+	</file>
+
+	<file name="admin/view/template/common/header.tpl">
+		<operation>
+			<search position="after"><![CDATA[<li><a href="<?php echo $feed; ?>"><?php echo $text_feed; ?></a></li>]]></search>
+			<add><![CDATA[<li><a href="<?php echo $exchange1c; ?>">Opencart Exchange 1C</a></li>]]></add>
 		</operation>
 	</file>
 	

@@ -327,7 +327,7 @@ class ModelToolExchange1c extends Model {
 		$name = (string)$category->Наименование;
         
 		$data['category_description'] = array(
-				1 => array(
+			1 => array(
 				'name' =>  $name,
 				'meta_keyword' => (isset($data['category_description'][1]['meta_keyword'])) ? $data['category_description'][1]['meta_keyword'] : '',
 				'meta_description' => (isset($data['category_description'][1]['meta_description'])) ? $data['category_description'][1]['meta_description'] : '',
@@ -391,7 +391,7 @@ class ModelToolExchange1c extends Model {
 		$this->load->model('catalog/attribute_group');
 
 
-		$attribute_group = $this->model_catalog_attribute_group->getAttributeGroup(50);
+		$attribute_group = $this->model_catalog_attribute_group->getAttributeGroup(1);
 		
 		if (!$attribute_group) {
 
@@ -592,7 +592,7 @@ class ModelToolExchange1c extends Model {
 
 		$data['product_download'] = (isset($product['product_download'])) ?$product['product_download'] : (isset($data['product_download'])? $data['product_download']: array());
 
-		if (isset($product['category_1c_id']) AND isset($this->CAT[$product['category_1c_id']])) {
+		if (isset($product['category_1c_id']) && isset($this->CAT[$product['category_1c_id']])) {
 			$data['product_category'] = array((int)$this->CAT[$product['category_1c_id']]);
 			$data['main_category_id'] = (int)$this->CAT[$product['category_1c_id']];
 		} else {
@@ -708,7 +708,7 @@ class ModelToolExchange1c extends Model {
 	}
 
 
-	// Заполняет продуктами родительские категории (не используется)
+	// Заполняет продуктами родительские категории
 	public function fillParentsCategories() {
 		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
 		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');

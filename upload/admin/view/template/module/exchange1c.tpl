@@ -24,6 +24,7 @@
         <a href="#tab-general"><?php echo $text_tab_general; ?></a>
         <a href="#tab-product"><?php echo $text_tab_product; ?></a>
         <a href="#tab-order"><?php echo $text_tab_order; ?></a>
+        <a href="#tab-manual"><?php echo $text_tab_manual; ?></a>
       </div>
 
     
@@ -84,6 +85,13 @@
                 <input type="checkbox" value="1" id="exchange1c_flush_manufacturer" name="exchange1c_flush_manufacturer" <?php echo ($exchange1c_flush_manufacturer == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
+
+            <tr>
+              <td><label for="exchange1c_flush_attribute"><?php echo $entry_flush_attribute; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_flush_attribute" name="exchange1c_flush_attribute" <?php echo ($exchange1c_flush_attribute == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
     
             <tr>
               <td><label for="exchange1c_flush_quantity"><?php echo $entry_flush_quantity; ?></label></td>
@@ -138,8 +146,26 @@
 
           </table>
         </div>
-        
+
+        <div id="tab-manual">
+          <table class="form">
+            <tr>
+              <td>
+                <?php echo $entry_upload; ?>
+              </td>
+              <td>
+                <a id="button-upload" class="button"><?php echo $button_upload; ?></a>
+              </td>
+              <td>
+                <?php echo $text_max_filesize; ?>
+              </td>
+            </tr>
+          </table>
+        </div>
+
       </form>
+
+
     </div>
     
     <div style="text-align:center; opacity: .5">
@@ -150,6 +176,34 @@
 
 <script type="text/javascript"><!--
 $('#tabs a').tabs(); 
+//--></script>
+
+<script type="text/javascript" src="view/javascript/jquery/ajaxupload.js"></script> 
+<script type="text/javascript"><!--
+new AjaxUpload('#button-upload', {
+  action: 'index.php?route=module/exchange1c/manualImport&token=<?php echo $token; ?>',
+  name: 'file',
+  autoSubmit: true,
+  responseType: 'json',
+  onSubmit: function(file, extension) {
+    $('#button-upload').after('<img src="view/image/loading.gif" class="loading" style="padding-left: 5px;" />');
+    $('#button-upload').attr('disabled', true);
+  },
+  onComplete: function(file, json) {
+    $('#button-upload').attr('disabled', false);
+    $('.loading').remove();
+    
+    if (json['success']) {
+      alert(json['success']);
+    }
+    
+    if (json['error']) {
+      alert(json['error']);
+    }
+    
+    
+  }
+});
 //--></script> 
 
 
