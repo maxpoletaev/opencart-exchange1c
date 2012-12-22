@@ -17,7 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 121222.git';
+		$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
@@ -520,35 +520,35 @@ class ControllerModuleExchange1c extends Controller {
 	private function cleanCacheDir() {
 	
 		// Проверяем есть ли директория
-		if( file_exists(DIR_CACHE . 'exchange1c')) {
-			if(is_dir(DIR_CACHE . 'exchange1c')) { return $this->cleanDir(DIR_CACHE . 'exchange1c/'); }
+		if (file_exists(DIR_CACHE . 'exchange1c')) {
+			if (is_dir(DIR_CACHE . 'exchange1c')) { return $this->cleanDir(DIR_CACHE . 'exchange1c/'); }
 			else { unlink(DIR_CACHE . 'exchange1c'); }
 		}
 		
-		mkdir(DIR_CACHE . 'exchange1c'); 
+		mkdir (DIR_CACHE . 'exchange1c'); 
 		
 		return 0;
 	}
 	
 	private function checkUploadFileTree($path, $curDir = null) {
 		
-		if(!$curDir) $curDir = DIR_CACHE . 'exchange1c/';
+		if (!$curDir) $curDir = DIR_CACHE . 'exchange1c/';
 		
-		foreach( explode('/', $path) as $name) {
+		foreach (explode('/', $path) as $name) {
 			
-			if( ! $name ) continue;
+			if (!$name ) continue;
 			
-			if(file_exists( $curDir . $name ) ) {
+			if (file_exists($curDir . $name)) {
 				// Есть такое поделие
-				if(is_dir( $curDir . $name ) ) {
+				if (is_dir( $curDir . $name)) {
 					$curDir = $curDir . $name . '/';
 					continue;
 				}
 				
-				unlink($curDir . $name);				
+				unlink ($curDir . $name);				
 			} 
 
-			mkdir($curDir . $name );
+			mkdir ($curDir . $name );
 			$curDir = $curDir . $name . '/';
 		}
 		
@@ -559,27 +559,22 @@ class ControllerModuleExchange1c extends Controller {
 	
 		$dir = dir($root);
 		
-		while($file = $dir->read()) {
-			if($file == '.' || $file == '..') continue;
-			if(file_exists($root . $file)) {
-				if(is_file($root . $file)) { unlink($root . $file); continue; }
-				if(is_dir($root . $file)) { $this->cleanDir($root . $file . '/', true); continue; }
-				var_dump($file);	
+		while ($file = $dir->read()) {
+			if ($file == '.' || $file == '..') continue;
+			if (file_exists($root . $file)) {
+				if (is_file($root . $file)) { unlink($root . $file); continue; }
+				if (is_dir($root . $file)) { $this->cleanDir($root . $file . '/', true); continue; }
+				var_dump ($file);	
 			}
 			var_dump($file);
 		}
 		
-		if($self) {
+		if ($self) {
 			if(file_exists($root) AND is_dir($root)) { rmdir($root); return 0; }
 			var_dump($root);
 		}
 		return 0;
 	}
-	
-	
-	
-	
-	
 	
 }
 ?>
