@@ -103,20 +103,39 @@ class ModelToolExchange1c extends Model {
 		return $xml->asXML();
 	}
 
-	public function parseOffers() {
+	/**
+	 *	Функция разбора предложений
+	 *	@param $config_price_type = Наименование типа цены
+	 */
+	public function parseOffers($config_price_type = false) {
 
 		$importFile = DIR_CACHE . 'exchange1c/offers.xml';
 		$xml = simplexml_load_file($importFile);
 		$data = array();
+		$price_types = array();
 
-		foreach( $xml->ПакетПредложений->Предложения->Предложение as $offer ){
+		foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
+			$price_types[(string)$type->Ид] = (string)$type->Наименование;
+		}
+
+		foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
 
 			//UUID без номера после #
 			$uuid = explode("#", $offer->Ид);
 			$data['id'] = $uuid[0];
 
 			//Цена за единицу
-			if($offer->Цены) $data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
+			if ($offer->Цены) {
+				if (!$config_price_type) {
+					$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
+				} else {
+					foreach ($offer->Цены->Цена as $price) {
+						if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type) {
+							$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+						}
+					} 
+				}
+			}
 
 			//Количество
 			$data['quantity'] = $offer->Количество ? (int)$offer->Количество : 0 ;

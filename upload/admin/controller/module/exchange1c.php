@@ -17,12 +17,14 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 1.4';
+		$this->data['version'] = 'Version git.20121227';
+		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
 		$this->data['entry_password'] = $this->language->get('entry_password');
 		$this->data['entry_allow_ip'] = $this->language->get('entry_allow_ip');
+		$this->data['entry_price_type'] = $this->language->get('entry_price_type');
 		$this->data['entry_flush_product'] = $this->language->get('entry_flush_product');
 		$this->data['entry_flush_category'] = $this->language->get('entry_flush_category');
 		$this->data['entry_flush_manufacturer'] = $this->language->get('entry_flush_manufacturer');
@@ -122,6 +124,12 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_status'] = $this->config->get('exchange1c_status');
 		}	
 		
+		if (isset($this->request->post['exchange1c_price_type'])) {
+			$this->data['exchange1c_price_type'] = $this->request->post['exchange1c_price_type'];
+		} else {
+			$this->data['exchange1c_price_type'] = $this->config->get('exchange1c_price_type');
+		}
+
 		if (isset($this->request->post['exchange1c_flush_product'])) {
 			$this->data['exchange1c_flush_product'] = $this->request->post['exchange1c_flush_product'];
 		} else {
@@ -484,7 +492,13 @@ class ControllerModuleExchange1c extends Controller {
 			
 		} else if ($filename == 'offers.xml') {
 			
-			$this->model_tool_exchange1c->parseOffers();
+			if ($this->config->get('exchange1c_price_type') == '') {
+				$config_price_type = false;
+			} else {
+				$config_price_type = $this->config->get('exchange1c_price_type');
+			}
+
+			$this->model_tool_exchange1c->parseOffers($config_price_type);
 			
 			if (!$manual) {
 				echo "success\n";

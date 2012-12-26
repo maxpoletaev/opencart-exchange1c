@@ -25,6 +25,7 @@ $_['entry_password']   = 'Password:';
 $_['entry_status']     = 'Status:';
 $_['entry_allow_ip']   = 'Allow IPs (Share a line break. If empty, all addresses are allowed.):';
 
+$_['entry_price_type']			 = 'Price type';
 $_['entry_flush_product']   	 = 'Flush products';
 $_['entry_flush_category']   	 = 'Flush categories';
 $_['entry_flush_manufacturer']   = 'Flush manufacturers';

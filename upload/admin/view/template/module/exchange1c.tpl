@@ -65,6 +65,14 @@
         
         <div id="tab-product">
           <table class="form">
+
+            <tr>
+              <td><label for="exchange1c_price_type"><?php echo $entry_price_type; ?></label></td>
+              <td>
+                <input name="exchange1c_price_type" type="text" value="<?php echo $exchange1c_price_type; ?>" />
+              </td>
+            </tr>
+
             <tr>
               <td><label for="exchange1c_flush_product"><?php echo $entry_flush_product; ?></label></td>
               <td>
