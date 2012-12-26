@@ -240,13 +240,13 @@ class ModelToolExchange1c extends Model {
 				if ($product->ЗначенияСвойств) {
 					foreach ($product->ЗначенияСвойств->ЗначенияСвойства as $property) {
 						if (isset($ATTRIBUTE_VALUES[(string)$property->Ид]['name'])) {
-							switch ($ATTRIBUTE_VALUES[(string)$property->Ид]['name']) {
-								case 'Псевдоним':
-									$data['keyword'] = $property->Значение?(string)$property->Значение:$ATTRIBUTE_VALUES[(string)$property->Ид]['id'];
-								break;
-								
+
+							$attribute = $ATTRIBUTE_VALUES[(string)$property->Ид];
+
+							switch ($attribute['name']) {
+			
 								case 'Производитель':
-									$manufacturer_name = ($property->Значение ? str_replace("/","-", (string)$property->Значение) : str_replace("/","-", $ATTRIBUTE_VALUES[(string)$property->Ид]['id']));
+									$manufacturer_name = isset($attribute['values'][(string)$property->Значение]) ? (string)$attribute['values'][(string)$property->Значение] : (string)$property->Значение;
 									$query = $this->db->query("SELECT manufacturer_id FROM ". DB_PREFIX ."manufacturer WHERE name='". $manufacturer_name ."'");
 									
 									if ($query->num_rows) {
@@ -275,23 +275,23 @@ class ModelToolExchange1c extends Model {
 								break;
 								
 								case 'oc.seo_h1':
-									$data['seo_h1'] = $property->Значение?(string)$property->Значение : '';
+									$data['seo_h1'] = isset($attribute['values'][(string)$property->Значение]) ? (string)$attribute['values'][(string)$property->Значение] : (string)$property->Значение;
 								break;
 								
 								case 'oc.seo_title':
-									$data['seo_title'] = $property->Значение?(string)$property->Значение : '';
+									$data['seo_title'] = isset($attribute['values'][(string)$property->Значение]) ? (string)$attribute['values'][(string)$property->Значение] : (string)$property->Значение;
 								break;
 								
 								case 'oc.sort_order':
-									$data['sort_order'] = $property->Значение?(string)$property->Значение : '';
+									$data['sort_order'] = isset($attribute['values'][(string)$property->Значение]) ? (string)$attribute['values'][(string)$property->Значение] : (string)$property->Значение;
 								break;
 									
 								default:
 									$data['product_attribute'][] = array(
-										'attribute_id' 					=> $ATTRIBUTE_VALUES[(string)$property->Ид]['id'],
+										'attribute_id' 					=> $attribute['id'],
 										'product_attribute_description'	=> array(
 											1 => array(
-												'text' => (string)$property->Значение
+												'text' => isset($attribute['values'][(string)$property->Значение]) ? (string)$attribute['values'][(string)$property->Значение] : (string)$property->Значение
 											)
 										)
 									);
@@ -410,7 +410,17 @@ class ModelToolExchange1c extends Model {
 		foreach ($xml as $attribute) {
 			$id 	= (string)$attribute->Ид;
 			$name	= (string)$attribute->Наименование;
+			$values = array();
 			
+			if ((string)$attribute->ВариантыЗначений) {
+				if ((string)$attribute->ТипЗначений == 'Справочник') {
+					foreach($attribute->ВариантыЗначений->Справочник as $option_value){
+						$values[(string)$option_value->ИдЗначения] = (string)$option_value->Значение;
+					}
+				}
+			}
+
+
 			$data = array (
 				'attribute_group_id'	=>	1,
 				'sort_order'			=> 	0,
@@ -429,8 +439,9 @@ class ModelToolExchange1c extends Model {
 			}
 
 			$ATTRIBUTE_VALUES[$id] = array(
-				'id'   => $attribute_id,
-				'name' => $name
+				'id'     => $attribute_id,
+				'name'   => $name,
+				'values' => $values
 			);
 			
 		}	
