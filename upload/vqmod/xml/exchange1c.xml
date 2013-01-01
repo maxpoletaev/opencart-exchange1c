@@ -29,7 +29,7 @@
 	
 	<file name="admin/model/catalog/product.php">
 		<operation>
-			<search position="before" offset="2"><![CDATA[public function editProduct]]></search>
+			<search position="after" offset="113"><![CDATA[public function addProduct($data) {]]></search>
 			<add><![CDATA[return $product_id;]]></add>
 		</operation>
 	</file>
