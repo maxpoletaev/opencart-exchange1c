@@ -67,7 +67,7 @@
           <table class="form">
 
             <tr>
-              <td><label for="exchange1c_price_type"><?php echo $entry_price_type; ?></label></td>
+              <td><?php echo $entry_price_type; ?></td>
               <td>
                 <input name="exchange1c_price_type" type="text" value="<?php echo $exchange1c_price_type; ?>" />
               </td>
@@ -177,7 +177,7 @@
     </div>
     
     <div style="text-align:center; opacity: .5">
-      <p><?php echo $version; ?> | <a href="http://eth1.ru/lab/opencart-exchange1c.html"><?php echo $text_homepage; ?></a></p>
+      <p><?php echo $version; ?> | <a href="http://eth1.ru/lab/opencart-exchange1c/"><?php echo $text_homepage; ?></a></p>
     </div>
   </div>
 </div>

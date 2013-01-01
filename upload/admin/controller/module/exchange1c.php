@@ -17,7 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version git.20121227';
+		$this->data['version'] = 'Version git.20130101';
 		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -273,10 +273,11 @@ class ControllerModuleExchange1c extends Controller {
 
 		if (!empty($this->request->files['file']['name'])) {
 
-			$this->modeCatalogInit(false);
 			$zip = new ZipArchive;
 			
 			if ($zip->open($this->request->files['file']['tmp_name']) === true) {
+				$this->modeCatalogInit(false);
+
 				$zip->extractTo($cache);
 
 				if (file_exists($cache . 'import.xml')) {
@@ -304,6 +305,7 @@ class ControllerModuleExchange1c extends Controller {
 				fclose($handle);
 
 				if (strpos($buffer, 'Классификатор')) {
+					$this->modeCatalogInit(false);
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'import.xml');
 					$this->modeImport('import.xml');
 				
@@ -535,8 +537,11 @@ class ControllerModuleExchange1c extends Controller {
 	
 		// Проверяем есть ли директория
 		if (file_exists(DIR_CACHE . 'exchange1c')) {
-			if (is_dir(DIR_CACHE . 'exchange1c')) { return $this->cleanDir(DIR_CACHE . 'exchange1c/'); }
-			else { unlink(DIR_CACHE . 'exchange1c'); }
+			if (is_dir(DIR_CACHE . 'exchange1c')) {
+				return $this->cleanDir(DIR_CACHE . 'exchange1c/');
+			} else { 
+				unlink(DIR_CACHE . 'exchange1c');
+			}
 		}
 		
 		mkdir (DIR_CACHE . 'exchange1c'); 
@@ -553,7 +558,6 @@ class ControllerModuleExchange1c extends Controller {
 			if (!$name ) continue;
 			
 			if (file_exists($curDir . $name)) {
-				// Есть такое поделие
 				if (is_dir( $curDir . $name)) {
 					$curDir = $curDir . $name . '/';
 					continue;
@@ -584,7 +588,10 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		if ($self) {
-			if(file_exists($root) AND is_dir($root)) { rmdir($root); return 0; }
+			if(file_exists($root) && is_dir($root)) {
+				rmdir($root); return 0;
+			}
+
 			var_dump($root);
 		}
 		return 0;
