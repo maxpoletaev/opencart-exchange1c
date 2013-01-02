@@ -5,6 +5,13 @@ class ModelToolExchange1c extends Model {
 	private $PROPERTIES = array();
 
 
+	/**
+	* Генерирует xml с заказами
+	* @param int $query_order_status = Статус выгружаемых заказов
+	* @param int $new_order_status = Новый статус заказов
+	* @param bool $notify = Уведомлять пользователя
+	* @return string
+	*/
 	public function queryOrders($query_order_status, $new_order_status, $notify) {
 
 		$this->load->model('sale/order');
@@ -105,7 +112,7 @@ class ModelToolExchange1c extends Model {
 
 	/**
 	 *	Функция разбора предложений
-	 *	@param $config_price_type = Наименование типа цены
+	 *	@param bool $config_price_type = Наименование типа цены
 	 */
 	public function parseOffers($config_price_type = false) {
 
@@ -147,7 +154,7 @@ class ModelToolExchange1c extends Model {
 				$product_option_value_description_data[1] = array('name' => '');
 				$product_option_value_data[0] = array(
 					'language'                => $product_option_value_description_data,
-					'quantity'                => isset($data['quantity'])?$data['quantity']:0,
+					'quantity'                => isset($data['quantity']) ? $data['quantity']:0,
 					'subtract'                => 1,
 					// Пока записываем полную цену продукта с данной характеристикой, потом будем считать разницу цен.
 					'price'                   => isset($data['price']) ? $data['price']:10 ,
@@ -182,22 +189,20 @@ class ModelToolExchange1c extends Model {
             if ($offer->СкидкиНаценки) {
                 $value = array();
                 foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
+                	$value = array(
+                		 'customer_group_id'	=> 1
+                		,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
+                		,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
+                		,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
+                		,'date_end'		=> (string)$discount->ДатаОкончания
+                	);
+
+                	$data['product_discount'][] = $value;
+
                     if ($discount->ЗначениеУсловия) {
-                        $value['customer_group_id'] = 1;
                         $value['quantity'] = (int)$discount->ЗначениеУсловия;
-                        $value['priority'] = (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0;
-                        $value['price'] = (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100);	
-                        $value['date_start'] = (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01';
-                        $value['date_end'] = (string)$discount->ДатаОкончания;
-                        $data['product_discount'][] = $value;
-                    } else {
-                        $value['customer_group_id'] = 1;
-                        $value['priority'] = (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0;
-                        $value['price'] = (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100);
-                        $value['date_start'] = (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01';
-                        $value['date_end'] = (string)$discount->ДатаОкончания;
-                        $data['product_special'][] = $value;
                     }
+                    
                     unset($value);
                 }
             }
@@ -352,25 +357,27 @@ class ModelToolExchange1c extends Model {
 
 	// Инициализируем данные для категории дабы обновлять данные, а не затирать.
 	private function initCategory($category, $parent, $data = array()){
-		$name = (string)$category->Наименование;
         
+		$data = array(
+			 'status' 		=> (isset($data['status'])) ? $data['status'] : 1
+			,'parent_id'	=> $parent
+			,'category_store' => (isset($data['category_store'])) ? $data['category_store'] : array(0)
+			,'keyword'		=> (isset($data['keyword'])) ? $data['keyword'] : str_replace("/","-", $name)
+			,'image'		=> (isset($category->Картинка)) ? (string)$category->Картинка :((isset($data['image'])) ? $data['image'] : '')
+			,'sort_order'	=> (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
+			,'column'		=> 1
+		);
+
 		$data['category_description'] = array(
 			1 => array(
-				'name' =>  $name,
-				'meta_keyword' => (isset($data['category_description'][1]['meta_keyword'])) ? $data['category_description'][1]['meta_keyword'] : '',
-				'meta_description' => (isset($data['category_description'][1]['meta_description'])) ? $data['category_description'][1]['meta_description'] : '',
-				'description' => (isset($category->Описание))? (string)$category->Описание : ((isset($data['category_description'][1]['description'])) ? $data['category_description'][1]['description'] : ''),
-				'seo_title'	=> (isset($data['category_description'][1]['seo_title'])) ? $data['category_description'][1]['seo_title'] : '',
-				'seo_h1' => (isset($data['category_description'][1]['seo_h1'])) ? $data['category_description'][1]['seo_h1'] : ''
+				 'name' =>  (string)$category->Наименование
+				,'meta_keyword' => (isset($data['category_description'][1]['meta_keyword'])) ? $data['category_description'][1]['meta_keyword'] : ''
+				,'meta_description' => (isset($data['category_description'][1]['meta_description'])) ? $data['category_description'][1]['meta_description'] : ''
+				,'description' => (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][1]['description'])) ? $data['category_description'][1]['description'] : '')
+				,'seo_title'	=> (isset($data['category_description'][1]['seo_title'])) ? $data['category_description'][1]['seo_title'] : ''
+				,'seo_h1' => (isset($data['category_description'][1]['seo_h1'])) ? $data['category_description'][1]['seo_h1'] : ''
 			),
 		);
-		$data['status'] = (isset($data['status'])) ? $data['status'] : 1;
-		$data['parent_id'] = $parent;
-		$data['category_store'] = (isset($data['category_store'])) ? $data['category_store'] : array(0);
-		$data['keyword'] = (isset($data['keyword'])) ? $data['keyword'] : str_replace("/","-", $name);
-		$data['image'] = (isset($category->Картинка))? (string)$category->Картинка :((isset($data['image'])) ? $data['image'] : '');
-		$data['sort_order'] =(isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0);
-		$data['column'] = 1;
 
 		return $data;
 	}
@@ -530,87 +537,63 @@ class ModelToolExchange1c extends Model {
 
 	private function initProduct($product, $data = array()) {
 
-		$data['product_description'] = array(
-			1 => array(
-				'name' => isset($product['name']) ? htmlspecialchars(trim($product['name']),ENT_QUOTES, 'UTF-8'): (isset($data['product_description'][1]['name'])? $data['product_description'][1]['name']: 'Имя не задано'),
-				'meta_keyword' => isset($product['meta_keyword']) ? trim($product['meta_keyword']): (isset($data['product_description'][1]['meta_keyword'])? $data['product_description'][1]['meta_keyword']: ''),
-				'meta_description' => isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][1]['meta_description'])? $data['product_description'][1]['meta_description']: ''),
-				'description' => isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][1]['description'])? $data['product_description'][1]['description']: ''),
-				'seo_title' => isset($product['seo_title']) ? $product['seo_title']: (isset($data['product_description'][1]['seo_title'])? $data['product_description'][1]['seo_title']: ''),
-				'seo_h1' => isset($product['seo_h1']) ? $product['seo_h1']: (isset($data['product_description'][1]['seo_h1'])? $data['product_description'][1]['seo_h1']: ''),
-				'tag' => isset($product['tag']) ? $product['tag']: (isset($data['product_description'][1]['tag'])? $data['product_description'][1]['tag']: ''),
-			),
-		);
-
-		// Модель
-		$data['model'] = (isset($product['model'])) ?$product['model'] : (isset($data['model'])? $data['model']: '');
-
-		// Артикул
-		$data['sku'] = (isset($product['sku'])) ?$product['sku'] : (isset($data['sku'])? $data['sku']: '');
-
-		// Какие-то ненужные штуки
-		$data['upc'] = (isset($product['upc'])) ?$product['upc'] : (isset($data['upc'])? $data['upc']: '');
-		$data['ean'] = (isset($product['ean'])) ?$product['ean'] : (isset($data['ean'])? $data['ean']: '');
-		$data['jan'] = (isset($product['jan'])) ?$product['jan'] : (isset($data['jan'])? $data['jan']: '');
-		$data['isbn'] = (isset($product['isbn'])) ?$product['isbn'] : (isset($data['isbn'])? $data['isbn']: '');
-		$data['mpn'] = (isset($product['mpn'])) ?$product['mpn'] : (isset($data['mpn'])? $data['mpn']: '');
-
-		// Points
-		$data['points'] = (isset($product['points'])) ?$product['points'] : (isset($data['points'])? $data['points']: 0);
-
-		$data['location'] = (isset($product['location'])) ?$product['location'] : (isset($data['location'])? $data['location']: '');
-
-		// Магазин в который выгружаем
-		$data['product_store'] = array(0);
-
-		$data['keyword'] = (isset($product['keyword'])) ?$product['keyword'] : (isset($data['keyword'])? $data['keyword']: '');
-
-		// Изображение
-		$data['image'] = (isset($product['image'])) ?$product['image'] : (isset($data['image'])? $data['image']: '');
-
-		// Доп. изображения
-
-		$data['product_image'] = (isset($product['product_image'])) ?$product['product_image'] : (isset($data['product_image'])? $data['product_image']: array());
-
 		$this->load->model('tool/image');
 
-		$data['preview'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+		$data = array(
+			 'model' => (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
+			,'sku'	 => (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
+			,'upc'	 => (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
+			,'ean'	 => (isset($product['ean'])) ? $product['ean'] : (isset($data['ean']) ? $data['ean']: '')
+			,'jan'	 => (isset($product['jan'])) ? $product['jan'] : (isset($data['jan']) ? $data['jan']: '')
+			,'isbn'	 => (isset($product['isbn'])) ? $product['isbn'] : (isset($data['isbn']) ? $data['isbn']: '')
+			,'mpn'   => (isset($product['mpn'])) ? $product['mpn'] : (isset($data['mpn']) ? $data['mpn']: '')
 
-		$data['manufacturer_id'] = (isset($product['manufacturer_id'])) ?$product['manufacturer_id'] : (isset($data['manufacturer_id'])? $data['manufacturer_id']: 0);
+			,'points' 		 => (isset($product['points'])) ? $product['points'] : (isset($data['points']) ? $data['points']: 0)
+			,'location'		 => (isset($product['location'])) ? $product['location'] : (isset($data['location']) ? $data['location']: '')
+			,'product_store' => array(0)
+			,'keyword'		 => (isset($product['keyword'])) ? $product['keyword'] : (isset($data['keyword']) ? $data['keyword']: '')
+			,'image'		 => (isset($product['image'])) ? $product['image'] : (isset($data['image']) ? $data['image']: '')
+			,'product_image' => (isset($product['product_image'])) ? $product['product_image'] : (isset($data['product_image']) ? $data['product_image']: array())
+			,'preview'		 => $this->model_tool_image->resize('no_image.jpg', 100, 100)
 
-		$data['shipping'] = (isset($product['shipping'])) ?$product['shipping'] : (isset($data['shipping'])? $data['shipping']: 1);
+			,'manufacturer_id'	=> (isset($product['manufacturer_id'])) ? $product['manufacturer_id'] : (isset($data['manufacturer_id']) ? $data['manufacturer_id']: 0)
+			,'shipping'			=> (isset($product['shipping'])) ? $product['shipping'] : (isset($data['shipping']) ? $data['shipping']: 1)
+			,'date_available'	=> date('Y-m-d', time() - 86400)
+			,'quantity'			=> (isset($product['quantity'])) ? $product['quantity'] : (isset($data['quantity']) ? $data['quantity']: 0)
+			,'minimum'			=> (isset($product['minimum'])) ? $product['minimum'] : (isset($data['minimum']) ? $data['minimum']: 1)
+			,'subtract'			=> (isset($product['subtract'])) ? $product['subtract'] : (isset($data['subtract']) ? $data['subtract']: 1)
+			,'sort_order'		=> (isset($product['sort_order'])) ? $product['sort_order'] : (isset($data['sort_order']) ? $data['sort_order']: 1)
+			,'stock_status_id'	=> $this->config->get('config_stock_status_id')
+			,'price'			=> (isset($product['price'])) ? $product['price'] : (isset($data['price']) ? $data['price']: 0)
+			,'cost'				=> (isset($product['cost'])) ? $product['cost'] : (isset($data['cost']) ? $data['cost']: 0)
+			,'status'			=> (isset($product['status'])) ? $product['status'] : (isset($data['status']) ? $data['status']: 1)
+			,'tax_class_id'		=> (isset($product['tax_class_id'])) ? $product['tax_class_id'] : (isset($data['tax_class_id']) ? $data['tax_class_id']: 0)
+			,'weight'			=> (isset($product['tax_class_id'])) ? $product['tax_class_id'] : (isset($data['tax_class_id']) ? $data['tax_class_id']: 0)
+			,'weight_class_id'	=> (isset($product['weight_class_id'])) ? $product['weight_class_id'] : (isset($data['weight_class_id']) ? $data['weight_class_id']: 1)
+			,'length'			=> (isset($product['length'])) ? $product['length'] : (isset($data['length']) ? $data['length']: '')
+			,'width'			=> (isset($product['width'])) ? $product['width'] : (isset($data['width']) ? $data['width']: '')
+			,'height'			=> (isset($product['height'])) ? $product['height'] : (isset($data['height']) ? $data['height']: '')
+			,'length_class_id'	=> (isset($product['length_class_id'])) ? $product['length_class_id'] : (isset($data['length_class_id']) ? $data['length_class_id']: 1)
 
-		$data['date_available'] = date('Y-m-d', time()-86400);
+			,'product_discount'	=> (isset($product['product_discount'])) ? $product['product_discount'] : (isset($data['product_discount']) ? $data['product_discount']: array())
+			,'product_special'	=> (isset($product['product_special'])) ? $product['product_special'] : (isset($data['product_special']) ? $data['product_special']: array())
+			,'product_download'	=> (isset($product['product_download'])) ? $product['product_download'] : (isset($data['product_download']) ? $data['product_download']: array())
+			,'product_related'	=> (isset($product['product_related'])) ? $product['product_related'] : (isset($data['product_related']) ? $data['product_related']: array())
+			,'product_attribute' => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())			
 
-		$data['quantity'] = (isset($product['quantity'])) ? $product['quantity'] : (isset($data['quantity'])? $data['quantity']: 0);
+		);
 
-		$data['minimum'] = (isset($product['minimum'])) ?$product['minimum'] : (isset($data['minimum'])? $data['minimum']: 1);
-
-		$data['subtract'] = (isset($product['subtract'])) ?$product['subtract'] : (isset($data['subtract'])? $data['subtract']: 1);
-
-		$data['sort_order'] = (isset($product['sort_order'])) ?$product['sort_order'] : (isset($data['sort_order'])? $data['sort_order']: 1);
-
-		$data['stock_status_id'] = $this->config->get('config_stock_status_id');
-
-		$data['price'] = (isset($product['price'])) ?$product['price'] : (isset($data['price'])? $data['price']: 0);
-
-		$data['cost'] = (isset($product['cost'])) ?$product['cost'] : (isset($data['cost'])? $data['cost']: 0);
-
-		$data['status'] = (isset($product['status'])) ?$product['status'] : (isset($data['status'])? $data['status']: 1);
-
-		$data['tax_class_id'] = (isset($product['tax_class_id'])) ?$product['tax_class_id'] : (isset($data['tax_class_id'])? $data['tax_class_id']: 0);
-
-		$data['weight'] = (isset($product['weight'])) ?$product['weight'] : (isset($data['weight'])? $data['weight']: 0);
-
-		$data['weight_class_id'] = (isset($product['weight_class_id'])) ?$product['weight_class_id'] : (isset($data['weight_class_id'])? $data['weight_class_id']: 1);
-
-		$data['length'] = (isset($product['length'])) ?$product['length'] : (isset($data['length'])? $data['length']: '');
-
-		$data['width'] = (isset($product['width'])) ?$product['width'] : (isset($data['width'])? $data['width']: '');
-
-		$data['height'] = (isset($product['height'])) ?$product['height'] : (isset($data['height'])? $data['height']: '');
-
-		$data['length_class_id'] = (isset($product['length_class_id'])) ?$product['length_class_id'] : (isset($data['length_class_id'])? $data['length_class_id']: 1);
+		$data['product_description'] = array(
+			1 => array(
+				 'name' 			=> isset($product['name']) ? htmlspecialchars(trim($product['name']),ENT_QUOTES, 'UTF-8'): (isset($data['product_description'][1]['name']) ? $data['product_description'][1]['name']: 'Имя не задано')
+				,'meta_keyword'		=> isset($product['meta_keyword']) ? trim($product['meta_keyword']): (isset($data['product_description'][1]['meta_keyword']) ? $data['product_description'][1]['meta_keyword']: '')
+				,'meta_description' => isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][1]['meta_description']) ? $data['product_description'][1]['meta_description']: '')
+				,'description' 		=> isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][1]['description']) ? $data['product_description'][1]['description']: '')
+				,'seo_title' 		=> isset($product['seo_title']) ? $product['seo_title']: (isset($data['product_description'][1]['seo_title']) ? $data['product_description'][1]['seo_title']: '')
+				,'seo_h1' 			=> isset($product['seo_h1']) ? $product['seo_h1']: (isset($data['product_description'][1]['seo_h1']) ? $data['product_description'][1]['seo_h1']: '')
+				,'tag' 				=> isset($product['tag']) ? $product['tag']: (isset($data['product_description'][1]['tag']) ? $data['product_description'][1]['tag']: '')
+			),
+		);
 
 		if (isset($product['product_option'])) {
 			if (!empty($data['product_option'])) {
@@ -620,12 +603,6 @@ class ModelToolExchange1c extends Model {
 			}
 		}
 
-		$data['product_discount'] = (isset($product['product_discount'])) ?$product['product_discount'] : (isset($data['product_discount'])? $data['product_discount']: array());
-
-		$data['product_special'] = (isset($product['product_special'])) ?$product['product_special'] : (isset($data['product_special'])? $data['product_special']: array());
-
-		$data['product_download'] = (isset($product['product_download'])) ?$product['product_download'] : (isset($data['product_download'])? $data['product_download']: array());
-
 		if (isset($product['category_1c_id']) && isset($this->CATEGORIES[$product['category_1c_id']])) {
 			$data['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
 			$data['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
@@ -633,10 +610,6 @@ class ModelToolExchange1c extends Model {
 			$data['product_category'] = isset($data['product_category']) ? $data['product_category']: array();
 			$data['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: '';
 		}
-
-		$data['product_related'] = (isset($product['product_related'])) ?$product['product_related'] : (isset($data['product_related'])? $data['product_related']: array());
-
-		$data['product_attribute'] = (isset($product['product_attribute'])) ?$product['product_attribute'] : (isset($data['product_attribute'])? $data['product_attribute']: array());
 				
 		return $data;
 	}
