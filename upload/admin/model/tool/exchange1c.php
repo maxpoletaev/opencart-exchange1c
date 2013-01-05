@@ -6,12 +6,13 @@ class ModelToolExchange1c extends Model {
 
 
 	/**
-	* Генерирует xml с заказами
-	* @param int $query_order_status = Статус выгружаемых заказов
-	* @param int $new_order_status = Новый статус заказов
-	* @param bool $notify = Уведомлять пользователя
-	* @return string
-	*/
+	 * Генерирует xml с заказами
+	 *
+	 * @param 	int 	статус выгружаемых заказов
+	 * @param 	int 	новый статус заказов
+	 * @param 	bool 	уведомлять пользователя
+	 * @return 	string
+	 */
 	public function queryOrders($query_order_status, $new_order_status, $notify) {
 
 		$this->load->model('sale/order');
@@ -111,8 +112,9 @@ class ModelToolExchange1c extends Model {
 	}
 
 	/**
-	 *	Функция разбора предложений
-	 *	@param bool $config_price_type = Наименование типа цены
+	 * Парсит цены и количество
+	 *
+	 * @param    string    наименование типа цены
 	 */
 	public function parseOffers($config_price_type = false) {
 
@@ -153,13 +155,13 @@ class ModelToolExchange1c extends Model {
 				//Заполняем массив с Атрибутами данными по умолчанию
 				$product_option_value_description_data[1] = array('name' => '');
 				$product_option_value_data[0] = array(
-					'language'                => $product_option_value_description_data,
-					'quantity'                => isset($data['quantity']) ? $data['quantity']:0,
-					'subtract'                => 1,
+					'language'				=> $product_option_value_description_data,
+					'quantity'				=> isset($data['quantity']) ? $data['quantity']:0,
+					'subtract'				=> 1,
 					// Пока записываем полную цену продукта с данной характеристикой, потом будем считать разницу цен.
-					'price'                   => isset($data['price']) ? $data['price']:10 ,
-					'prefix'                  => '+',
-					'sort_order'              => isset($offer->ХарактеристикиТовара->Сортировка) ? (int)$offer->ХарактеристикиТовара->Сортировка : 0
+					'price'				   => isset($data['price']) ? $data['price']:10 ,
+					'prefix'				  => '+',
+					'sort_order'			  => isset($offer->ХарактеристикиТовара->Сортировка) ? (int)$offer->ХарактеристикиТовара->Сортировка : 0
 				);
 
 				//Если характеристика одна, то незачем объединять их и потому название и значения запишем как надо
@@ -168,9 +170,9 @@ class ModelToolExchange1c extends Model {
 
 				$data['product_option'][0] = array(
 					//Название Атрибута
-					'language'             => array( 1 => array( 'name' => ($count_options == 1 ) ? (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Наименование : 'Варианты')),
+					'language'			 => array( 1 => array( 'name' => ($count_options == 1 ) ? (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Наименование : 'Варианты')),
 					'product_option_value' => $product_option_value_data,
-					'sort_order'           => 0
+					'sort_order'		   => 0
 				);
 
 				//Считываем характеристики и объединяем, если их больше 1-й
@@ -186,27 +188,27 @@ class ModelToolExchange1c extends Model {
 			}
 			*/
 
-            if ($offer->СкидкиНаценки) {
-                $value = array();
-                foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
-                	$value = array(
-                		 'customer_group_id'	=> 1
-                		,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
-                		,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
-                		,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
-                		,'date_end'		=> (string)$discount->ДатаОкончания
-                	);
+			if ($offer->СкидкиНаценки) {
+				$value = array();
+				foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
+					$value = array(
+						 'customer_group_id'	=> 1
+						,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
+						,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
+						,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
+						,'date_end'		=> (string)$discount->ДатаОкончания
+					);
 
-                	$data['product_discount'][] = $value;
+					$data['product_discount'][] = $value;
 
-                    if ($discount->ЗначениеУсловия) {
-                        $value['quantity'] = (int)$discount->ЗначениеУсловия;
-                    }
-                    
-                    unset($value);
-                }
-            }
-            
+					if ($discount->ЗначениеУсловия) {
+						$value['quantity'] = (int)$discount->ЗначениеУсловия;
+					}
+					
+					unset($value);
+				}
+			}
+		   	
 			$data['status'] = 1;
 			$this->updateProduct($data);
 			unset($data);
@@ -216,6 +218,9 @@ class ModelToolExchange1c extends Model {
 
 	}
 
+	/**
+	 * Парсит товары и категории
+	 */
 	public function parseImport() {		
 
 		$importFile = DIR_CACHE . 'exchange1c/import.xml';
@@ -227,7 +232,7 @@ class ModelToolExchange1c extends Model {
 		if($xml->Классификатор->Группы) $this->insertCategory($xml->Классификатор->Группы->Группа);
 
 		// Свойства
-		if ($xml->Классификатор->Свойства) $this->PROPERTIES = $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
+		if ($xml->Классификатор->Свойства) $this->insertAttribute($xml->Классификатор->Свойства->Свойство);
 
 		$this->load->model('catalog/manufacturer');
 
@@ -337,8 +342,8 @@ class ModelToolExchange1c extends Model {
 
 				// Реквезиты продукта
 				if($product->ЗначенияРеквизитов) {
-					foreach($product->ЗначенияРеквизитов->ЗначениеРеквизита as $requisite){
-						switch($requisite->Наименование){
+					foreach ($product->ЗначенияРеквизитов->ЗначениеРеквизита as $requisite){
+						switch ($requisite->Наименование){
 							case 'Вес':
 								$data['weight'] = $requisite->Значение ? (float)$requisite->Значение : 0;
 							break;
@@ -355,31 +360,38 @@ class ModelToolExchange1c extends Model {
 	}
 
 
-	// Инициализируем данные для категории дабы обновлять данные, а не затирать.
+	/**
+	 * Инициализируем данные для категории дабы обновлять данные, а не затирать
+	 *
+	 * @param 	array 	старые данные
+	 * @param 	int 	id родительской категории
+	 * @param 	array 	новые данные
+	 * @return 	array
+	 */
 	private function initCategory($category, $parent, $data = array()){
-        
-		$data = array(
-			 'status' 		=> (isset($data['status'])) ? $data['status'] : 1
+		
+		$result = array(
+			 'status' 		=> isset($data['status']) ? $data['status'] : 1
 			,'parent_id'	=> $parent
-			,'category_store' => (isset($data['category_store'])) ? $data['category_store'] : array(0)
-			,'keyword'		=> (isset($data['keyword'])) ? $data['keyword'] : str_replace("/","-", $name)
-			,'image'		=> (isset($category->Картинка)) ? (string)$category->Картинка :((isset($data['image'])) ? $data['image'] : '')
+			,'category_store' => isset($data['category_store']) ? $data['category_store'] : array(0)
+			,'keyword'		=> isset($data['keyword']) ? $data['keyword'] : ''
+			,'image'		=> (isset($category->Картинка)) ? (string)$category->Картинка : ((isset($data['image'])) ? $data['image'] : '')
 			,'sort_order'	=> (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
 			,'column'		=> 1
 		);
 
-		$data['category_description'] = array(
+		$result['category_description'] = array(
 			1 => array(
-				 'name' =>  (string)$category->Наименование
+				 'name'			=> (string)$category->Наименование
 				,'meta_keyword' => (isset($data['category_description'][1]['meta_keyword'])) ? $data['category_description'][1]['meta_keyword'] : ''
 				,'meta_description' => (isset($data['category_description'][1]['meta_description'])) ? $data['category_description'][1]['meta_description'] : ''
-				,'description' => (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][1]['description'])) ? $data['category_description'][1]['description'] : '')
+				,'description'	=> (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][1]['description'])) ? $data['category_description'][1]['description'] : '')
 				,'seo_title'	=> (isset($data['category_description'][1]['seo_title'])) ? $data['category_description'][1]['seo_title'] : ''
-				,'seo_h1' => (isset($data['category_description'][1]['seo_h1'])) ? $data['category_description'][1]['seo_h1'] : ''
+				,'seo_h1'		=> (isset($data['category_description'][1]['seo_h1'])) ? $data['category_description'][1]['seo_h1'] : ''
 			),
 		);
 
-		return $data;
+		return $result;
 	}
 
 
@@ -388,29 +400,28 @@ class ModelToolExchange1c extends Model {
 
 		$this->load->model('catalog/category');
 
-		foreach($xml as $category){
+		foreach ($xml as $category){
 
-			if( isset($category->Ид) AND isset($category->Наименование) ){ 
+			if (isset($category->Ид) && isset($category->Наименование) ){ 
 				$id =  (string)$category->Ид;
 
-                $data = array();
+				$data = array();
 
-                $query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category_to_1c` WHERE `1c_category_id` = "' . $this->db->escape($id) . '"');
+				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category_to_1c` WHERE `1c_category_id` = "' . $this->db->escape($id) . '"');
 
-				if($query->num_rows) {
+				if ($query->num_rows) {
 					$category_id = (int)$query->row['category_id'];
-                    $data = $this->model_catalog_category->getCategory($category_id);
-                    $data['category_description'] = $this->model_catalog_category->getCategoryDescriptions($category_id);
-                    $data = $this->initCategory($category, $parent, $data);
+					$data = $this->model_catalog_category->getCategory($category_id);
+					$data['category_description'] = $this->model_catalog_category->getCategoryDescriptions($category_id);
+					$data = $this->initCategory($category, $parent, $data);
 					$this->model_catalog_category->editCategory($category_id, $data);
 				} else {
-                    $data = $this->initCategory($category, $parent);
+					$data = $this->initCategory($category, $parent);
 					$category_id = $this->model_catalog_category->addCategory($data);
 					$this->db->query('INSERT INTO `' . DB_PREFIX . 'category_to_1c` SET category_id = ' . (int)$category_id . ', `1c_category_id` = "' . $this->db->escape($id) . '"');
 				}
 
 				$this->CATEGORIES[$id] = $category_id;
-
 			}
 
 			if ($category->Группы) $this->insertCategory($category->Группы->Группа, $category_id);
@@ -475,8 +486,8 @@ class ModelToolExchange1c extends Model {
 				$attribute_id = $data['attribute_id'];
 			}
 
-			$PROPERTIES[$id] = array(
-				'id'     => $attribute_id,
+			$this->PROPERTIES[$id] = array(
+				'id'	 => $attribute_id,
 				'name'   => $name,
 				'values' => $values
 			);
@@ -484,16 +495,13 @@ class ModelToolExchange1c extends Model {
 		}	
 		
 		unset($xml);
-		return $PROPERTIES;
 	}
 
 
 	/**
-	*	Функция работы с продуктом
-	* 	@param array $product(
-	*							'id'	идентификатор передаваемый из 1С
-	*						)
-	*	@return array
+	* Функция работы с продуктом
+	* @param 	int
+	* @return 	array
 	*/
 
 	private function getProductWithAllData($product_id) {
@@ -535,11 +543,18 @@ class ModelToolExchange1c extends Model {
 		return $data;
 	}
 
+	/**
+	 * Обновляет массив с информацией о продукте
+	 *
+	 * @param 	array 	новые данные
+	 * @param 	array 	обновляемые данные
+	 * @return 	array
+	 */
 	private function initProduct($product, $data = array()) {
 
 		$this->load->model('tool/image');
 
-		$data = array(
+		$result = array(
 			 'model' => (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
 			,'sku'	 => (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
 			,'upc'	 => (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
@@ -583,9 +598,9 @@ class ModelToolExchange1c extends Model {
 
 		);
 
-		$data['product_description'] = array(
+		$result['product_description'] = array(
 			1 => array(
-				 'name' 			=> isset($product['name']) ? htmlspecialchars(trim($product['name']),ENT_QUOTES, 'UTF-8'): (isset($data['product_description'][1]['name']) ? $data['product_description'][1]['name']: 'Имя не задано')
+				 'name' 			=> isset($product['name']) ? $product['name'] : (isset($data['product_description'][1]['name']) ? $data['product_description'][1]['name']: 'Имя не задано')
 				,'meta_keyword'		=> isset($product['meta_keyword']) ? trim($product['meta_keyword']): (isset($data['product_description'][1]['meta_keyword']) ? $data['product_description'][1]['meta_keyword']: '')
 				,'meta_description' => isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][1]['meta_description']) ? $data['product_description'][1]['meta_description']: '')
 				,'description' 		=> isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][1]['description']) ? $data['product_description'][1]['description']: '')
@@ -596,33 +611,31 @@ class ModelToolExchange1c extends Model {
 		);
 
 		if (isset($product['product_option'])) {
-			if (!empty($data['product_option'])) {
-				$data['product_option'][0]['product_option_value'][] = $product['product_option'][0]['product_option_value'][0];
+			if (!empty($result['product_option'])) {
+				$result['product_option'][0]['product_option_value'][] = $product['product_option'][0]['product_option_value'][0];
 			} else {
-				$data['product_option'] = $product['product_option'];
+				$result['product_option'] = $product['product_option'];
 			}
 		}
 
 		if (isset($product['category_1c_id']) && isset($this->CATEGORIES[$product['category_1c_id']])) {
-			$data['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
-			$data['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
+			$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
+			$result['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
 		} else {
-			$data['product_category'] = isset($data['product_category']) ? $data['product_category']: array();
-			$data['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: '';
+			$result['product_category'] = isset($data['product_category']) ? $data['product_category']: array(0);
+			$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: 0;
 		}
 				
-		return $data;
+		return $result;
 	}
 
 
 
 	/**
-	*	Функция работы с продуктом
-	* 	@param array $product (
-	*							'id' => идентификатор передаваемый из 1С,
-	*							'model' => поле модель из 1С 
-	*						)
-	*/
+	 *	Функция работы с продуктом
+	 *
+	 * 	@param array
+	 */
 	private function setProduct($product) {
 
 		if (!$product) return;
@@ -654,23 +667,19 @@ class ModelToolExchange1c extends Model {
 	}
 
 
-	private function updateProduct($product, $product_id = 0) {
+	/**
+	 * Обновляет продукт
+	 *
+	 * @param array
+	 * @param int
+	 */
+	private function updateProduct($product, $product_id = false) {
 
 		$this->load->model('catalog/product');
 
 		// Проверяем что обновлять?
 		if (!$product_id) {
-
-			$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_1c` WHERE `1c_id` = "' . $this->db->escape($product['id']) . '"');
-
-			if($query->num_rows) {	
-				$product_id = (int)$query->row['product_id'];
-			} else {
-
-				echo '<pre>';
-				var_dump($product);
-				exit;
-			}
+			$product_id = $this->getProductIdBy1CProductId($product['id']);
 		}
 
 		// Обновляем описание продукта
@@ -701,7 +710,7 @@ class ModelToolExchange1c extends Model {
 	private function getProductIdBy1CProductName($name) {
 		$sql = 'SELECT p.product_id FROM ' . DB_PREFIX . 'product p LEFT JOIN ' . DB_PREFIX . 'product_description pd ON (p.product_id = pd.product_id) WHERE pd.name LIKE "'.$this->db->escape($name).'"';
 		$query = $this->db->query($sql);
-		if( ! $query->num_rows) return 0;
+		if (!$query->num_rows) return false;
 		return (int)$query->row['product_id'];
 	}
 
@@ -711,6 +720,19 @@ class ModelToolExchange1c extends Model {
 
 		if ($query->num_rows) {
 			return $query->row['1c_id'];
+		} else {
+			return false;
+		}
+	}
+
+	private function getProductIdBy1CProductId($product_id) {
+		$sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"';
+		$query = $this->db->query($sql);
+
+		if ($query->num_rows) {
+			return $query->row['product_id'];
+		} else {
+			return false;
 		}
 	}
 
