@@ -372,6 +372,7 @@ class ModelToolExchange1c extends Model {
 		
 		$result = array(
 			 'status' 		=> isset($data['status']) ? $data['status'] : 1
+			,'top'			=> isset($data['top']) ? $data['top'] : 1
 			,'parent_id'	=> $parent
 			,'category_store' => isset($data['category_store']) ? $data['category_store'] : array(0)
 			,'keyword'		=> isset($data['keyword']) ? $data['keyword'] : ''
