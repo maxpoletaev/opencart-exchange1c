@@ -13,12 +13,12 @@ class ModelToolExchange1c extends Model {
 	 * @param 	bool 	уведомлять пользователя
 	 * @return 	string
 	 */
-	public function queryOrders($query_order_status, $new_order_status, $notify) {
+	public function queryOrders($params) {
 
 		$this->load->model('sale/order');
 
 		$orders = $this->model_sale_order->getOrders(array(
-			'filter_order_status_id' => $query_order_status
+			'filter_order_status_id' => $params['query_status']
 		));
 
 		$document = array();
@@ -36,7 +36,7 @@ class ModelToolExchange1c extends Model {
 				,'Номер'		=> $order['order_id']
 				,'Дата'			=> $date
 				,'Время'		=> $time
-				,'Валюта'		=> 'руб.'
+				,'Валюта'		=> $params['currency']
 				,'Курс'			=> 1
 				,'ХозОперация'	=> 'Заказ товара'
 				,'Роль'			=> 'Продавец'
@@ -88,9 +88,9 @@ class ModelToolExchange1c extends Model {
 			$data = $order;
 
 			$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
-				'order_status_id'	=> $new_order_status,
+				'order_status_id'	=> $params['new_status'],
 				'comment' 			=> '',
-				'notify'			=> $notify
+				'notify'			=> $params['notify']
 			));
 
 			$document_counter++;

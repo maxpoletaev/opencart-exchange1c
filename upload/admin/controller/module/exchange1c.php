@@ -45,8 +45,9 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['text_homepage'] = $this->language->get('text_homepage');
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
+		$this->data['entry_order_currency'] = $this->language->get('entry_order_currency');
 		$this->data['entry_use_utf8'] = $this->language->get('entry_use_utf8');
-		$this->data['entry_notify'] = $this->language->get('entry_notify');
+		$this->data['entry_order_notify'] = $this->language->get('entry_order_notify');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_upload'] = $this->language->get('entry_upload');
 		$this->data['button_upload'] = $this->language->get('button_upload');
@@ -194,6 +195,13 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_order_status'] = $this->config->get('exchange1c_order_status');
 		}
 
+		if (isset($this->request->post['exchange1c_order_currency'])) {
+			$this->data['exchange1c_order_currency'] = $this->request->post['exchange1c_order_currency'];
+		}
+		else {
+			$this->data['exchange1c_order_currency'] = $this->config->get('exchange1c_order_currency');
+		}
+
 		if (isset($this->request->post['exchange1c_use_utf8'])) {
 			$this->data['exchange1c_use_utf8'] = $this->request->post['exchange1c_use_utf8'];
 		}
@@ -201,11 +209,11 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_use_utf8'] = $this->config->get('exchange1c_use_utf8');
 		}
 
-		if (isset($this->request->post['exchange1c_notify'])) {
-			$this->data['exchange1c_notify'] = $this->request->post['exchange1c_notify'];
+		if (isset($this->request->post['exchange1c_order_notify'])) {
+			$this->data['exchange1c_order_notify'] = $this->request->post['exchange1c_order_notify'];
 		}
 		else {
-			$this->data['exchange1c_notify'] = $this->config->get('exchange1c_notify');
+			$this->data['exchange1c_order_notify'] = $this->config->get('exchange1c_order_notify');
 		}
 
 		$this->load->model('localisation/order_status');
@@ -551,7 +559,12 @@ class ControllerModuleExchange1c extends Controller {
 	public function modeQueryOrders() {
 
 		$this->load->model('tool/exchange1c');
-		$orders = $this->model_tool_exchange1c->queryOrders($this->config->get('config_order_status_id'), $this->config->get('exchange1c_order_status'), $this->config->get('exchange1c_notify'));
+		$orders = $this->model_tool_exchange1c->queryOrders(array(
+			 'query_status' => $this->config->get('config_order_status_id')
+			,'new_status'	=> $this->config->get('exchange1c_order_status')
+			,'notify'		=> $this->config->get('exchange1c_order_notify')
+			,'currency'		=> $this->config->get('exchange1c_order_currency') ? $this->config->get('exchange1c_order_currency') : 'руб.'
+		));
 		
 		if (!$this->config->get('exchange1c_use_utf8')) {
 			echo iconv('utf-8', 'cp1251', $orders);
@@ -588,7 +601,7 @@ class ControllerModuleExchange1c extends Controller {
 		
 		foreach (explode('/', $path) as $name) {
 			
-			if (!$name ) continue;
+			if (!$name) continue;
 			
 			if (file_exists($curDir . $name)) {
 				if (is_dir( $curDir . $name)) {

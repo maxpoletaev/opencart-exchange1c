@@ -139,9 +139,16 @@
             </tr>
 
             <tr>
-              <td><label for="exchange1c_notify"><?php echo $entry_notify; ?></label></td>
+              <td><label for="exchange1c_order_currency"><?php echo $entry_order_currency; ?></label></td>
               <td>
-                <input type="checkbox" value="1" id="exchange1c_notify" name="exchange1c_notify" <?php echo ($exchange1c_notify == 1)? 'checked' : ''; ?>>
+                <input type="text" name="exchange1c_order_currency" value="<?php echo $exchange1c_order_currency; ?>">
+              </td>
+            </tr>
+
+            <tr>
+              <td><label for="exchange1c_order_notify"><?php echo $entry_order_notify; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_order_notify" name="exchange1c_order_notify" <?php echo ($exchange1c_order_notify == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
 

@@ -34,12 +34,12 @@ $_['entry_flush_attribute']      = 'Flush attributes:';
 $_['entry_fill_parent_cats']	 = 'Fill parent categories:';
 $_['entry_seo_url']				 = 'Generate SEO URL (depends on <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>):';
 
-$_['entry_order_status'] = 'Uploaded orders status:';
-$_['entry_notify'] 		 = 'Notify users of status change:';
-$_['entry_use_utf8'] 	 = 'Use UTF-8:';
+$_['entry_order_status'] 	= 'Uploaded orders status:';
+$_['entry_order_notify'] 	= 'Notify users of status change:';
+$_['entry_order_currency'] 	= 'Orders currency:';
+$_['entry_use_utf8'] 	 	= 'Use UTF-8:';
 
 $_['entry_upload']		 = 'Select file:';
-
 $_['button_upload']		 = 'Upload';
 
 // Error
