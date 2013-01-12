@@ -157,7 +157,7 @@ class ModelToolExchange1c extends Model {
 		$price_types = array();
 		$data['price'] = 0;
 
-		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены)
+		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
 			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
 				$price_types[(string)$type->Ид] = (string)$type->Наименование;
 			}
@@ -174,7 +174,7 @@ class ModelToolExchange1c extends Model {
 				if (!$config_price_type) {
 					$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
 				}
-				else {
+				else if ($offer->Цены->Цена->ИдТипаЦены) {
 					foreach ($offer->Цены->Цена as $price) {
 						if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type) {
 							$data['price'] = (float)$price->ЦенаЗаЕдиницу;
