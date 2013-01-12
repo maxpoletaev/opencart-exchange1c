@@ -585,6 +585,10 @@ class ModelToolExchange1c extends Model {
 			$data = array_merge($data, array('product_store' => $this->model_catalog_product->getProductStores($product_id)));
 			$data = array_merge($data, array('product_related' => $this->model_catalog_product->getProductRelated($product_id)));
 			$data = array_merge($data, array('product_attribute' => $this->model_catalog_product->getProductAttributes($product_id)));
+			
+			if (VERSION == '1.5.3.1') {
+				$data = array_merge($data, array('product_attribute' => $this->model_catalog_product->getProductTags($product_id)));
+			}
 		}
 
 		$query = $this->db->query('SELECT * FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "product_id='.$product_id.'"');
@@ -644,9 +648,12 @@ class ModelToolExchange1c extends Model {
 			,'product_special'	=> (isset($product['product_special'])) ? $product['product_special'] : (isset($data['product_special']) ? $data['product_special']: array())
 			,'product_download'	=> (isset($product['product_download'])) ? $product['product_download'] : (isset($data['product_download']) ? $data['product_download']: array())
 			,'product_related'	=> (isset($product['product_related'])) ? $product['product_related'] : (isset($data['product_related']) ? $data['product_related']: array())
-			,'product_attribute' => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())			
-
+			,'product_attribute' => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
 		);
+
+		if (VERSION == '1.5.3.1') {
+			$result['product_tag'] = (isset($product['product_tag'])) ? $product['product_tag'] : (isset($data['product_tag']) ? $data['product_tag']: array());
+		}
 
 		$result['product_description'] = array(
 			1 => array(
@@ -713,9 +720,7 @@ class ModelToolExchange1c extends Model {
 		$product_id = $this->model_catalog_product->addProduct($data);
 
 		// Добавляемя линкт в дб
-		$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['uuid']) . '"');		
-
-
+		$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['uuid']) . '"');
 	}
 
 
