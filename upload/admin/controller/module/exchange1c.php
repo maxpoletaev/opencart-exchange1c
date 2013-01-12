@@ -17,7 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version dev.35';
+		$this->data['version'] = 'Version dev.36';
 		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -56,19 +56,22 @@ class ControllerModuleExchange1c extends Controller {
 	
   		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
-		} else {
+		}
+		else {
 			$this->data['error_warning'] = '';
 		}
 
  		if (isset($this->error['exchange1c_username'])) {
 			$this->data['error_exchange1c_username'] = $this->error['exchange1c_username'];
-		} else {
+		}
+		else {
 			$this->data['error_exchange1c_username'] = '';
 		}
 
  		if (isset($this->error['exchange1c_password'])) {
 			$this->data['error_exchange1c_password'] = $this->error['exchange1c_password'];
-		} else {
+		}
+		else {
 			$this->data['error_exchange1c_password'] = '';
 		}
 		
@@ -102,91 +105,106 @@ class ControllerModuleExchange1c extends Controller {
 
 		if (isset($this->request->post['exchange1c_username'])) {
 			$this->data['exchange1c_username'] = $this->request->post['exchange1c_username'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_username'] = $this->config->get('exchange1c_username');
 		}
 		
 		if (isset($this->request->post['exchange1c_password'])) {
 			$this->data['exchange1c_password'] = $this->request->post['exchange1c_password'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_password'] = $this->config->get('exchange1c_password'); 
 		}
 
 		if (isset($this->request->post['exchange1c_allow_ip'])) {
 			$this->data['exchange1c_allow_ip'] = $this->request->post['exchange1c_allow_ip'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_allow_ip'] = $this->config->get('exchange1c_allow_ip'); 
 		} 
 		
 		if (isset($this->request->post['exchange1c_status'])) {
 			$this->data['exchange1c_status'] = $this->request->post['exchange1c_status'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_status'] = $this->config->get('exchange1c_status');
 		}	
 		
 		if (isset($this->request->post['exchange1c_price_type'])) {
 			$this->data['exchange1c_price_type'] = $this->request->post['exchange1c_price_type'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_price_type'] = $this->config->get('exchange1c_price_type');
 		}
 
 		if (isset($this->request->post['exchange1c_flush_product'])) {
 			$this->data['exchange1c_flush_product'] = $this->request->post['exchange1c_flush_product'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_flush_product'] = $this->config->get('exchange1c_flush_product');
 		}
 
 		if (isset($this->request->post['exchange1c_flush_category'])) {
 			$this->data['exchange1c_flush_category'] = $this->request->post['exchange1c_flush_category'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_flush_category'] = $this->config->get('exchange1c_flush_category');
 		}
 
 		if (isset($this->request->post['exchange1c_flush_manufacturer'])) {
 			$this->data['exchange1c_flush_manufacturer'] = $this->request->post['exchange1c_flush_manufacturer'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_flush_manufacturer'] = $this->config->get('exchange1c_flush_manufacturer');
 		}
         
 		if (isset($this->request->post['exchange1c_flush_quantity'])) {
 			$this->data['exchange1c_flush_quantity'] = $this->request->post['exchange1c_flush_quantity'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_flush_quantity'] = $this->config->get('exchange1c_flush_quantity');
 		}
 
 		if (isset($this->request->post['exchange1c_flush_attribute'])) {
 			$this->data['exchange1c_flush_attribute'] = $this->request->post['exchange1c_flush_attribute'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_flush_attribute'] = $this->config->get('exchange1c_flush_attribute');
 		}
 
 		if (isset($this->request->post['exchange1c_fill_parent_cats'])) {
 			$this->data['exchange1c_fill_parent_cats'] = $this->request->post['exchange1c_fill_parent_cats'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_fill_parent_cats'] = $this->config->get('exchange1c_fill_parent_cats');
 		}
 
 		if (isset($this->request->post['exchange1c_seo_url'])) {
 			$this->data['exchange1c_seo_url'] = $this->request->post['exchange1c_seo_url'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_seo_url'] = $this->config->get('exchange1c_seo_url');
 		}
 
 		if (isset($this->request->post['exchange1c_order_status'])) {
 			$this->data['exchange1c_order_status'] = $this->request->post['exchange1c_order_status'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_order_status'] = $this->config->get('exchange1c_order_status');
 		}
 
 		if (isset($this->request->post['exchange1c_use_utf8'])) {
 			$this->data['exchange1c_use_utf8'] = $this->request->post['exchange1c_use_utf8'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_use_utf8'] = $this->config->get('exchange1c_use_utf8');
 		}
 
 		if (isset($this->request->post['exchange1c_notify'])) {
 			$this->data['exchange1c_notify'] = $this->request->post['exchange1c_notify'];
-		} else {
+		}
+		else {
 			$this->data['exchange1c_notify'] = $this->config->get('exchange1c_notify');
 		}
 
@@ -218,7 +236,8 @@ class ControllerModuleExchange1c extends Controller {
 		
 		if (!$this->error) {
 			return TRUE;
-		} else {
+		}
+		else {
 			return FALSE;
 		}
 	}
@@ -298,7 +317,8 @@ class ControllerModuleExchange1c extends Controller {
 					rename($cache . 'import_files/', $images);
 				}
 
-			} else {
+			}
+			else {
 
 				$handle = fopen($this->request->files['file']['tmp_name'], 'r');
 				$buffer = fread($handle, 256);
@@ -309,11 +329,13 @@ class ControllerModuleExchange1c extends Controller {
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'import.xml');
 					$this->modeImport('import.xml');
 				
-				} else if (strpos($buffer, 'ПакетПредложений')) {
+				}
+				else if (strpos($buffer, 'ПакетПредложений')) {
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
 					$this->modeImport('offers.xml');
 
-				} else {
+				}
+				else {
 					$json['error'] = $this->language->get('text_upload_error');
 					exit;
 				}
@@ -411,7 +433,8 @@ class ControllerModuleExchange1c extends Controller {
 		// Проверяем на наличие имени файла
 		if (isset($this->request->get['filename'])) {
 			$uplod_file = $cache . $this->request->get['filename'];
-		} else {
+		}
+		else {
 			echo "failure\n";
 			echo "ERROR 10: No file name variable";
 			return;
@@ -439,15 +462,18 @@ class ControllerModuleExchange1c extends Controller {
 					
 					chmod($uplod_file , 0777);
 					//echo "success\n";
-				} else {
+				}
+				else {
 					echo "failure\n";
 				}
-			} else {
+			}
+			else {
 				echo "failure\n";
 				echo "Can not open file: $uplod_file\n";
 				echo $cache;
 			}
-		} else {
+		}
+		else {
 			echo "failure\n";
 			echo "No data file\n";
 		}
@@ -462,10 +488,12 @@ class ControllerModuleExchange1c extends Controller {
 		if ($manual) {
 			$filename = $manual;
 			$importFile = $cache . $filename;
-		} else if (isset($this->request->get['filename'])) {
+		}
+		else if (isset($this->request->get['filename'])) {
 			$filename = $this->request->get['filename'];
 			$importFile = $cache . $filename;
-		} else {
+		}
+		else {
 			echo "failure\n";
 			echo "ERROR 10: No file name variable";
 			return 0;
@@ -492,11 +520,13 @@ class ControllerModuleExchange1c extends Controller {
 				echo "success\n";
 			}
 			
-		} else if ($filename == 'offers.xml') {
+		}
+		else if ($filename == 'offers.xml') {
 			
 			if ($this->config->get('exchange1c_price_type') == '') {
 				$config_price_type = false;
-			} else {
+			}
+			else {
 				$config_price_type = $this->config->get('exchange1c_price_type');
 			}
 
@@ -506,7 +536,8 @@ class ControllerModuleExchange1c extends Controller {
 				echo "success\n";
 			}
 			
-		} else {
+		}
+		else {
 		
 			echo "failure\n";
 			echo $filename;
@@ -524,7 +555,8 @@ class ControllerModuleExchange1c extends Controller {
 		
 		if (!$this->config->get('exchange1c_use_utf8')) {
 			echo iconv('utf-8', 'cp1251', $orders);
-		} else {
+		}
+		else {
 			echo $orders;
 		}
 
@@ -539,7 +571,8 @@ class ControllerModuleExchange1c extends Controller {
 		if (file_exists(DIR_CACHE . 'exchange1c')) {
 			if (is_dir(DIR_CACHE . 'exchange1c')) {
 				return $this->cleanDir(DIR_CACHE . 'exchange1c/');
-			} else { 
+			}
+			else { 
 				unlink(DIR_CACHE . 'exchange1c');
 			}
 		}

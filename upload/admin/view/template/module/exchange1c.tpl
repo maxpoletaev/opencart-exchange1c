@@ -57,7 +57,7 @@
             <tr>
               <td><?php echo $entry_allow_ip; ?></td>
               <td>
-                <textarea name="exchange1c_allow_ip" style="200px; height: 50px;"><?php echo $exchange1c_allow_ip; ?></textarea>
+                <textarea name="exchange1c_allow_ip" style="width: 200px; height: 50px;"><?php echo $exchange1c_allow_ip; ?></textarea>
               </td>
             </tr>
           </table>
