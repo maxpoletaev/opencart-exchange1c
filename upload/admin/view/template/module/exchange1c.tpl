@@ -177,7 +177,7 @@
     </div>
     
     <div style="text-align:center; opacity: .5">
-      <p><?php echo $version; ?> | <a href="http://eth1.ru/lab/opencart-exchange1c/"><?php echo $text_homepage; ?></a></p>
+      <p><?php echo $version; ?> | <a href="http://zenwalker.ru/lab/opencart-exchange1c"><?php echo $text_homepage; ?></a></p>
     </div>
   </div>
 </div>
