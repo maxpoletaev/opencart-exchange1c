@@ -46,7 +46,6 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
 		$this->data['entry_order_currency'] = $this->language->get('entry_order_currency');
-		$this->data['entry_use_utf8'] = $this->language->get('entry_use_utf8');
 		$this->data['entry_order_notify'] = $this->language->get('entry_order_notify');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_upload'] = $this->language->get('entry_upload');
@@ -200,13 +199,6 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_order_currency'] = $this->config->get('exchange1c_order_currency');
-		}
-
-		if (isset($this->request->post['exchange1c_use_utf8'])) {
-			$this->data['exchange1c_use_utf8'] = $this->request->post['exchange1c_use_utf8'];
-		}
-		else {
-			$this->data['exchange1c_use_utf8'] = $this->config->get('exchange1c_use_utf8');
 		}
 
 		if (isset($this->request->post['exchange1c_order_notify'])) {
@@ -566,14 +558,7 @@ class ControllerModuleExchange1c extends Controller {
 			,'currency'		=> $this->config->get('exchange1c_order_currency') ? $this->config->get('exchange1c_order_currency') : 'руб.'
 		));
 		
-		if (!$this->config->get('exchange1c_use_utf8')) {
-			echo iconv('utf-8', 'cp1251', $orders);
-		}
-		else {
-			echo $orders;
-		}
-
-		return;
+		echo iconv('utf-8', 'cp1251', $orders);
 	}
 	
 	

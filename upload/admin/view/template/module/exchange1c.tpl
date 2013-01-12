@@ -152,13 +152,6 @@
               </td>
             </tr>
 
-            <tr>
-              <td><label for="exchange1c_use_utf8"><?php echo $entry_use_utf8; ?></label></td>
-              <td>
-                <input type="checkbox" value="1" id="exchange1c_use_utf8" name="exchange1c_use_utf8" <?php echo ($exchange1c_use_utf8 == 1)? 'checked' : ''; ?>>
-              </td>
-            </tr>
-
           </table>
         </div>
 
