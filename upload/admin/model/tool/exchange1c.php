@@ -157,8 +157,10 @@ class ModelToolExchange1c extends Model {
 		$price_types = array();
 		$data['price'] = 0;
 
-		foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
-			$price_types[(string)$type->Ид] = (string)$type->Наименование;
+		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены)
+			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
+				$price_types[(string)$type->Ид] = (string)$type->Наименование;
+			}
 		}
 
 		foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
