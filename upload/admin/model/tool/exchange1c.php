@@ -310,10 +310,10 @@ class ModelToolExchange1c extends Model {
 							$attribute = $this->PROPERTIES[(string)$property->Ид];
 
 							if (isset($attribute['values'][(string)$property->Значение])) {
-								$attribute_value = (string)$attribute['values'][(string)$property->Значение];
+								$attribute_value = str_replace("'", "&apos;", (string)$attribute['values'][(string)$property->Значение]);
 							}
 							else if ((string)$property->Значение != '') {
-								$attribute_value = (string)$property->Значение;
+								$attribute_value = str_replace("'", "&apos;", (string)$property->Значение);
 							}
 							else {
 								continue;
