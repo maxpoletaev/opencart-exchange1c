@@ -167,7 +167,7 @@ class ModelToolExchange1c extends Model {
 
 			//UUID без номера после #
 			$uuid = explode("#", $offer->Ид);
-			$data['id'] = $uuid[0];
+			$data['1c_id'] = $uuid[0];
 
 			//Цена за единицу
 			if ($offer->Цены) {
@@ -278,8 +278,7 @@ class ModelToolExchange1c extends Model {
 			foreach ($xml->Каталог->Товары->Товар as $product) {
 
 				$uuid = explode('#', (string)$product->Ид);
-				$data['id'] = $uuid[0];
-				$data['uuid'] = $uuid[0];
+				$data['1c_id'] = $uuid[0];
 
 				$data['model'] = $product->Артикул?(string)$product->Артикул :'не задана';
 				$data['sku'] = $data['model'];
@@ -589,7 +588,7 @@ class ModelToolExchange1c extends Model {
 			$data = array_merge($data, array('product_attribute' => $this->model_catalog_product->getProductAttributes($product_id)));
 			
 			if (VERSION == '1.5.3.1') {
-				$data = array_merge($data, array('product_attribute' => $this->model_catalog_product->getProductTags($product_id)));
+				$data = array_merge($data, array('product_tag' => $this->model_catalog_product->getProductTags($product_id)));
 			}
 		}
 
@@ -702,16 +701,16 @@ class ModelToolExchange1c extends Model {
 		if (!$product) return;
 
 		//Проверяем есть ли такой товар в БД
-		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_1c` WHERE `1c_id` = "' . $this->db->escape($product['id']) . '"');
+		$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
 
-		if ($query->num_rows) {
+		if ($product_id) {
 			$product['price'] = 0;
 			// Удаляем атрибуты т.к. еще не придумал как их сравнивать и обновлять.
 			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$query->row['product_id'] . "'");
 			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_description WHERE product_id = '" . (int)$query->row['product_id'] . "'");
 			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$query->row['product_id'] . "'");
 			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value_description WHERE product_id = '" . (int)$query->row['product_id'] . "'");
-			return $this->updateProduct($product, (int)$query->row['product_id']);
+			return $this->updateProduct($product, $product_id);
 		} 	
 
 		// Заполняем значения продукта
@@ -722,7 +721,7 @@ class ModelToolExchange1c extends Model {
 		$product_id = $this->model_catalog_product->addProduct($data);
 
 		// Добавляемя линкт в дб
-		$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['uuid']) . '"');
+		$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['1c_id']) . '"');
 	}
 
 
@@ -738,7 +737,7 @@ class ModelToolExchange1c extends Model {
 
 		// Проверяем что обновлять?
 		if (!$product_id) {
-			$product_id = $this->getProductIdBy1CProductId($product['id']);
+			$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
 		}
 
 		// Обновляем описание продукта
@@ -837,6 +836,66 @@ class ModelToolExchange1c extends Model {
 		return $result;
 	}
 
+
+	/**
+	 * Очищает таблицы магазина
+	 */
+	public function flushDb($params) {
+
+		// Удаляем товары
+		if ($params['product']) {
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_attribute');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_discount');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_image');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_option_value');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_related');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_reward');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_special');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_1c');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_category');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_download');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_layout');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_store');
+			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
+		}
+
+		// Очищает таблицы категорий
+		if ($params['category']) {
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category'); 
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_store');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_1c');
+			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%category_id=%"');
+		}
+			
+		// Очищает таблицы от всех производителей
+		if ($params['manufacturer']) {
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
+			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%manufacturer_id=%"');
+		}
+			
+		// Очищает атрибуты
+		if ($params['attribute']) {
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_to_1c');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_group');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_group_description');
+		}
+
+        
+		// Выставляем кол-во товаров в 0
+		if($params['quantity']) {
+			$this->db->query('UPDATE ' . DB_PREFIX . 'product ' . 'SET quantity = 0');
+		}
+
+	}
 
 	/**
 	 * Создает таблицы, нужные для работы
