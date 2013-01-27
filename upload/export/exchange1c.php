@@ -43,7 +43,11 @@ $registry->set('db', $db);
 $query = $db->query("SELECT * FROM " . DB_PREFIX . "setting");
  
 foreach ($query->rows as $setting) {
-	$config->set($setting['key'], $setting['value']);
+	if (!$setting['serialized']) {
+		$config->set($setting['key'], $setting['value']);
+	} else {
+		$config->set($setting['key'], unserialize($setting['value']));
+	}
 }
 
 // Log 

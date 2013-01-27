@@ -17,14 +17,18 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version dev.43';
+		$this->data['version'] = 'Version dev.44';
 		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
 		$this->data['entry_password'] = $this->language->get('entry_password');
 		$this->data['entry_allow_ip'] = $this->language->get('entry_allow_ip');
-		$this->data['entry_price_type'] = $this->language->get('entry_price_type');
+		$this->data['text_price_default'] = $this->language->get('text_price_default');
+		$this->data['entry_config_price_type'] = $this->language->get('entry_config_price_type');
+		$this->data['entry_customer_group'] = $this->language->get('entry_customer_group');
+		$this->data['entry_quantity'] = $this->language->get('entry_quantity');
+		$this->data['entry_priority'] = $this->language->get('entry_priority');
 		$this->data['entry_flush_product'] = $this->language->get('entry_flush_product');
 		$this->data['entry_flush_category'] = $this->language->get('entry_flush_category');
 		$this->data['entry_flush_manufacturer'] = $this->language->get('entry_flush_manufacturer');
@@ -53,6 +57,8 @@ class ControllerModuleExchange1c extends Controller {
 
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
+		$this->data['button_insert'] = $this->language->get('button_insert');
+		$this->data['button_remove'] = $this->language->get('button_remove');
 	
   		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
@@ -136,6 +142,14 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_price_type'] = $this->config->get('exchange1c_price_type');
+			if(empty($this->data['exchange1c_price_type'])) {
+				$this->data['exchange1c_price_type'][] = array(
+					'keyword'			=> '',
+					'customer_group_id'	=> 0,
+					'quantity'			=> 0,
+					'priority'			=> 0
+				);
+			}
 		}
 
 		if (isset($this->request->post['exchange1c_flush_product'])) {
@@ -207,7 +221,11 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_order_notify'] = $this->config->get('exchange1c_order_notify');
 		}
-
+		
+		// Группы
+		$this->load->model('sale/customer_group');
+		$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
+		
 		$this->load->model('localisation/order_status');
 
 		$order_statuses = $this->model_localisation_order_status->getOrderStatuses();
@@ -218,14 +236,14 @@ class ControllerModuleExchange1c extends Controller {
 				'name'			  => $order_status['name']
 			);
 		}
-				
+		
 		$this->template = 'module/exchange1c.tpl';
 		$this->children = array(
 			'common/header',	
 			'common/footer'	
 		);
 		
-		$this->response->setOutput($this->render(TRUE), $this->config->get('config_compression'));
+		$this->response->setOutput($this->render(), $this->config->get('config_compression'));
 	}
 
 	private function validate() {
@@ -235,10 +253,10 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		if (!$this->error) {
-			return TRUE;
+			return true;
 		}
 		else {
-			return FALSE;
+			return false;
 		}
 	}
 	
@@ -250,7 +268,7 @@ class ControllerModuleExchange1c extends Controller {
 	public function modeCheckauth() {
 	
 		// Проверяем включен или нет модуль
-		if(!$this->config->get('exchange1c_status')) {
+		if (!$this->config->get('exchange1c_status')) {
 			echo "failure\n";
 			echo "1c module OFF";
 			exit;
@@ -268,12 +286,12 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		// Авторизуем
-		if(($this->config->get('exchange1c_username') != '') && (@$_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username'))) {
+		if (($this->config->get('exchange1c_username') != '') && (@$_SERVER['PHP_AUTH_USER'] != $this->config->get('exchange1c_username'))) {
 			echo "failure\n";
 			echo "error login";
 		}
 		
-		if(($this->config->get('exchange1c_password') != '') && (@$_SERVER['PHP_AUTH_PW'] != $this->config->get('exchange1c_password'))) {
+		if (($this->config->get('exchange1c_password') != '') && (@$_SERVER['PHP_AUTH_PW'] != $this->config->get('exchange1c_password'))) {
 			echo "failure\n";
 			echo "error password";
 			exit;
@@ -397,13 +415,10 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		// Проверяем XML или изображения
-		if( strpos( $this->request->get['filename'], 'import_files') !== false ) {
+		if (strpos($this->request->get['filename'], 'import_files')) {
 			$cache = DIR_IMAGE;
 			$uplod_file = $cache . $this->request->get['filename'];
-			$this->checkUploadFileTree( dirname($this->request->get['filename']) , $cache);
-			
-			// TODO: физическое обновление изображений. 
-			
+			$this->checkUploadFileTree(dirname($this->request->get['filename']) , $cache);
 		}
 				
 		// Получаем данные
@@ -478,15 +493,8 @@ class ControllerModuleExchange1c extends Controller {
 			
 		}
 		else if ($filename == 'offers.xml') {
-			
-			if ($this->config->get('exchange1c_price_type') == '') {
-				$config_price_type = false;
-			}
-			else {
-				$config_price_type = $this->config->get('exchange1c_price_type');
-			}
-
-			$this->model_tool_exchange1c->parseOffers($config_price_type);
+			$exchange1c_price_type = $this->config->get('exchange1c_price_type');
+			$this->model_tool_exchange1c->parseOffers($exchange1c_price_type);
 			
 			if (!$manual) {
 				echo "success\n";

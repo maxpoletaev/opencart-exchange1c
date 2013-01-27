@@ -149,19 +149,35 @@ class ModelToolExchange1c extends Model {
 	 *
 	 * @param    string    наименование типа цены
 	 */
-	public function parseOffers($config_price_type = false) {
+	public function parseOffers($config_price_type) {
 
 		$importFile = DIR_CACHE . 'exchange1c/offers.xml';
 		$xml = simplexml_load_file($importFile);
 		$data = array();
 		$price_types = array();
 		$data['price'] = 0;
-
+		
 		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
 			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
 				$price_types[(string)$type->Ид] = (string)$type->Наименование;
 			}
 		}
+		
+		if (!empty($config_price_type) && count($config_price_type) > 0) {
+			$config_price_type_main = array_shift($config_price_type);
+		}
+		
+		// Инициализация массива скидок для оптимизации алгоритма
+		if (!empty($config_price_type) && count($config_price_type) > 0) {
+			$discount_price_type = array();
+			foreach ($config_price_type as $obj) {
+				$discount_price_type[$obj['keyword']] = array(
+					'customer_group_id' => $obj['customer_group_id'],
+					'quantity' => $obj['quantity'],
+					'priority' => $obj['priority']
+				); 
+			}
+		} 
 
 		foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
 
@@ -171,15 +187,38 @@ class ModelToolExchange1c extends Model {
 
 			//Цена за единицу
 			if ($offer->Цены) {
-				if (!$config_price_type) {
+
+				// Первая цена по умолчанию - $config_price_type_main
+				if (!$config_price_type_main['keyword']) {
 					$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
 				}
-				else if ($offer->Цены->Цена->ИдТипаЦены) {
-					foreach ($offer->Цены->Цена as $price) {
-						if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type) {
-							$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+				else {
+					if ($offer->Цены->Цена->ИдТипаЦены) {
+						foreach ($offer->Цены->Цена as $price) {
+							if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
+								$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+							}
 						}
-					} 
+					}
+				}
+				
+				// Вторая цена и тд - $discount_price_type
+				if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
+					foreach ($offer->Цены->Цена as $price) {
+						$key = $price_types[(string)$price->ИдТипаЦены];
+						if (isset($discount_price_type[$key])) {
+							$value = array(
+								'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
+								'quantity'			=> $discount_price_type[$key]['quantity'],
+								'priority'			=> $discount_price_type[$key]['priority'],
+								'price'				=> (float)$price->ЦенаЗаЕдиницу,
+								'date_start'		=> '0000-00-00',
+								'date_end'			=> '0000-00-00'
+							);
+							$data['product_discount'][] = $value;
+							unset($value);
+						}
+					}
 				}
 			}
 
