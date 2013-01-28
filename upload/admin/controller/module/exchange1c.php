@@ -17,7 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version dev.44';
+		$this->data['version'] = 'Version dev.45';
 		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -316,13 +316,12 @@ class ControllerModuleExchange1c extends Controller {
 				$this->modeCatalogInit(false);
 
 				$zip->extractTo($cache);
+				$files = scandir($cache);
 
-				if (file_exists($cache . 'import.xml')) {
-					$this->modeImport('import.xml');
-				}
-
-				if (file_exists($cache . 'offers.xml')) {
-					$this->modeImport('offers.xml');
+				foreach ($files as $file) {
+					if (is_file($cache . $file)) {
+						$this->modeImport($file);
+					}
 				}
 
 				if (is_dir($cache . 'import_files')) {
@@ -351,7 +350,6 @@ class ControllerModuleExchange1c extends Controller {
 				else if (strpos($buffer, 'ПакетПредложений')) {
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
 					$this->modeImport('offers.xml');
-
 				}
 				else {
 					$json['error'] = $this->language->get('text_upload_error');
@@ -422,13 +420,13 @@ class ControllerModuleExchange1c extends Controller {
 		}
 				
 		// Получаем данные
-		$DATA = file_get_contents("php://input");
+		$data = file_get_contents("php://input");
 		
-		if ($DATA !== false) {
+		if ($data !== false) {
 			if ($fp = fopen($uplod_file, "wb")) {
-				$result = fwrite($fp, $DATA);
+				$result = fwrite($fp, $data);
 				
-				if ($result === strlen($DATA)) {
+				if ($result === strlen($data)) {
 					echo "success\n";
 					
 					chmod($uplod_file , 0777);
@@ -472,7 +470,7 @@ class ControllerModuleExchange1c extends Controller {
 		
 		$this->load->model('tool/exchange1c');
 		
-		if($filename == 'import.xml') {
+		if (strpos($filename, 'import') !== false) {
 			
 			$this->model_tool_exchange1c->parseImport();
 
@@ -492,20 +490,17 @@ class ControllerModuleExchange1c extends Controller {
 			}
 			
 		}
-		else if ($filename == 'offers.xml') {
+		else if (strpos($filename, 'offers') !== false) {
 			$exchange1c_price_type = $this->config->get('exchange1c_price_type');
 			$this->model_tool_exchange1c->parseOffers($exchange1c_price_type);
 			
 			if (!$manual) {
 				echo "success\n";
-			}
-			
+			}	
 		}
-		else {
-		
+		else {		
 			echo "failure\n";
 			echo $filename;
-			
 		}
 		
 		$this->cache->delete('product');
