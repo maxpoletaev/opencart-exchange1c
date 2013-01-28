@@ -17,108 +17,85 @@ class ModelToolExchange1c extends Model {
 
 		$this->load->model('sale/order');
 
-		$orders = $this->model_sale_order->getOrders(array(
-			'filter_order_status_id' => $params['query_status']
-		));
+		$query = $this->db->query("SELECT order_id FROM `order` WHERE `date_added` >= '" . $params['from_date'] . "'");
 
 		$document = array();
 		$document_counter = 0;
-		
-		foreach ($orders as $orders_data) {
-		
-			$order = $this->model_sale_order->getOrder($orders_data['order_id']);
+
+		if ($query->num_rows) {
+
+			foreach ($query->rows as $orders_data) {
 			
-			$date = date('Y-m-d', strtotime($order['date_added']));
-			$time = date('H:i:s', strtotime($order['date_added']));
-
-			$document['Документ' . $document_counter] = array(
-				 'Ид'			=> $order['order_id']
-				,'Номер'		=> $order['order_id']
-				,'Дата'			=> $date
-				,'Время'		=> $time
-				,'Валюта'		=> $params['currency']
-				,'Курс'			=> 1
-				,'ХозОперация'	=> 'Заказ товара'
-				,'Роль'			=> 'Продавец'
-				,'Сумма'		=> $order['total']
-				,'Комментарий'	=> $order['comment']
-			);
-
-			$document['Документ' . $document_counter]['Контрагенты']['Контрагент'] = array(
-				 'Ид' 					=> $order['customer_id'] . '#' . $order['email']
-				,'Наименование'			=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-				,'Роль'					=> 'Покупатель'
-				,'ПолноеНаименование'	=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-				,'Фамилия'				=> $order['payment_lastname']
-				,'Имя'					=> $order['payment_firstname']
+				$order = $this->model_sale_order->getOrder($orders_data['order_id']);
 				
-				,'Адрес' 	=> array(
-					'Представление'	=> $order['shipping_address_1'].', '.$order['shipping_city'].', '.$order['shipping_postcode'].', '.$order['shipping_country']
-				)
-				,'Контакты'	=> array(
-					'Контакт1'	=> array(
-						 'Тип'		=> 'ТелефонРабочий'
-						,'Значение'	=> $order['telephone']
-					)
-					,'Контакт2'	=> array(
-						 'Тип'		=> 'Почта'
-						,'Значение'	=> $order['email']
-					)
-				)
-			);
+				$date = date('Y-m-d', strtotime($order['date_added']));
+				$time = date('H:i:s', strtotime($order['date_added']));
 
-			// Товары
-			$products = $this->model_sale_order->getOrderProducts($orders_data['order_id']);
-
-			$product_counter = 0;
-			foreach ($products as $product) {
-				$id = $this->get1CProductIdByProductId($product['product_id']);
-
-				$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter] = array(
-					 'Ид'			=> $id
-					,'Наименование'	=> $product['name']
-					,'ЦенаЗаЕдиницу'=> $product['price']
-					,'Количество'	=> $product['quantity']
-					,'Сумма'		=> $product['total']
+				$document['Документ' . $document_counter] = array(
+					 'Ид'			=> $order['order_id']
+					,'Номер'		=> $order['order_id']
+					,'Дата'			=> $date
+					,'Время'		=> $time
+					,'Валюта'		=> $params['currency']
+					,'Курс'			=> 1
+					,'ХозОперация'	=> 'Заказ товара'
+					,'Роль'			=> 'Продавец'
+					,'Сумма'		=> $order['total']
+					,'Комментарий'	=> $order['comment']
 				);
 
-				$product_counter++;
+				$document['Документ' . $document_counter]['Контрагенты']['Контрагент'] = array(
+					 'Ид' 					=> $order['customer_id'] . '#' . $order['email']
+					,'Наименование'			=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
+					,'Роль'					=> 'Покупатель'
+					,'ПолноеНаименование'	=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
+					,'Фамилия'				=> $order['payment_lastname']
+					,'Имя'					=> $order['payment_firstname']
+					
+					,'Адрес' 	=> array(
+						'Представление'	=> $order['shipping_address_1'].', '.$order['shipping_city'].', '.$order['shipping_postcode'].', '.$order['shipping_country']
+					)
+					,'Контакты'	=> array(
+						'Контакт1'	=> array(
+							 'Тип'		=> 'ТелефонРабочий'
+							,'Значение'	=> $order['telephone']
+						)
+						,'Контакт2'	=> array(
+							 'Тип'		=> 'Почта'
+							,'Значение'	=> $order['email']
+						)
+					)
+				);
+
+				// Товары
+				$products = $this->model_sale_order->getOrderProducts($orders_data['order_id']);
+
+				$product_counter = 0;
+				foreach ($products as $product) {
+					$id = $this->get1CProductIdByProductId($product['product_id']);
+
+					$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter] = array(
+						 'Ид'			=> $id
+						,'Наименование'	=> $product['name']
+						,'ЦенаЗаЕдиницу'=> $product['price']
+						,'Количество'	=> $product['quantity']
+						,'Сумма'		=> $product['total']
+					);
+
+					$product_counter++;
+				}
+
+				$data = $order;
+
+				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
+					'order_status_id'	=> $params['new_status'],
+					'comment' 			=> '',
+					'notify'			=> $params['notify']
+				));
+
+				$document_counter++;
 			}
-
-			$data = $order;
-
-			$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
-				'order_status_id'	=> $params['new_status'],
-				'comment' 			=> '',
-				'notify'			=> $params['notify']
-			));
-
-			$document_counter++;
 		}
-
-		/*
-		$xml_values = $doc->addChild('ЗначенияРеквизитов');
-
-		$xml_value = $doc->addChild('ЗначениеРеквизита');
-		$xml_value->addChild('Наименование', 'Метод оплаты');
-		$xml_value->addChild('Значение', 'Наличный расчет');
-
-		$xml_value = $doc->addChild('ЗначениеРеквизита');
-		$xml_value->addChild('Наименование', 'Метод оплаты');
-		$xml_value->addChild('Значение', 'Наличный расчет');
-
-		$xml_value = $doc->addChild('ЗначениеРеквизита');
-		$xml_value->addChild('Наименование', 'Заказ оплачен');
-		$xml_value->addChild('Значение', 'true');
-
-		$xml_value = $doc->addChild('ЗначениеРеквизита');
-		$xml_value->addChild('Наименование', 'Отменен');
-		$xml_value->addChild('Значение', 'false');
-
-		$xml_value = $doc->addChild('ЗначениеРеквизита');
-		$xml_value->addChild('Наименование', 'Статус заказа');
-		$xml_value->addChild('Значение', '[N] Принят');
-		*/
 
 		$root = '<?xml version="1.0" encoding="utf-8"?><КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date('Y-m-d', time()) . '" />';
 		$xml = $this->array_to_xml($document, new SimpleXMLElement($root));

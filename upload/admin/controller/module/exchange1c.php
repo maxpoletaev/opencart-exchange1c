@@ -510,12 +510,19 @@ class ControllerModuleExchange1c extends Controller {
 	public function modeQueryOrders() {
 
 		$this->load->model('tool/exchange1c');
+
 		$orders = $this->model_tool_exchange1c->queryOrders(array(
-			 'query_status' => $this->config->get('config_order_status_id')
+			 'from_date' 	=> $this->config->get('exchange1c_order_date')
 			,'new_status'	=> $this->config->get('exchange1c_order_status')
 			,'notify'		=> $this->config->get('exchange1c_order_notify')
 			,'currency'		=> $this->config->get('exchange1c_order_currency') ? $this->config->get('exchange1c_order_currency') : 'руб.'
 		));
+
+		// Обновляем данные о последнем запросе заказов
+		$this->load->model('setting/setting');
+		$config = $this->model_setting_setting->getSetting('exchange1c');
+		$config['exchange1c_order_date'] = date('Y-m-d H:i:s');
+		$this->model_setting_setting->editSetting('exchange1c', $config);
 		
 		echo iconv('utf-8', 'cp1251', $orders);
 	}
