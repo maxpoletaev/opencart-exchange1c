@@ -415,7 +415,7 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		// Проверяем XML или изображения
-		if (strpos($this->request->get['filename'], 'import_files')) {
+		if (strpos($this->request->get['filename'], 'import_files') !== false) {
 			$cache = DIR_IMAGE;
 			$uplod_file = $cache . $this->request->get['filename'];
 			$this->checkUploadFileTree(dirname($this->request->get['filename']) , $cache);
