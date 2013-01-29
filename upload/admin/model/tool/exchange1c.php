@@ -17,7 +17,7 @@ class ModelToolExchange1c extends Model {
 
 		$this->load->model('sale/order');
 
-		$query = $this->db->query("SELECT order_id FROM `order` WHERE `date_added` >= '" . $params['from_date'] . "'");
+		$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `date_added` >= '" . $params['from_date'] . "'");
 
 		$document = array();
 		$document_counter = 0;
@@ -126,9 +126,9 @@ class ModelToolExchange1c extends Model {
 	 *
 	 * @param    string    наименование типа цены
 	 */
-	public function parseOffers($config_price_type) {
+	public function parseOffers($filename, $config_price_type) {
 
-		$importFile = DIR_CACHE . 'exchange1c/offers.xml';
+		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 		$xml = simplexml_load_file($importFile);
 		$data = array();
 		$price_types = array();
@@ -156,115 +156,117 @@ class ModelToolExchange1c extends Model {
 			}
 		} 
 
-		foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
+		if ($xml->ПакетПредложений->Предложения->Предложение) {
+			foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
 
-			//UUID без номера после #
-			$uuid = explode("#", $offer->Ид);
-			$data['1c_id'] = $uuid[0];
+				//UUID без номера после #
+				$uuid = explode("#", $offer->Ид);
+				$data['1c_id'] = $uuid[0];
 
-			//Цена за единицу
-			if ($offer->Цены) {
+				//Цена за единицу
+				if ($offer->Цены) {
 
-				// Первая цена по умолчанию - $config_price_type_main
-				if (!$config_price_type_main['keyword']) {
-					$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
-				}
-				else {
-					if ($offer->Цены->Цена->ИдТипаЦены) {
+					// Первая цена по умолчанию - $config_price_type_main
+					if (!$config_price_type_main['keyword']) {
+						$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
+					}
+					else {
+						if ($offer->Цены->Цена->ИдТипаЦены) {
+							foreach ($offer->Цены->Цена as $price) {
+								if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
+									$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+								}
+							}
+						}
+					}
+					
+					// Вторая цена и тд - $discount_price_type
+					if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
 						foreach ($offer->Цены->Цена as $price) {
-							if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
-								$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+							$key = $price_types[(string)$price->ИдТипаЦены];
+							if (isset($discount_price_type[$key])) {
+								$value = array(
+									'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
+									'quantity'			=> $discount_price_type[$key]['quantity'],
+									'priority'			=> $discount_price_type[$key]['priority'],
+									'price'				=> (float)$price->ЦенаЗаЕдиницу,
+									'date_start'		=> '0000-00-00',
+									'date_end'			=> '0000-00-00'
+								);
+								$data['product_discount'][] = $value;
+								unset($value);
 							}
 						}
 					}
 				}
-				
-				// Вторая цена и тд - $discount_price_type
-				if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
-					foreach ($offer->Цены->Цена as $price) {
-						$key = $price_types[(string)$price->ИдТипаЦены];
-						if (isset($discount_price_type[$key])) {
-							$value = array(
-								'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
-								'quantity'			=> $discount_price_type[$key]['quantity'],
-								'priority'			=> $discount_price_type[$key]['priority'],
-								'price'				=> (float)$price->ЦенаЗаЕдиницу,
-								'date_start'		=> '0000-00-00',
-								'date_end'			=> '0000-00-00'
-							);
-							$data['product_discount'][] = $value;
-							unset($value);
-						}
-					}
-				}
-			}
 
-			//Количество
-			$data['quantity'] = $offer->Количество ? (int)$offer->Количество : 0 ;
+				//Количество
+				$data['quantity'] = $offer->Количество ? (int)$offer->Количество : 0 ;
 
-			/*
-			if($offer->ХарактеристикиТовара){
-				//Заполняем массив с Атрибутами данными по умолчанию
-				$product_option_value_description_data[1] = array('name' => '');
-				$product_option_value_data[0] = array(
-					'language'				=> $product_option_value_description_data,
-					'quantity'				=> isset($data['quantity']) ? $data['quantity']:0,
-					'subtract'				=> 1,
-					// Пока записываем полную цену продукта с данной характеристикой, потом будем считать разницу цен.
-					'price'				   => isset($data['price']) ? $data['price']:10 ,
-					'prefix'				  => '+',
-					'sort_order'			  => isset($offer->ХарактеристикиТовара->Сортировка) ? (int)$offer->ХарактеристикиТовара->Сортировка : 0
-				);
-
-				//Если характеристика одна, то незачем объединять их и потому название и значения запишем как надо
-
-				$count_options = count($offer->ХарактеристикиТовара->ХарактеристикаТовара);
-
-				$data['product_option'][0] = array(
-					//Название Атрибута
-					'language'			 => array( 1 => array( 'name' => ($count_options == 1 ) ? (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Наименование : 'Варианты')),
-					'product_option_value' => $product_option_value_data,
-					'sort_order'		   => 0
-				);
-
-				//Считываем характеристики и объединяем, если их больше 1-й
-				if($count_options == 1){
-					$data['product_option'][0]['product_option_value'][0]['language'][1]['name'] = (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Значение;
-				}
-				else {
-					foreach($offer->ХарактеристикиТовара->ХарактеристикаТовара as $option ){
-						$data['product_option'][0]['product_option_value'][0]['language'][1]['name'].= (string)$option->Наименование. ': '. (string)$option->Значение.' ';
-				}}
-
-				//Если 1С выгружает значение СортировкаХарактеристики, то считываем его, если нет, то топаем дальше и этот код никому не мешает.
-				if($offer->ХарактеристикиТовара->СортировкаХарактеристики) $data['product_option'][0]['product_option_value'][0]['sort_order'] = (int)$offer->ХарактеристикиТовара->СортировкаХарактеристики;
-			}
-			*/
-
-			if ($offer->СкидкиНаценки) {
-				$value = array();
-				foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
-					$value = array(
-						 'customer_group_id'	=> 1
-						,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
-						,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
-						,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
-						,'date_end'		=> (string)$discount->ДатаОкончания
+				/*
+				if($offer->ХарактеристикиТовара){
+					//Заполняем массив с Атрибутами данными по умолчанию
+					$product_option_value_description_data[1] = array('name' => '');
+					$product_option_value_data[0] = array(
+						'language'				=> $product_option_value_description_data,
+						'quantity'				=> isset($data['quantity']) ? $data['quantity']:0,
+						'subtract'				=> 1,
+						// Пока записываем полную цену продукта с данной характеристикой, потом будем считать разницу цен.
+						'price'				   => isset($data['price']) ? $data['price']:10 ,
+						'prefix'				  => '+',
+						'sort_order'			  => isset($offer->ХарактеристикиТовара->Сортировка) ? (int)$offer->ХарактеристикиТовара->Сортировка : 0
 					);
 
-					$data['product_discount'][] = $value;
+					//Если характеристика одна, то незачем объединять их и потому название и значения запишем как надо
 
-					if ($discount->ЗначениеУсловия) {
-						$value['quantity'] = (int)$discount->ЗначениеУсловия;
+					$count_options = count($offer->ХарактеристикиТовара->ХарактеристикаТовара);
+
+					$data['product_option'][0] = array(
+						//Название Атрибута
+						'language'			 => array( 1 => array( 'name' => ($count_options == 1 ) ? (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Наименование : 'Варианты')),
+						'product_option_value' => $product_option_value_data,
+						'sort_order'		   => 0
+					);
+
+					//Считываем характеристики и объединяем, если их больше 1-й
+					if($count_options == 1){
+						$data['product_option'][0]['product_option_value'][0]['language'][1]['name'] = (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара->Значение;
 					}
-					
-					unset($value);
+					else {
+						foreach($offer->ХарактеристикиТовара->ХарактеристикаТовара as $option ){
+							$data['product_option'][0]['product_option_value'][0]['language'][1]['name'].= (string)$option->Наименование. ': '. (string)$option->Значение.' ';
+					}}
+
+					//Если 1С выгружает значение СортировкаХарактеристики, то считываем его, если нет, то топаем дальше и этот код никому не мешает.
+					if($offer->ХарактеристикиТовара->СортировкаХарактеристики) $data['product_option'][0]['product_option_value'][0]['sort_order'] = (int)$offer->ХарактеристикиТовара->СортировкаХарактеристики;
 				}
+				*/
+
+				if ($offer->СкидкиНаценки) {
+					$value = array();
+					foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
+						$value = array(
+							 'customer_group_id'	=> 1
+							,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
+							,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
+							,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
+							,'date_end'		=> (string)$discount->ДатаОкончания
+						);
+
+						$data['product_discount'][] = $value;
+
+						if ($discount->ЗначениеУсловия) {
+							$value['quantity'] = (int)$discount->ЗначениеУсловия;
+						}
+						
+						unset($value);
+					}
+				}
+			   	
+				$data['status'] = 1;
+				$this->updateProduct($data);
+				unset($data);
 			}
-		   	
-			$data['status'] = 1;
-			$this->updateProduct($data);
-			unset($data);
 		}
 
 		$this->cache->delete('product');
@@ -274,9 +276,9 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Парсит товары и категории
 	 */
-	public function parseImport() {		
+	public function parseImport($filename) {		
 
-		$importFile = DIR_CACHE . 'exchange1c/import.xml';
+		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();

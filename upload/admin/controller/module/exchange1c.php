@@ -17,7 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version dev.45';
+		$this->data['version'] = 'Version dev.46';
 		//$this->data['version'] = 'Version 1.4';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
@@ -472,7 +472,7 @@ class ControllerModuleExchange1c extends Controller {
 		
 		if (strpos($filename, 'import') !== false) {
 			
-			$this->model_tool_exchange1c->parseImport();
+			$this->model_tool_exchange1c->parseImport($filename);
 
 			if ($this->config->get('exchange1c_fill_parent_cats')) {
 				$this->model_tool_exchange1c->fillParentsCategories();
@@ -492,7 +492,7 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else if (strpos($filename, 'offers') !== false) {
 			$exchange1c_price_type = $this->config->get('exchange1c_price_type');
-			$this->model_tool_exchange1c->parseOffers($exchange1c_price_type);
+			$this->model_tool_exchange1c->parseOffers($filename, $exchange1c_price_type);
 			
 			if (!$manual) {
 				echo "success\n";
