@@ -298,11 +298,11 @@ class ModelToolExchange1c extends Model {
 				$uuid = explode('#', (string)$product->Ид);
 				$data['1c_id'] = $uuid[0];
 
-				$data['model'] = $product->Артикул?(string)$product->Артикул :'не задана';
+				$data['model'] = $product->Артикул? (string)$product->Артикул : 'не задана';
+				$data['name'] = $product->Наименование? (string)$product->Наименование : 'не задано';
+				$data['weight'] = $product->Вес? (float)$product->Вес : 0;
 				$data['sku'] = $data['model'];
 
-				$data['name'] = $product->Наименование?(string)$product->Наименование:'не задано';
-			
 				if ($product->Картинка) {
 					$data['image'] =(string)$product->Картинка[0];
 					unset($product->Картинка[0]);
@@ -314,11 +314,9 @@ class ModelToolExchange1c extends Model {
 					}
 				}
 
-				if($product->Группы) $data['category_1c_id'] = (string)$product->Группы->Ид;
-
-				if($product->Описание) $data['description'] = (string)$product->Описание;
-
-				if($product->Статус) $data['status'] = (string)$product->Статус;
+				if ($product->Группы) $data['category_1c_id'] = (string)$product->Группы->Ид;
+				if ($product->Описание) $data['description'] = (string)$product->Описание;
+				if ($product->Статус) $data['status'] = (string)$product->Статус;
 
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
@@ -628,13 +626,13 @@ class ModelToolExchange1c extends Model {
 		$this->load->model('tool/image');
 
 		$result = array(
-			 'model' => (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
-			,'sku'	 => (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
-			,'upc'	 => (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
-			,'ean'	 => (isset($product['ean'])) ? $product['ean'] : (isset($data['ean']) ? $data['ean']: '')
-			,'jan'	 => (isset($product['jan'])) ? $product['jan'] : (isset($data['jan']) ? $data['jan']: '')
-			,'isbn'	 => (isset($product['isbn'])) ? $product['isbn'] : (isset($data['isbn']) ? $data['isbn']: '')
-			,'mpn'   => (isset($product['mpn'])) ? $product['mpn'] : (isset($data['mpn']) ? $data['mpn']: '')
+			 'model' 	=> (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
+			,'sku'	 	=> (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
+			,'upc'	 	=> (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
+			,'ean'	 	=> (isset($product['ean'])) ? $product['ean'] : (isset($data['ean']) ? $data['ean']: '')
+			,'jan'	 	=> (isset($product['jan'])) ? $product['jan'] : (isset($data['jan']) ? $data['jan']: '')
+			,'isbn'	 	=> (isset($product['isbn'])) ? $product['isbn'] : (isset($data['isbn']) ? $data['isbn']: '')
+			,'mpn'   	=> (isset($product['mpn'])) ? $product['mpn'] : (isset($data['mpn']) ? $data['mpn']: '')
 
 			,'points' 		 => (isset($product['points'])) ? $product['points'] : (isset($data['points']) ? $data['points']: 0)
 			,'location'		 => (isset($product['location'])) ? $product['location'] : (isset($data['location']) ? $data['location']: '')
@@ -656,7 +654,7 @@ class ModelToolExchange1c extends Model {
 			,'cost'				=> (isset($product['cost'])) ? $product['cost'] : (isset($data['cost']) ? $data['cost']: 0)
 			,'status'			=> (isset($product['status'])) ? $product['status'] : (isset($data['status']) ? $data['status']: 1)
 			,'tax_class_id'		=> (isset($product['tax_class_id'])) ? $product['tax_class_id'] : (isset($data['tax_class_id']) ? $data['tax_class_id']: 0)
-			,'weight'			=> (isset($product['tax_class_id'])) ? $product['tax_class_id'] : (isset($data['tax_class_id']) ? $data['tax_class_id']: 0)
+			,'weight'			=> (isset($product['weight'])) ? $product['weight'] : (isset($data['weight']) ? $data['weight']: 0)
 			,'weight_class_id'	=> (isset($product['weight_class_id'])) ? $product['weight_class_id'] : (isset($data['weight_class_id']) ? $data['weight_class_id']: 1)
 			,'length'			=> (isset($product['length'])) ? $product['length'] : (isset($data['length']) ? $data['length']: '')
 			,'width'			=> (isset($product['width'])) ? $product['width'] : (isset($data['width']) ? $data['width']: '')
@@ -703,7 +701,7 @@ class ModelToolExchange1c extends Model {
 			$result['product_category'] = isset($data['product_category']) ? $data['product_category']: array(0);
 			$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: 0;
 		}
-				
+
 		return $result;
 	}
 
@@ -735,7 +733,6 @@ class ModelToolExchange1c extends Model {
 		$data = $this->initProduct($product);
 
 		$this->load->model('catalog/product');
-
 		$product_id = $this->model_catalog_product->addProduct($data);
 
 		// Добавляемя линкт в дб
