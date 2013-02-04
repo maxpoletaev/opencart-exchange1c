@@ -402,6 +402,10 @@ class ModelToolExchange1c extends Model {
 							case 'Вес':
 								$data['weight'] = $requisite->Значение ? (float)$requisite->Значение : 0;
 							break;
+							
+							case 'ОписаниеВФорматеHTML':
+								$data['description'] = $requisite->Значение ? (string)$requisite->Значение : '';
+							break;
 						}
 					}
 				}
