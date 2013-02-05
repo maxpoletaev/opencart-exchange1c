@@ -483,7 +483,7 @@ class ModelToolExchange1c extends Model {
 				}
 				else {
 					$data = $this->initCategory($category, $parent);
-					$category_id = $this->model_catalog_category->addCategory($data);
+					$category_id = $this->getCategoryIdByName($data['category_description'][1]['name']) ? $this->getCategoryIdByName($data['category_description'][1]['name']) : $this->model_catalog_category->addCategory($data);
 					$this->db->query('INSERT INTO `' . DB_PREFIX . 'category_to_1c` SET category_id = ' . (int)$category_id . ', `1c_category_id` = "' . $this->db->escape($id) . '"');
 				}
 
@@ -720,27 +720,31 @@ class ModelToolExchange1c extends Model {
 
 		if (!$product) return;
 
-		//Проверяем есть ли такой товар в БД
+		// Проверяем, связан ли 1c_id с product_id
 		$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
-
-		if ($product_id) {
-			$product['price'] = 0;
-			// Удаляем атрибуты т.к. еще не придумал как их сравнивать и обновлять.
-			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option WHERE product_id = '" . (int)$query->row['product_id'] . "'");
-			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_description WHERE product_id = '" . (int)$query->row['product_id'] . "'");
-			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value WHERE product_id = '" . (int)$query->row['product_id'] . "'");
-			//$this->db->query("DELETE FROM " . DB_PREFIX . "product_option_value_description WHERE product_id = '" . (int)$query->row['product_id'] . "'");
-			return $this->updateProduct($product, $product_id);
-		} 	
-
-		// Заполняем значения продукта
 		$data = $this->initProduct($product);
 
-		$this->load->model('catalog/product');
-		$product_id = $this->model_catalog_product->addProduct($data);
+		if ($product_id) {
+			$this->updateProduct($product, $product_id);
+		}
+		else {
+			// Проверяем, существует ли товар с тем-же артикулом
+			$query = $this->db->query('SELECT product_id FROM `' . DB_PREFIX . 'product` WHERE `sku` = "' . $data['sku'] . '"');
 
-		// Добавляемя линкт в дб
-		$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['1c_id']) . '"');
+			// Если есть, то обновляем его
+			if ($query->num_rows) {
+				$product_id = $query->row['product_id'];
+				$this->updateProduct($product, $product_id);
+			}
+			// Если нет, то создаем новый
+			else {
+				$this->load->model('catalog/product');
+				$product_id = $this->model_catalog_product->addProduct($data);
+			}
+
+			// Добавляем линк
+			$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['1c_id']) . '"');
+		}
 	}
 
 
@@ -791,8 +795,7 @@ class ModelToolExchange1c extends Model {
 	 * @return 	string|bool
 	 */
 	private function get1CProductIdByProductId($product_id) {
-		$sql = 'SELECT 1c_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `product_id` = ' . $product_id;
-		$query = $this->db->query($sql);
+		$query = $this->db->query('SELECT 1c_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `product_id` = ' . $product_id);
 
 		if ($query->num_rows) {
 			return $query->row['1c_id'];
@@ -809,11 +812,20 @@ class ModelToolExchange1c extends Model {
 	 * @return 	int|bool
 	 */
 	private function getProductIdBy1CProductId($product_id) {
-		$sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"';
-		$query = $this->db->query($sql);
+		$query = $this->db->query('SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"');
 
 		if ($query->num_rows) {
 			return $query->row['product_id'];
+		}
+		else {
+			return false;
+		}
+	}
+
+	private function getCategoryIdByName($name) {
+		$query = $this->db->query("SELECT category_id FROM `" . DB_PREFIX . "category_description` WHERE `name` = '" . $name . "'");
+		if ($query->num_rows) {
+			return $query->row['category_id'];
 		}
 		else {
 			return false;
