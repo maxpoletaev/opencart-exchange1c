@@ -301,7 +301,7 @@ class ModelToolExchange1c extends Model {
 				$data['model'] = $product->Артикул? (string)$product->Артикул : 'не задана';
 				$data['name'] = $product->Наименование? (string)$product->Наименование : 'не задано';
 				$data['weight'] = $product->Вес? (float)$product->Вес : 0;
-				$data['sku'] = $data['model'];
+				$data['sku'] = $product->Артикул? (string)$product->Артикул : '';
 
 				if ($product->Картинка) {
 					$data['image'] =(string)$product->Картинка[0];
@@ -483,7 +483,8 @@ class ModelToolExchange1c extends Model {
 				}
 				else {
 					$data = $this->initCategory($category, $parent);
-					$category_id = $this->getCategoryIdByName($data['category_description'][1]['name']) ? $this->getCategoryIdByName($data['category_description'][1]['name']) : $this->model_catalog_category->addCategory($data);
+					//$category_id = $this->getCategoryIdByName($data['category_description'][1]['name']) ? $this->getCategoryIdByName($data['category_description'][1]['name']) : $this->model_catalog_category->addCategory($data);
+					$category_id = $this->model_catalog_category->addCategory($data);
 					$this->db->query('INSERT INTO `' . DB_PREFIX . 'category_to_1c` SET category_id = ' . (int)$category_id . ', `1c_category_id` = "' . $this->db->escape($id) . '"');
 				}
 
@@ -732,7 +733,7 @@ class ModelToolExchange1c extends Model {
 			$query = $this->db->query('SELECT product_id FROM `' . DB_PREFIX . 'product` WHERE `sku` = "' . $data['sku'] . '"');
 
 			// Если есть, то обновляем его
-			if ($query->num_rows) {
+			if ($query->num_rows && $data['sku'] != '') {
 				$product_id = $query->row['product_id'];
 				$this->updateProduct($product, $product_id);
 			}
