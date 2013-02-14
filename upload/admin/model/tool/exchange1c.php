@@ -846,7 +846,7 @@ class ModelToolExchange1c extends Model {
 			foreach ($query->rows as $row) {
 				$parents = $this->findParentsCategories($row['category_id']);
 				foreach ($parents as $parent) {
-					if ($row['category_id'] != $parent && $parent['parent_id'] != 0) {
+					if ($row['category_id'] != $parent && $parent != 0) {
 						$this->db->query('INSERT INTO `' .DB_PREFIX . 'product_to_category` SET `product_id` = ' . $row['product_id'] . ', `category_id` = ' . $parent . ', `main_category` = 0');
 					}
 				}
@@ -862,7 +862,7 @@ class ModelToolExchange1c extends Model {
 	 */
 	private function findParentsCategories($category_id) {
 		$query = $this->db->query('SELECT * FROM `'.DB_PREFIX.'category` WHERE `category_id` = "'.$category_id.'"');
-		if ($query->row['parent_id']){
+		if (isset($query->row['parent_id'])) {
 			$result = $this->findParentsCategories($query->row['parent_id']);
 		}
 		$result[] = $category_id;
