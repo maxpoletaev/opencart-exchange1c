@@ -247,10 +247,11 @@ class ModelToolExchange1c extends Model {
 					foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
 						$value = array(
 							 'customer_group_id'	=> 1
-							,'priority'		=> (isset($discount->Приоритет)) ? (int)$discount->Приоритет : 0
-							,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
-							,'date_start'	=> (isset($discount->ДатаНачала)) ? (string)$discount->ДатаНачала : '2011-01-01'
-							,'date_end'		=> (string)$discount->ДатаОкончания
+							,'priority'				=> isset($discount->Приоритет) ? (int)$discount->Приоритет : 0
+							,'price'				=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
+							,'date_start'			=> isset($discount->ДатаНачала) ? (string)$discount->ДатаНачала : ''
+							,'date_end'				=> isset($discount->ДатаОкончания) ? (string)$discount->ДатаОкончания : ''
+							,'quantity'				=> 0
 						);
 
 						$data['product_discount'][] = $value;
