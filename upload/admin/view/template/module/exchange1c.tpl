@@ -27,20 +27,20 @@
         <a href="#tab-manual"><?php echo $text_tab_manual; ?></a>
       </div>
 
-    
+
       <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
-        
+
         <div id="tab-general">
           <table class="form">
             <tr>
               <td><?php echo $entry_username; ?></td>
               <td><input name="exchange1c_username" type="text" value="<?php echo $exchange1c_username; ?>" /></td>
-            </tr>        
+            </tr>
             <tr>
               <td><?php echo $entry_password; ?></td>
               <td><input name="exchange1c_password" type="password" value="<?php echo $exchange1c_password; ?>" /></td>
             </tr>
-            
+
             <tr>
               <td><?php echo $entry_status; ?></td>
               <td><select name="exchange1c_status">
@@ -62,13 +62,13 @@
             </tr>
           </table>
         </div>
-        
+
         <div id="tab-product">
-        	
+
         <table id="exchange1c_price_type_id" class="list" style="width: auto">
             <thead>
               <tr>
-              	<td class="left"><?php echo $entry_config_price_type; ?></td>
+                <td class="left"><?php echo $entry_config_price_type; ?></td>
                 <td class="left"><?php echo $entry_customer_group; ?></td>
                 <td class="right"><?php echo $entry_quantity; ?></td>
                 <td class="right"><?php echo $entry_priority; ?></td>
@@ -79,29 +79,29 @@
               <?php $price_row = 0; ?>
               <?php foreach ($exchange1c_price_type as $obj) { ?>
                 <?php if ($price_row == 0) {?>
-                	<tr id="exchange1c_price_type_row<?php echo $price_row; ?>">
-    	                <td class="left"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][keyword]" value="<?php echo $obj['keyword']; ?>" /></td>
-    	                <td class="left"><?php  echo $text_price_default; ?><input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][customer_group_id]" value="0" /></td>
-    	                <td class="center">-<input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][quantity]" value="0" /></td>
-    	                <td class="center">-<input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][priority]" value="0" /></td>
-    	                <td class="left">&nbsp;</td>
-    	              </tr>
+                  <tr id="exchange1c_price_type_row<?php echo $price_row; ?>">
+                    <td class="left"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][keyword]" value="<?php echo $obj['keyword']; ?>" /></td>
+                    <td class="left"><?php  echo $text_price_default; ?><input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][customer_group_id]" value="0" /></td>
+                    <td class="center">-<input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][quantity]" value="0" /></td>
+                    <td class="center">-<input type="hidden" name="exchange1c_price_type[<?php echo $price_row; ?>][priority]" value="0" /></td>
+                    <td class="left">&nbsp;</td>
+                  </tr>
                 <?php } else { ?>
-    	              <tr id="exchange1c_price_type_row<?php echo $price_row; ?>">
-    	                <td class="left"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][keyword]" value="<?php echo $obj['keyword']; ?>" /></td>
-    	                <td class="left"><select name="exchange1c_price_type[<?php echo $price_row; ?>][customer_group_id]">
-    	                    <?php foreach ($customer_groups as $customer_group) { ?>
-      	                    <?php if ($customer_group['customer_group_id'] == $obj['customer_group_id']) { ?>
-      	                     <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>
-      	                    <?php } else { ?>
-      	                     <option value="<?php echo $customer_group['customer_group_id']; ?>"><?php echo $customer_group['name']; ?></option>
-      	                    <?php } ?>
-    	                    <?php } ?>
-    	                  </select></td>
-    	                <td class="center"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][quantity]" value="<?php echo $obj['quantity']; ?>" size="2" /></td>
-    	                <td class="center"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][priority]" value="<?php echo $obj['priority']; ?>" size="2" /></td>
-    	                <td class="center"><a onclick="$('#exchange1c_price_type_row<?php echo $price_row; ?>').remove();" class="button"><?php echo $button_remove; ?></a></td>
-    	              </tr>
+                  <tr id="exchange1c_price_type_row<?php echo $price_row; ?>">
+                    <td class="left"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][keyword]" value="<?php echo $obj['keyword']; ?>" /></td>
+                    <td class="left"><select name="exchange1c_price_type[<?php echo $price_row; ?>][customer_group_id]">
+                      <?php foreach ($customer_groups as $customer_group) { ?>
+                        <?php if ($customer_group['customer_group_id'] == $obj['customer_group_id']) { ?>
+                          <option value="<?php echo $customer_group['customer_group_id']; ?>" selected="selected"><?php echo $customer_group['name']; ?></option>
+                        <?php } else { ?>
+                          <option value="<?php echo $customer_group['customer_group_id']; ?>"><?php echo $customer_group['name']; ?></option>
+                        <?php } ?>
+                      <?php } ?>
+                      </select></td>
+                    <td class="center"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][quantity]" value="<?php echo $obj['quantity']; ?>" size="2" /></td>
+                    <td class="center"><input type="text" name="exchange1c_price_type[<?php echo $price_row; ?>][priority]" value="<?php echo $obj['priority']; ?>" size="2" /></td>
+                    <td class="center"><a onclick="$('#exchange1c_price_type_row<?php echo $price_row; ?>').remove();" class="button"><?php echo $button_remove; ?></a></td>
+                  </tr>
                 <?php } ?>
                 <?php $price_row++; ?>
               <?php } ?>
@@ -112,8 +112,8 @@
                 <td class="left"><a onclick="addConfigPriceType();" class="button"><?php echo $button_insert; ?></a></td>
               </tr>
             </tfoot>
-          </table>	
-        
+          </table>
+
           <table class="form">
             <tr>
               <td><label for="exchange1c_flush_product"><?php echo $entry_flush_product; ?></label></td>
@@ -128,7 +128,7 @@
                 <input type="checkbox" value="1" id="exchange1c_flush_category" name="exchange1c_flush_category" <?php echo ($exchange1c_flush_category == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
-            
+
             <tr>
               <td><label for="exchange1c_flush_manufacturer"><?php echo $entry_flush_manufacturer; ?></label></td>
               <td>
@@ -142,7 +142,7 @@
                 <input type="checkbox" value="1" id="exchange1c_flush_attribute" name="exchange1c_flush_attribute" <?php echo ($exchange1c_flush_attribute == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
-    
+
             <tr>
               <td><label for="exchange1c_flush_quantity"><?php echo $entry_flush_quantity; ?></label></td>
               <td>
@@ -168,7 +168,7 @@
 
         <div id="tab-order">
           <table class="form">
-            
+
             <tr>
               <td><?php echo $entry_order_status; ?></td>
               <td>
@@ -215,9 +215,8 @@
 
       </form>
 
-
     </div>
-    
+
     <div style="text-align:center; opacity: .5">
       <p><?php echo $version; ?> | <a href="http://zenwalker.ru/lab/opencart-exchange1c"><?php echo $text_homepage; ?></a></p>
     </div>
@@ -225,7 +224,7 @@
 </div>
 
 <script type="text/javascript"><!--
-$('#tabs a').tabs(); 
+$('#tabs a').tabs();
 //--></script>
 
 <script type="text/javascript" src="view/javascript/jquery/ajaxupload.js"></script> 
@@ -242,26 +241,24 @@ new AjaxUpload('#button-upload', {
   onComplete: function(file, json) {
     $('#button-upload').attr('disabled', false);
     $('.loading').remove();
-    
+
     if (json['success']) {
       alert(json['success']);
     }
-    
+
     if (json['error']) {
       alert(json['error']);
     }
-    
-    
   }
 });
-//--></script> 
+//--></script>
 <script type="text/javascript"><!--
 var price_row = <?php echo $price_row; ?>;
 
 function addConfigPriceType() {
-	html  = '';
-	html += '  <tr id="exchange1c_price_type_row' + price_row + '">'; 
-	html += '    <td class="left"><input type="text" name="exchange1c_price_type[' + price_row + '][keyword]" value="" /></td>';
+    html  = '';
+    html += '  <tr id="exchange1c_price_type_row' + price_row + '">'; 
+    html += '    <td class="left"><input type="text" name="exchange1c_price_type[' + price_row + '][keyword]" value="" /></td>';
     html += '    <td class="left"><select name="exchange1c_price_type[' + price_row + '][customer_group_id]">';
     <?php foreach ($customer_groups as $customer_group) { ?>
     html += '      <option value="<?php echo $customer_group['customer_group_id']; ?>"><?php echo $customer_group['name']; ?></option>';
@@ -269,15 +266,14 @@ function addConfigPriceType() {
     html += '    </select></td>';
     html += '    <td class="center"><input type="text" name="exchange1c_price_type[' + price_row + '][quantity]" value="0" size="2" /></td>';
     html += '    <td class="center"><input type="text" name="exchange1c_price_type[' + price_row + '][priority]" value="0" size="2" /></td>';
-	html += '    <td class="center"><a onclick="$(\'#exchange1c_price_type_row' + price_row + '\').remove();" class="button"><?php echo $button_remove; ?></a></td>';
-	html += '  </tr>';
-	
-	$('#exchange1c_price_type_id tfoot').before(html);
- 
-	$('#config_price_type_row' + price_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
-	
-	price_row++;
+    html += '    <td class="center"><a onclick="$(\'#exchange1c_price_type_row' + price_row + '\').remove();" class="button"><?php echo $button_remove; ?></a></td>';
+    html += '  </tr>';
+
+    $('#exchange1c_price_type_id tfoot').before(html);
+
+    $('#config_price_type_row' + price_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
+    price_row++;
 }
-//--></script> 
+//--></script>
 
 <?php echo $footer; ?>
