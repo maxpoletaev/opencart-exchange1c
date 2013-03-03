@@ -1,8 +1,8 @@
 <modification>
 	<id><![CDATA[exchange1c]]></id>
-	<version><![CDATA[1.0]]></version>
+	<version><![CDATA[1.1]]></version>
 	<vqmver><![CDATA[]]></vqmver>
-	<author><![CDATA[ethernet1 (http://eth1.ru/)]]></author>
+	<author><![CDATA[zenwalker (http://zenwalker.ru/)]]></author>
 	
 	<file name="admin/model/catalog/attribute.php">
 		<operation>
@@ -11,14 +11,12 @@
 		</operation>
 	</file>
 	
-	
 	<file name="admin/model/catalog/category.php">
 		<operation>
 			<search position="before" offset="2"><![CDATA[public function editCategory]]></search>
 			<add><![CDATA[return $category_id;]]></add>
 		</operation>
 	</file>
-	
 	
 	<file name="admin/model/catalog/manufacturer.php">
 		<operation>
@@ -29,7 +27,7 @@
 	
 	<file name="admin/model/catalog/product.php">
 		<operation>
-			<search position="after" offset="113"><![CDATA[public function addProduct($data) {]]></search>
+			<search position="before" offset="2"><![CDATA[public function editProduct]]></search>
 			<add><![CDATA[return $product_id;]]></add>
 		</operation>
 	</file>
