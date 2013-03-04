@@ -298,8 +298,8 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		
 		echo "success\n";
-		echo session_name()."\n";
-		echo session_id() ."\n";
+		echo "key\n";
+		echo md5($this->config->get('exchange1c_password')) . "\n";
 	}
 
 	public function manualImport() {
@@ -400,6 +400,16 @@ class ControllerModuleExchange1c extends Controller {
 	}
 	
 	public function modeFile() {
+
+		if (!isset($this->request->cookie['key'])) {
+			return;
+		}
+
+		if ($this->request->cookie['key'] != md5($this->config->get('exchange1c_password'))) {
+			echo "failure\n";
+			echo "Session error";
+			return;
+		}
 	
 		$cache = DIR_CACHE . 'exchange1c/';
 		
