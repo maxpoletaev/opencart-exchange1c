@@ -116,12 +116,12 @@ $query = $db->query("SELECT * FROM " . DB_PREFIX . "language");
 
 foreach ($query->rows as $result) {
 	$languages[$result['code']] = array(
-		'language_id' => $result['language_id'],
-		'name'        => $result['name'],
-		'code'        => $result['code'],
-		'locale'      => $result['locale'],
-		'directory'   => $result['directory'],
-		'filename'    => $result['filename']
+		'language_id'	=> $result['language_id'],
+		'name'		=> $result['name'],
+		'code'		=> $result['code'],
+		'locale'	=> $result['locale'],
+		'directory'	=> $result['directory'],
+		'filename'	=> $result['filename']
 	);
 }
 

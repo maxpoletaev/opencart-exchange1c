@@ -1,4 +1,5 @@
 <?php
+
 class ModelToolExchange1c extends Model {
 
 	private $CATEGORIES = array();
@@ -8,10 +9,10 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Генерирует xml с заказами
 	 *
-	 * @param 	int 	статус выгружаемых заказов
-	 * @param 	int 	новый статус заказов
-	 * @param 	bool 	уведомлять пользователя
-	 * @return 	string
+	 * @param	int	статус выгружаемых заказов
+	 * @param	int	новый статус заказов
+	 * @param	bool	уведомлять пользователя
+	 * @return	string
 	 */
 	public function queryOrders($params) {
 
@@ -25,9 +26,9 @@ class ModelToolExchange1c extends Model {
 		if ($query->num_rows) {
 
 			foreach ($query->rows as $orders_data) {
-			
+
 				$order = $this->model_sale_order->getOrder($orders_data['order_id']);
-				
+
 				$date = date('Y-m-d', strtotime($order['date_added']));
 				$time = date('H:i:s', strtotime($order['date_added']));
 
@@ -38,26 +39,26 @@ class ModelToolExchange1c extends Model {
 					,'Время'		=> $time
 					,'Валюта'		=> $params['currency']
 					,'Курс'			=> 1
-					,'ХозОперация'	=> 'Заказ товара'
+					,'ХозОперация'		=> 'Заказ товара'
 					,'Роль'			=> 'Продавец'
 					,'Сумма'		=> $order['total']
 					,'Комментарий'	=> $order['comment']
 				);
 
 				$document['Документ' . $document_counter]['Контрагенты']['Контрагент'] = array(
-					 'Ид' 					=> $order['customer_id'] . '#' . $order['email']
-					,'Наименование'			=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-					,'Роль'					=> 'Покупатель'
+					 'Ид'			=> $order['customer_id'] . '#' . $order['email']
+					,'Наименование'		=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
+					,'Роль'			=> 'Покупатель'
 					,'ПолноеНаименование'	=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-					,'Фамилия'				=> $order['payment_lastname']
-					,'Имя'					=> $order['payment_firstname']
+					,'Фамилия'		=> $order['payment_lastname']
+					,'Имя'			=> $order['payment_firstname']
 					
-					,'Адрес' 	=> array(
+					,'Адрес'	=> array(
 						'Представление'	=> $order['shipping_address_1'].', '.$order['shipping_city'].', '.$order['shipping_postcode'].', '.$order['shipping_country']
 					)
 					,'Контакты'	=> array(
 						'Контакт1'	=> array(
-							 'Тип'		=> 'ТелефонРабочий'
+							'Тип'		=> 'ТелефонРабочий'
 							,'Значение'	=> $order['telephone']
 						)
 						,'Контакт2'	=> array(
@@ -76,9 +77,9 @@ class ModelToolExchange1c extends Model {
 
 					$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter] = array(
 						 'Ид'			=> $id
-						,'Наименование'	=> $product['name']
-						,'ЦенаЗаЕдиницу'=> $product['price']
-						,'Количество'	=> $product['quantity']
+						,'Наименование'		=> $product['name']
+						,'ЦенаЗаЕдиницу'	=> $product['price']
+						,'Количество'		=> $product['quantity']
 						,'Сумма'		=> $product['total']
 					);
 
@@ -89,8 +90,8 @@ class ModelToolExchange1c extends Model {
 
 				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
 					'order_status_id'	=> $params['new_status'],
-					'comment' 			=> '',
-					'notify'			=> $params['notify']
+					'comment'		=> '',
+					'notify'		=> $params['notify']
 				));
 
 				$document_counter++;
@@ -133,17 +134,17 @@ class ModelToolExchange1c extends Model {
 		$data = array();
 		$price_types = array();
 		$data['price'] = 0;
-		
+
 		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
 			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
 				$price_types[(string)$type->Ид] = (string)$type->Наименование;
 			}
 		}
-		
+
 		if (!empty($config_price_type) && count($config_price_type) > 0) {
 			$config_price_type_main = array_shift($config_price_type);
 		}
-		
+
 		// Инициализация массива скидок для оптимизации алгоритма
 		if (!empty($config_price_type) && count($config_price_type) > 0) {
 			$discount_price_type = array();
@@ -179,7 +180,7 @@ class ModelToolExchange1c extends Model {
 							}
 						}
 					}
-					
+
 					// Вторая цена и тд - $discount_price_type
 					if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
 						foreach ($offer->Цены->Цена as $price) {
@@ -187,11 +188,11 @@ class ModelToolExchange1c extends Model {
 							if (isset($discount_price_type[$key])) {
 								$value = array(
 									'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
-									'quantity'			=> $discount_price_type[$key]['quantity'],
-									'priority'			=> $discount_price_type[$key]['priority'],
-									'price'				=> (float)$price->ЦенаЗаЕдиницу,
+									'quantity'		=> $discount_price_type[$key]['quantity'],
+									'priority'		=> $discount_price_type[$key]['priority'],
+									'price'			=> (float)$price->ЦенаЗаЕдиницу,
 									'date_start'		=> '0000-00-00',
-									'date_end'			=> '0000-00-00'
+									'date_end'		=> '0000-00-00'
 								);
 								$data['product_discount'][] = $value;
 								unset($value);
@@ -247,11 +248,11 @@ class ModelToolExchange1c extends Model {
 					foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
 						$value = array(
 							 'customer_group_id'	=> 1
-							,'priority'				=> isset($discount->Приоритет) ? (int)$discount->Приоритет : 0
-							,'price'				=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
-							,'date_start'			=> isset($discount->ДатаНачала) ? (string)$discount->ДатаНачала : ''
-							,'date_end'				=> isset($discount->ДатаОкончания) ? (string)$discount->ДатаОкончания : ''
-							,'quantity'				=> 0
+							,'priority'		=> isset($discount->Приоритет) ? (int)$discount->Приоритет : 0
+							,'price'		=> (int)(($data['price']*(100-(float)str_replace(',','.',(string)$discount->Процент)))/100)
+							,'date_start'		=> isset($discount->ДатаНачала) ? (string)$discount->ДатаНачала : ''
+							,'date_end'		=> isset($discount->ДатаОкончания) ? (string)$discount->ДатаОкончания : ''
+							,'quantity'		=> 0
 						);
 
 						$data['product_discount'][] = $value;
@@ -259,11 +260,11 @@ class ModelToolExchange1c extends Model {
 						if ($discount->ЗначениеУсловия) {
 							$value['quantity'] = (int)$discount->ЗначениеУсловия;
 						}
-						
+
 						unset($value);
 					}
 				}
-			   	
+
 				$data['status'] = 1;
 				$this->updateProduct($data, false, $language_id);
 				unset($data);
@@ -277,13 +278,13 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Парсит товары и категории
 	 */
-	public function parseImport($filename, $language_id) {		
+	public function parseImport($filename, $language_id) {
 
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();
-		
+
 		// Группы
 		if($xml->Классификатор->Группы) $this->insertCategory($xml->Классификатор->Группы->Группа, 0, $language_id);
 
@@ -347,19 +348,19 @@ class ModelToolExchange1c extends Model {
 									}
 									else {
 										$data_manufacturer = array(
-											'name' 				 => $manufacturer_name,
-											'keyword'			 => '',
-											'sort_order' 		 => 0,
-											'manufacturer_store' => array(0 => 0)
+											'name' 			=> $manufacturer_name,
+											'keyword'		=> '',
+											'sort_order'		=> 0,
+											'manufacturer_store'	=> array(0 => 0)
 										);
 										
 										$data_manufacturer['manufacturer_description'] = array(
 											$language_id => array(
-												'meta_keyword' 		=> '',
-												'meta_description' 	=> '',
-												'description' 		=> '',
-												'seo_title'			=> '',
-												'seo_h1' 			=> ''
+												'meta_keyword'		=> '',
+												'meta_description'	=> '',
+												'description'		=> '',
+												'seo_title'		=> '',
+												'seo_h1'		=> ''
 											),
 										);
 
@@ -367,30 +368,30 @@ class ModelToolExchange1c extends Model {
 										$data['manufacturer_id'] = $manufacturer_id;
 									}
 								break;
-								
+
 								case 'oc.seo_h1':
 									$data['seo_h1'] = $attribute_value;
 								break;
-								
+
 								case 'oc.seo_title':
 									$data['seo_title'] = $attribute_value;
 								break;
-								
+
 								case 'oc.sort_order':
 									$data['sort_order'] = $attribute_value;
 								break;
-									
+
 								default:
 									$data['product_attribute'][] = array(
-										'attribute_id' 					=> $attribute['id'],
+										'attribute_id'			=> $attribute['id'],
 										'product_attribute_description'	=> array(
 											$language_id => array(
 												'text' => $attribute_value
 											)
 										)
 									);
-									
-										
+
+
 							}
 						}
 					}
@@ -403,7 +404,7 @@ class ModelToolExchange1c extends Model {
 							case 'Вес':
 								$data['weight'] = $requisite->Значение ? (float)$requisite->Значение : 0;
 							break;
-							
+
 							case 'ОписаниеВФорматеHTML':
 								$data['description'] = $requisite->Значение ? (string)$requisite->Значение : '';
 							break;
@@ -423,31 +424,31 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Инициализируем данные для категории дабы обновлять данные, а не затирать
 	 *
-	 * @param 	array 	старые данные
-	 * @param 	int 	id родительской категории
-	 * @param 	array 	новые данные
-	 * @return 	array
+	 * @param	array	старые данные
+	 * @param	int	id родительской категории
+	 * @param	array	новые данные
+	 * @return	array
 	 */
 	private function initCategory($category, $parent, $data = array(), $language_id) {
-		
+
 		$result = array(
 			 'status' 		=> isset($data['status']) ? $data['status'] : 1
 			,'top'			=> isset($data['top']) ? $data['top'] : 1
-			,'parent_id'	=> $parent
-			,'category_store' => isset($data['category_store']) ? $data['category_store'] : array(0)
+			,'parent_id'		=> $parent
+			,'category_store'	=> isset($data['category_store']) ? $data['category_store'] : array(0)
 			,'keyword'		=> isset($data['keyword']) ? $data['keyword'] : ''
 			,'image'		=> (isset($category->Картинка)) ? (string)$category->Картинка : ((isset($data['image'])) ? $data['image'] : '')
-			,'sort_order'	=> (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
+			,'sort_order'		=> (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
 			,'column'		=> 1
 		);
 
 		$result['category_description'] = array(
 			$language_id => array(
 				 'name'			=> (string)$category->Наименование
-				,'meta_keyword' => (isset($data['category_description'][$language_id]['meta_keyword'])) ? $data['category_description'][$language_id]['meta_keyword'] : ''
-				,'meta_description' => (isset($data['category_description'][$language_id]['meta_description'])) ? $data['category_description'][$language_id]['meta_description'] : ''
-				,'description'	=> (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][$language_id]['description'])) ? $data['category_description'][$language_id]['description'] : '')
-				,'seo_title'	=> (isset($data['category_description'][$language_id]['seo_title'])) ? $data['category_description'][$language_id]['seo_title'] : ''
+				,'meta_keyword'		=> (isset($data['category_description'][$language_id]['meta_keyword'])) ? $data['category_description'][$language_id]['meta_keyword'] : ''
+				,'meta_description'	=> (isset($data['category_description'][$language_id]['meta_description'])) ? $data['category_description'][$language_id]['meta_description'] : ''
+				,'description'		=> (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][$language_id]['description'])) ? $data['category_description'][$language_id]['description'] : '')
+				,'seo_title'		=> (isset($data['category_description'][$language_id]['seo_title'])) ? $data['category_description'][$language_id]['seo_title'] : ''
 				,'seo_h1'		=> (isset($data['category_description'][$language_id]['seo_h1'])) ? $data['category_description'][$language_id]['seo_h1'] : ''
 			),
 		);
@@ -459,8 +460,8 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Функция добавляет корневую категорию и всех детей
 	 *
-	 * @param 	SimpleXMLElement
-	 * @param 	int
+	 * @param	SimpleXMLElement
+	 * @param	int
 	 */
 	private function insertCategory($xml, $parent = 0, $language_id) {
 
@@ -514,22 +515,22 @@ class ModelToolExchange1c extends Model {
 		if (!$attribute_group) {
 
 			$attribute_group_description[1] = array (
-				'name'	=> 'Свойства'
+				'name' => 'Свойства'
 			);
 
 			$data = array (
-				'sort_order' 		 => 0,
-				'attribute_group_description' => $attribute_group_description
+				'sort_order'			=> 0,
+				'attribute_group_description'	=> $attribute_group_description
 			);
 
 			$this->model_catalog_attribute_group->addAttributeGroup($data);
 		}
-		
+
 		foreach ($xml as $attribute) {
-			$id 	= (string)$attribute->Ид;
+			$id	= (string)$attribute->Ид;
 			$name	= (string)$attribute->Наименование;
-			$values = array();
-			
+			$values	= array();
+
 			if ((string)$attribute->ВариантыЗначений) {
 				if ((string)$attribute->ТипЗначений == 'Справочник') {
 					foreach($attribute->ВариантыЗначений->Справочник as $option_value){
@@ -540,12 +541,11 @@ class ModelToolExchange1c extends Model {
 				}
 			}
 
-
 			$data = array (
-				'attribute_group_id'	=>	1,
-				'sort_order'			=> 	0,
+				'attribute_group_id'	=> 1,
+				'sort_order'		=> 0,
 			);
-			
+
 			$data['attribute_description'][1]['name'] = (string)$name;
 			
 			// Если атрибут уже был добавлен, то возвращаем старый id, если атрибута нет, то создаем его и возвращаем его id
@@ -566,15 +566,15 @@ class ModelToolExchange1c extends Model {
 			);
 			
 		}	
-		
+
 		unset($xml);
 	}
 
 
 	/**
 	* Функция работы с продуктом
-	* @param 	int
-	* @return 	array
+	* @param	int
+	* @return	array
 	*/
 
 	private function getProductWithAllData($product_id) {
@@ -623,55 +623,55 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Обновляет массив с информацией о продукте
 	 *
-	 * @param 	array 	новые данные
-	 * @param 	array 	обновляемые данные
-	 * @return 	array
+	 * @param	array	новые данные
+	 * @param	array	обновляемые данные
+	 * @return	array
 	 */
 	private function initProduct($product, $data = array(), $language_id) {
 
 		$this->load->model('tool/image');
 
 		$result = array(
-			 'model' 	=> (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
-			,'sku'	 	=> (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
-			,'upc'	 	=> (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
-			,'ean'	 	=> (isset($product['ean'])) ? $product['ean'] : (isset($data['ean']) ? $data['ean']: '')
-			,'jan'	 	=> (isset($product['jan'])) ? $product['jan'] : (isset($data['jan']) ? $data['jan']: '')
-			,'isbn'	 	=> (isset($product['isbn'])) ? $product['isbn'] : (isset($data['isbn']) ? $data['isbn']: '')
-			,'mpn'   	=> (isset($product['mpn'])) ? $product['mpn'] : (isset($data['mpn']) ? $data['mpn']: '')
+			 'model'	=> (isset($product['model'])) ? $product['model'] : (isset($data['model']) ? $data['model']: '')
+			,'sku'		=> (isset($product['sku'])) ? $product['sku'] : (isset($data['sku']) ? $data['sku']: '')
+			,'upc'		=> (isset($product['upc'])) ? $product['upc'] : (isset($data['upc']) ? $data['upc']: '')
+			,'ean'		=> (isset($product['ean'])) ? $product['ean'] : (isset($data['ean']) ? $data['ean']: '')
+			,'jan'		=> (isset($product['jan'])) ? $product['jan'] : (isset($data['jan']) ? $data['jan']: '')
+			,'isbn'		=> (isset($product['isbn'])) ? $product['isbn'] : (isset($data['isbn']) ? $data['isbn']: '')
+			,'mpn'		=> (isset($product['mpn'])) ? $product['mpn'] : (isset($data['mpn']) ? $data['mpn']: '')
 
-			,'points' 		 => (isset($product['points'])) ? $product['points'] : (isset($data['points']) ? $data['points']: 0)
-			,'location'		 => (isset($product['location'])) ? $product['location'] : (isset($data['location']) ? $data['location']: '')
-			,'product_store' => array(0)
-			,'keyword'		 => (isset($product['keyword'])) ? $product['keyword'] : (isset($data['keyword']) ? $data['keyword']: '')
-			,'image'		 => (isset($product['image'])) ? $product['image'] : (isset($data['image']) ? $data['image']: '')
-			,'product_image' => (isset($product['product_image'])) ? $product['product_image'] : (isset($data['product_image']) ? $data['product_image']: array())
-			,'preview'		 => $this->model_tool_image->resize('no_image.jpg', 100, 100)
+			,'points'		=> (isset($product['points'])) ? $product['points'] : (isset($data['points']) ? $data['points']: 0)
+			,'location'		=> (isset($product['location'])) ? $product['location'] : (isset($data['location']) ? $data['location']: '')
+			,'product_store'	=> array(0)
+			,'keyword'		=> (isset($product['keyword'])) ? $product['keyword'] : (isset($data['keyword']) ? $data['keyword']: '')
+			,'image'		=> (isset($product['image'])) ? $product['image'] : (isset($data['image']) ? $data['image']: '')
+			,'product_image'	=> (isset($product['product_image'])) ? $product['product_image'] : (isset($data['product_image']) ? $data['product_image']: array())
+			,'preview'		=> $this->model_tool_image->resize('no_image.jpg', 100, 100)
 
 			,'manufacturer_id'	=> (isset($product['manufacturer_id'])) ? $product['manufacturer_id'] : (isset($data['manufacturer_id']) ? $data['manufacturer_id']: 0)
-			,'shipping'			=> (isset($product['shipping'])) ? $product['shipping'] : (isset($data['shipping']) ? $data['shipping']: 1)
+			,'shipping'		=> (isset($product['shipping'])) ? $product['shipping'] : (isset($data['shipping']) ? $data['shipping']: 1)
 			,'date_available'	=> date('Y-m-d', time() - 86400)
-			,'quantity'			=> (isset($product['quantity'])) ? $product['quantity'] : (isset($data['quantity']) ? $data['quantity']: 0)
-			,'minimum'			=> (isset($product['minimum'])) ? $product['minimum'] : (isset($data['minimum']) ? $data['minimum']: 1)
-			,'subtract'			=> (isset($product['subtract'])) ? $product['subtract'] : (isset($data['subtract']) ? $data['subtract']: 1)
+			,'quantity'		=> (isset($product['quantity'])) ? $product['quantity'] : (isset($data['quantity']) ? $data['quantity']: 0)
+			,'minimum'		=> (isset($product['minimum'])) ? $product['minimum'] : (isset($data['minimum']) ? $data['minimum']: 1)
+			,'subtract'		=> (isset($product['subtract'])) ? $product['subtract'] : (isset($data['subtract']) ? $data['subtract']: 1)
 			,'sort_order'		=> (isset($product['sort_order'])) ? $product['sort_order'] : (isset($data['sort_order']) ? $data['sort_order']: 1)
 			,'stock_status_id'	=> $this->config->get('config_stock_status_id')
-			,'price'			=> (isset($product['price'])) ? $product['price'] : (isset($data['price']) ? $data['price']: 0)
-			,'cost'				=> (isset($product['cost'])) ? $product['cost'] : (isset($data['cost']) ? $data['cost']: 0)
-			,'status'			=> (isset($product['status'])) ? $product['status'] : (isset($data['status']) ? $data['status']: 1)
+			,'price'		=> (isset($product['price'])) ? $product['price'] : (isset($data['price']) ? $data['price']: 0)
+			,'cost'			=> (isset($product['cost'])) ? $product['cost'] : (isset($data['cost']) ? $data['cost']: 0)
+			,'status'		=> (isset($product['status'])) ? $product['status'] : (isset($data['status']) ? $data['status']: 1)
 			,'tax_class_id'		=> (isset($product['tax_class_id'])) ? $product['tax_class_id'] : (isset($data['tax_class_id']) ? $data['tax_class_id']: 0)
-			,'weight'			=> (isset($product['weight'])) ? $product['weight'] : (isset($data['weight']) ? $data['weight']: 0)
+			,'weight'		=> (isset($product['weight'])) ? $product['weight'] : (isset($data['weight']) ? $data['weight']: 0)
 			,'weight_class_id'	=> (isset($product['weight_class_id'])) ? $product['weight_class_id'] : (isset($data['weight_class_id']) ? $data['weight_class_id']: 1)
-			,'length'			=> (isset($product['length'])) ? $product['length'] : (isset($data['length']) ? $data['length']: '')
-			,'width'			=> (isset($product['width'])) ? $product['width'] : (isset($data['width']) ? $data['width']: '')
-			,'height'			=> (isset($product['height'])) ? $product['height'] : (isset($data['height']) ? $data['height']: '')
+			,'length'		=> (isset($product['length'])) ? $product['length'] : (isset($data['length']) ? $data['length']: '')
+			,'width'		=> (isset($product['width'])) ? $product['width'] : (isset($data['width']) ? $data['width']: '')
+			,'height'		=> (isset($product['height'])) ? $product['height'] : (isset($data['height']) ? $data['height']: '')
 			,'length_class_id'	=> (isset($product['length_class_id'])) ? $product['length_class_id'] : (isset($data['length_class_id']) ? $data['length_class_id']: 1)
 
 			,'product_discount'	=> (isset($product['product_discount'])) ? $product['product_discount'] : (isset($data['product_discount']) ? $data['product_discount']: array())
 			,'product_special'	=> (isset($product['product_special'])) ? $product['product_special'] : (isset($data['product_special']) ? $data['product_special']: array())
 			,'product_download'	=> (isset($product['product_download'])) ? $product['product_download'] : (isset($data['product_download']) ? $data['product_download']: array())
 			,'product_related'	=> (isset($product['product_related'])) ? $product['product_related'] : (isset($data['product_related']) ? $data['product_related']: array())
-			,'product_attribute' => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
+			,'product_attribute'	=> (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
 		);
 
 		if (VERSION == '1.5.3.1') {
@@ -680,13 +680,13 @@ class ModelToolExchange1c extends Model {
 
 		$result['product_description'] = array(
 			$language_id => array(
-				 'name' 			=> isset($product['name']) ? $product['name'] : (isset($data['product_description'][$language_id]['name']) ? $data['product_description'][$language_id]['name']: 'Имя не задано')
+				'name'			=> isset($product['name']) ? $product['name'] : (isset($data['product_description'][$language_id]['name']) ? $data['product_description'][$language_id]['name']: 'Имя не задано')
 				,'meta_keyword'		=> isset($product['meta_keyword']) ? trim($product['meta_keyword']): (isset($data['product_description'][$language_id]['meta_keyword']) ? $data['product_description'][$language_id]['meta_keyword']: '')
-				,'meta_description' => isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][$language_id]['meta_description']) ? $data['product_description'][$language_id]['meta_description']: '')
-				,'description' 		=> isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][$language_id]['description']) ? $data['product_description'][$language_id]['description']: '')
-				,'seo_title' 		=> isset($product['seo_title']) ? $product['seo_title']: (isset($data['product_description'][$language_id]['seo_title']) ? $data['product_description'][$language_id]['seo_title']: '')
-				,'seo_h1' 			=> isset($product['seo_h1']) ? $product['seo_h1']: (isset($data['product_description'][$language_id]['seo_h1']) ? $data['product_description'][$language_id]['seo_h1']: '')
-				,'tag' 				=> isset($product['tag']) ? $product['tag']: (isset($data['product_description'][$language_id]['tag']) ? $data['product_description'][$language_id]['tag']: '')
+				,'meta_description'	=> isset($product['meta_description']) ? trim($product['meta_description']): (isset($data['product_description'][$language_id]['meta_description']) ? $data['product_description'][$language_id]['meta_description']: '')
+				,'description'		=> isset($product['description']) ? nl2br($product['description']): (isset($data['product_description'][$language_id]['description']) ? $data['product_description'][$language_id]['description']: '')
+				,'seo_title'		=> isset($product['seo_title']) ? $product['seo_title']: (isset($data['product_description'][$language_id]['seo_title']) ? $data['product_description'][$language_id]['seo_title']: '')
+				,'seo_h1'		=> isset($product['seo_h1']) ? $product['seo_h1']: (isset($data['product_description'][$language_id]['seo_h1']) ? $data['product_description'][$language_id]['seo_h1']: '')
+				,'tag'			=> isset($product['tag']) ? $product['tag']: (isset($data['product_description'][$language_id]['tag']) ? $data['product_description'][$language_id]['tag']: '')
 			),
 		);
 
@@ -793,8 +793,8 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Получает 1c_id из product_id
 	 *
-	 * @param 	int
-	 * @return 	string|bool
+	 * @param	int
+	 * @return	string|bool
 	 */
 	private function get1CProductIdByProductId($product_id) {
 		$query = $this->db->query('SELECT 1c_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `product_id` = ' . $product_id);
@@ -810,8 +810,8 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Получает product_id из 1c_id
 	 *
-	 * @param 	string
-	 * @return 	int|bool
+	 * @param	string
+	 * @return	int|bool
 	 */
 	private function getProductIdBy1CProductId($product_id) {
 		$query = $this->db->query('SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"');
@@ -841,7 +841,7 @@ class ModelToolExchange1c extends Model {
 	public function fillParentsCategories() {
 		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
 		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
-		
+
 		if ($query->num_rows) {
 			foreach ($query->rows as $row) {
 				$parents = $this->findParentsCategories($row['category_id']);
@@ -857,8 +857,8 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Ищет все родительские категории
 	 *
-	 * @param 	int
-	 * @return 	array
+	 * @param	int
+	 * @return	array
 	 */
 	private function findParentsCategories($category_id) {
 		$query = $this->db->query('SELECT * FROM `'.DB_PREFIX.'category` WHERE `category_id` = "'.$category_id.'"');
@@ -873,8 +873,8 @@ class ModelToolExchange1c extends Model {
 	 * Получает language_id из code (ru, en, etc)
 	 * Как ни странно, подходящей функции в API не нашлось
 	 *
-	 * @param 	string
-	 * @return 	int
+	 * @param	string
+	 * @return	int
 	 */
 	public function getLanguageId($lang) {
 		$query = $this->db->query('SELECT `language_id` FROM `' . DB_PREFIX . 'language` WHERE `code` = "'.$lang.'"');
@@ -916,7 +916,7 @@ class ModelToolExchange1c extends Model {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_1c');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%category_id=%"');
 		}
-			
+
 		// Очищает таблицы от всех производителей
 		if ($params['manufacturer']) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
@@ -924,7 +924,7 @@ class ModelToolExchange1c extends Model {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%manufacturer_id=%"');
 		}
-			
+
 		// Очищает атрибуты
 		if ($params['attribute']) {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute');
@@ -934,7 +934,6 @@ class ModelToolExchange1c extends Model {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'attribute_group_description');
 		}
 
-        
 		// Выставляем кол-во товаров в 0
 		if($params['quantity']) {
 			$this->db->query('UPDATE ' . DB_PREFIX . 'product ' . 'SET quantity = 0');
@@ -995,4 +994,3 @@ class ModelToolExchange1c extends Model {
 	}
 
 }
-?>

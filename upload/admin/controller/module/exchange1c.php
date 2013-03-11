@@ -3,16 +3,16 @@ class ControllerModuleExchange1c extends Controller {
 	private $error = array(); 
 
 	public function index() {
-	
+
 		$this->load->language('module/exchange1c');
 
 		//$this->document->title = $this->language->get('heading_title');
 		$this->document->setTitle($this->language->get('heading_title'));
-		
+
 		$this->load->model('setting/setting');
 			
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-			$this->model_setting_setting->editSetting('exchange1c', $this->request->post);				
+			$this->model_setting_setting->editSetting('exchange1c', $this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
@@ -59,50 +59,50 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
 		$this->data['button_insert'] = $this->language->get('button_insert');
 		$this->data['button_remove'] = $this->language->get('button_remove');
-	
-  		if (isset($this->error['warning'])) {
+
+		if (isset($this->error['warning'])) {
 			$this->data['error_warning'] = $this->error['warning'];
 		}
 		else {
 			$this->data['error_warning'] = '';
 		}
 
- 		if (isset($this->error['exchange1c_username'])) {
+		if (isset($this->error['exchange1c_username'])) {
 			$this->data['error_exchange1c_username'] = $this->error['exchange1c_username'];
 		}
 		else {
 			$this->data['error_exchange1c_username'] = '';
 		}
 
- 		if (isset($this->error['exchange1c_password'])) {
+		if (isset($this->error['exchange1c_password'])) {
 			$this->data['error_exchange1c_password'] = $this->error['exchange1c_password'];
 		}
 		else {
 			$this->data['error_exchange1c_password'] = '';
 		}
 		
-  		$this->data['breadcrumbs'] = array();
+		$this->data['breadcrumbs'] = array();
 
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_home'),
-			'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => false
-   		);
+		$this->data['breadcrumbs'][] = array(
+			'text'		=> $this->language->get('text_home'),
+			'href'		=> $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+			'separator'	=> false
+		);
 
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('text_module'),
-			'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => ' :: '
-   		);
-		
-   		$this->data['breadcrumbs'][] = array(
-       		'text'      => $this->language->get('heading_title'),
+		$this->data['breadcrumbs'][] = array(
+			'text'		=> $this->language->get('text_module'),
+			'href'		=> $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+			'separator'	=> ' :: '
+		);
+
+		$this->data['breadcrumbs'][] = array(
+			'text'      => $this->language->get('heading_title'),
 			'href'      => $this->url->link('module/exchange1c', 'token=' . $this->session->data['token'], 'SSL'),
-      		'separator' => ' :: '
-   		);
+			'separator' => ' :: '
+		);
 
-   		$this->data['token'] = $this->session->data['token'];
-		
+		$this->data['token'] = $this->session->data['token'];
+
 		//$this->data['action'] = HTTPS_SERVER . 'index.php?route=module/exchange1c&token=' . $this->session->data['token'];
 		$this->data['action'] = $this->url->link('module/exchange1c', 'token=' . $this->session->data['token'], 'SSL');
 
@@ -115,7 +115,7 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_username'] = $this->config->get('exchange1c_username');
 		}
-		
+
 		if (isset($this->request->post['exchange1c_password'])) {
 			$this->data['exchange1c_password'] = $this->request->post['exchange1c_password'];
 		}
@@ -135,8 +135,8 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_status'] = $this->config->get('exchange1c_status');
-		}	
-		
+		}
+
 		if (isset($this->request->post['exchange1c_price_type'])) {
 			$this->data['exchange1c_price_type'] = $this->request->post['exchange1c_price_type'];
 		}
@@ -145,7 +145,7 @@ class ControllerModuleExchange1c extends Controller {
 			if(empty($this->data['exchange1c_price_type'])) {
 				$this->data['exchange1c_price_type'][] = array(
 					'keyword'			=> '',
-					'customer_group_id'	=> 0,
+					'customer_group_id'		=> 0,
 					'quantity'			=> 0,
 					'priority'			=> 0
 				);
@@ -221,11 +221,11 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_order_notify'] = $this->config->get('exchange1c_order_notify');
 		}
-		
+
 		// Группы
 		$this->load->model('sale/customer_group');
 		$this->data['customer_groups'] = $this->model_sale_customer_group->getCustomerGroups();
-		
+
 		$this->load->model('localisation/order_status');
 
 		$order_statuses = $this->model_localisation_order_status->getOrderStatuses();
@@ -236,13 +236,13 @@ class ControllerModuleExchange1c extends Controller {
 				'name'			  => $order_status['name']
 			);
 		}
-		
+
 		$this->template = 'module/exchange1c.tpl';
 		$this->children = array(
-			'common/header',	
+			'common/header',
 			'common/footer'	
 		);
-		
+
 		$this->response->setOutput($this->render(), $this->config->get('config_compression'));
 	}
 
@@ -251,7 +251,7 @@ class ControllerModuleExchange1c extends Controller {
 		if (!$this->user->hasPermission('modify', 'module/exchange1c')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
-		
+
 		if (!$this->error) {
 			return true;
 		}
@@ -259,14 +259,14 @@ class ControllerModuleExchange1c extends Controller {
 			return false;
 		}
 	}
-	
+
 	public function install() {}
-	
+
 	public function uninstall() {}
-	
-	// --- 
+
+	// ---
 	public function modeCheckauth() {
-	
+
 		// Проверяем включен или нет модуль
 		if (!$this->config->get('exchange1c_status')) {
 			echo "failure\n";
@@ -297,7 +297,7 @@ class ControllerModuleExchange1c extends Controller {
 			echo "error password";
 			exit;
 		}
-		
+
 		echo "success\n";
 		echo "key\n";
 		echo md5($this->config->get('exchange1c_password')) . "\n";
@@ -379,7 +379,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->model_tool_exchange1c->flushDb(array(
 			'product' 		=> $this->config->get('exchange1c_flush_product'),
 			'category'		=> $this->config->get('exchange1c_flush_category'),
-			'manufacturer'	=> $this->config->get('exchange1c_flush_manufacturer'),
+			'manufacturer'		=> $this->config->get('exchange1c_flush_manufacturer'),
 			'attribute'		=> $this->config->get('exchange1c_flush_attribute'),
 			'quantity'		=> $this->config->get('exchange1c_flush_quantity')
 		));
@@ -411,9 +411,9 @@ class ControllerModuleExchange1c extends Controller {
 			echo "Session error";
 			return;
 		}
-	
+
 		$cache = DIR_CACHE . 'exchange1c/';
-		
+
 		// Проверяем на наличие имени файла
 		if (isset($this->request->get['filename'])) {
 			$uplod_file = $cache . $this->request->get['filename'];
@@ -423,24 +423,24 @@ class ControllerModuleExchange1c extends Controller {
 			echo "ERROR 10: No file name variable";
 			return;
 		}
-		
+
 		// Проверяем XML или изображения
 		if (strpos($this->request->get['filename'], 'import_files') !== false) {
 			$cache = DIR_IMAGE;
 			$uplod_file = $cache . $this->request->get['filename'];
 			$this->checkUploadFileTree(dirname($this->request->get['filename']) , $cache);
 		}
-				
+
 		// Получаем данные
 		$data = file_get_contents("php://input");
-		
+
 		if ($data !== false) {
 			if ($fp = fopen($uplod_file, "wb")) {
 				$result = fwrite($fp, $data);
-				
+
 				if ($result === strlen($data)) {
 					echo "success\n";
-					
+
 					chmod($uplod_file , 0777);
 					//echo "success\n";
 				}
@@ -459,11 +459,11 @@ class ControllerModuleExchange1c extends Controller {
 			echo "No data file\n";
 		}
 
-	
+
 	}
-	
+
 	public function modeImport($manual = false) {
-		
+
 		$cache = DIR_CACHE . 'exchange1c/';
 
 		if ($manual) {
@@ -479,7 +479,7 @@ class ControllerModuleExchange1c extends Controller {
 			echo "ERROR 10: No file name variable";
 			return 0;
 		}
-		
+
 		$this->load->model('tool/exchange1c');
 
 		// Определяем текущую локаль
@@ -511,13 +511,13 @@ class ControllerModuleExchange1c extends Controller {
 			
 			if (!$manual) {
 				echo "success\n";
-			}	
+			}
 		}
-		else {		
+		else {
 			echo "failure\n";
 			echo $filename;
 		}
-		
+
 		$this->cache->delete('product');
 		return;
 	}
@@ -541,11 +541,11 @@ class ControllerModuleExchange1c extends Controller {
 		
 		echo iconv('utf-8', 'cp1251', $orders);
 	}
-	
-	
+
+
 	// -- Системные процедуры
 	private function cleanCacheDir() {
-	
+
 		// Проверяем есть ли директория
 		if (file_exists(DIR_CACHE . 'exchange1c')) {
 			if (is_dir(DIR_CACHE . 'exchange1c')) {
@@ -555,40 +555,40 @@ class ControllerModuleExchange1c extends Controller {
 				unlink(DIR_CACHE . 'exchange1c');
 			}
 		}
-		
+
 		mkdir (DIR_CACHE . 'exchange1c'); 
-		
+
 		return 0;
 	}
-	
+
 	private function checkUploadFileTree($path, $curDir = null) {
-		
+
 		if (!$curDir) $curDir = DIR_CACHE . 'exchange1c/';
-		
+
 		foreach (explode('/', $path) as $name) {
-			
+
 			if (!$name) continue;
-			
+
 			if (file_exists($curDir . $name)) {
 				if (is_dir( $curDir . $name)) {
 					$curDir = $curDir . $name . '/';
 					continue;
 				}
-				
-				unlink ($curDir . $name);				
-			} 
+
+				unlink ($curDir . $name);
+			}
 
 			mkdir ($curDir . $name );
 			$curDir = $curDir . $name . '/';
 		}
 		
 	}
-	
-	
+
+
 	private function cleanDir($root, $self = false) {
-	
+
 		$dir = dir($root);
-		
+
 		while ($file = $dir->read()) {
 			if ($file == '.' || $file == '..') continue;
 			if (file_exists($root . $file)) {
@@ -598,7 +598,7 @@ class ControllerModuleExchange1c extends Controller {
 			}
 			var_dump($file);
 		}
-		
+
 		if ($self) {
 			if(file_exists($root) && is_dir($root)) {
 				rmdir($root); return 0;
@@ -608,6 +608,6 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		return 0;
 	}
-	
+
 }
 ?>
