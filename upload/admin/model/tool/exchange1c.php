@@ -601,6 +601,7 @@ class ModelToolExchange1c extends Model {
 				);
 			}
 
+			$data = array_merge($data, array('main_category_id' => $this->model_catalog_product->getProductMainCategoryId($product_id)));
 			$data = array_merge($data, array('product_discount' => $this->model_catalog_product->getProductDiscounts($product_id)));
 			$data = array_merge($data, array('product_special' => $this->model_catalog_product->getProductSpecials($product_id)));
 			$data = array_merge($data, array('product_download' => $this->model_catalog_product->getProductDownloads($product_id)));
