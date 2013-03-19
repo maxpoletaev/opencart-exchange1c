@@ -36,6 +36,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_flush_attribute'] = $this->language->get('entry_flush_attribute');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
+		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -51,7 +52,6 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
 		$this->data['entry_order_currency'] = $this->language->get('entry_order_currency');
 		$this->data['entry_order_notify'] = $this->language->get('entry_order_notify');
-		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_upload'] = $this->language->get('entry_upload');
 		$this->data['button_upload'] = $this->language->get('button_upload');
 
@@ -199,6 +199,13 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_seo_url'] = $this->config->get('exchange1c_seo_url');
+		}
+
+		if (isset($this->request->post['exchange1c_full_log'])) {
+			$this->data['exchange1c_full_log'] = $this->request->post['exchange1c_full_log'];
+		}
+		else {
+			$this->data['exchange1c_full_log'] = $this->config->get('exchange1c_full_log');
 		}
 
 		if (isset($this->request->post['exchange1c_order_status'])) {
@@ -379,8 +386,9 @@ class ControllerModuleExchange1c extends Controller {
 		$this->model_tool_exchange1c->flushDb(array(
 			'product' 		=> $this->config->get('exchange1c_flush_product'),
 			'category'		=> $this->config->get('exchange1c_flush_category'),
-			'manufacturer'		=> $this->config->get('exchange1c_flush_manufacturer'),
+			'manufacturer'	=> $this->config->get('exchange1c_flush_manufacturer'),
 			'attribute'		=> $this->config->get('exchange1c_flush_attribute'),
+			'full_log'		=> $this->config->get('exchange1c_full_log'),
 			'quantity'		=> $this->config->get('exchange1c_flush_quantity')
 		));
 

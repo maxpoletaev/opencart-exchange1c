@@ -134,6 +134,10 @@ class ModelToolExchange1c extends Model {
 		$data = array();
 		$price_types = array();
 		$data['price'] = 0;
+		$enable_log = $this->config->get('exchange1c_full_log');
+
+		if ($enable_log)
+			$this->log->write("Начат разбор файла: " . $filename);
 
 		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
 			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
@@ -163,6 +167,8 @@ class ModelToolExchange1c extends Model {
 				//UUID без номера после #
 				$uuid = explode("#", $offer->Ид);
 				$data['1c_id'] = $uuid[0];
+				if ($enable_log)
+					$this->log->write("Товар: [UUID]:" . $data['1c_id']);
 
 				//Цена за единицу
 				if ($offer->Цены) {
@@ -176,6 +182,9 @@ class ModelToolExchange1c extends Model {
 							foreach ($offer->Цены->Цена as $price) {
 								if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
 									$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+									if ($enable_log)
+										$this->log->write(" найдена цена  > " . $data['price']);
+								
 								}
 							}
 						}
@@ -272,6 +281,8 @@ class ModelToolExchange1c extends Model {
 		}
 
 		$this->cache->delete('product');
+		if ($enable_log)
+			$this->log->write("Окончен разбор файла: " . $filename );
 
 	}
 
@@ -281,6 +292,8 @@ class ModelToolExchange1c extends Model {
 	public function parseImport($filename, $language_id) {
 
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
+
+		$enable_log = $this->config->get('exchange1c_full_log');
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();
@@ -305,6 +318,9 @@ class ModelToolExchange1c extends Model {
 				$data['weight'] = $product->Вес? (float)$product->Вес : 0;
 				$data['sku'] = $product->Артикул? (string)$product->Артикул : '';
 
+				if ($enable_log)
+					$this->log->write("Найден товар:" . $data['name'] . " арт: " . $data['sku'] . "1C UUID: " . $data['1c_id']);
+
 				if ($product->Картинка) {
 					$data['image'] =(string)$product->Картинка[0];
 					unset($product->Картинка[0]);
@@ -322,6 +338,8 @@ class ModelToolExchange1c extends Model {
 
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
+					if ($enable_log)
+						$this->log->write("   загружаются свойства... ");
 					foreach ($product->ЗначенияСвойств->ЗначенияСвойства as $property) {
 						if (isset($this->PROPERTIES[(string)$property->Ид]['name'])) {
 
@@ -336,6 +354,8 @@ class ModelToolExchange1c extends Model {
 							else {
 								continue;
 							}
+							if ($enable_log)
+								$this->log->write("   > " . $attribute_value);
 
 							switch ($attribute['name']) {
 			
@@ -395,6 +415,8 @@ class ModelToolExchange1c extends Model {
 							}
 						}
 					}
+					if ($enable_log)
+						$this->log->write("   свойства загружены... ");
 				}
 
 				// Реквезиты продукта
@@ -418,6 +440,8 @@ class ModelToolExchange1c extends Model {
 		}
 
 		unset($xml);
+		if ($enable_log)
+			$this->log->write("Окончен разбор файла: " . $filename );
 	}
 
 

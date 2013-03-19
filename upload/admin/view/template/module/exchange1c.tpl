@@ -163,6 +163,13 @@
                 <input type="checkbox" value="1" id="exchange1c_seo_url" name="exchange1c_seo_url" <?php echo ($exchange1c_seo_url == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
+
+            <tr>
+              <td><label for="exchange1c_full_log"><?php echo $entry_full_log; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_full_log" name="exchange1c_full_log" <?php echo ($exchange1c_full_log == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
           </table>
         </div>
 

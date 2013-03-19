@@ -37,6 +37,7 @@ $_['entry_flush_quantity']	= 'Flush quantity:';
 $_['entry_flush_attribute']	= 'Flush attributes:';
 $_['entry_fill_parent_cats']	= 'Fill parent categories:';
 $_['entry_seo_url']		= 'Generate SEO URL (depends on <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>):';
+$_['entry_full_log']		= 'Enable log';
 
 $_['entry_order_status']	= 'Uploaded orders status:';
 $_['entry_order_notify']	= 'Notify users of status change:';
