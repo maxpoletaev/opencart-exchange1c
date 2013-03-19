@@ -260,9 +260,18 @@ class ModelToolExchange1c extends Model {
 							//Нету такой опции
 							$option_id = $this->setOption($name_1c);
 						}
+//@TODO: Изменение на API OpenCart
 
+
+
+//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+						
 						$option_value_id = $this->setOptionValue($option_id,$value_1c);
 
+//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+
+						
+						
 						$product_option_value_data[] = array(
 							'option_value_id'         => (int) $option_value_id,
 							'quantity'                => isset($data['quantity']) ? (int)$data['quantity'] : 0,
