@@ -121,6 +121,14 @@ class ModelToolExchange1c extends Model {
 
 		return $xml;
 	}
+	
+	function format($var){
+		return preg_replace_callback(
+		    '/\\\u([0-9a-fA-F]{4})/',
+		    create_function('$match', 'return mb_convert_encoding("&#" . intval($match[1], 16) . ";", "UTF-8", "HTML-ENTITIES");'),
+		    json_encode($var)
+		);
+	}
 
 	/**
 	 * Парсит цены и количество
@@ -135,6 +143,7 @@ class ModelToolExchange1c extends Model {
 		$price_types = array();
 		$data['price'] = 0;
 		$enable_log = $this->config->get('exchange1c_full_log');
+		$this->load->model('catalog/option');
 
 		if ($enable_log)
 			$this->log->write("Начат разбор файла: " . $filename);
@@ -255,10 +264,10 @@ class ModelToolExchange1c extends Model {
 						$option_value_id = $this->setOptionValue($option_id,$value_1c);
 
 						$product_option_value_data[] = array(
-							'option_value_id'         => $option_value_id,
-							'quantity'                => $data['quantity'],
-							'subtract'                => 1,
-							'price'                   => 0,
+							'option_value_id'         => (int) $option_value_id,
+							'quantity'                => isset($data['quantity']) ? (int)$data['quantity'] : 0,
+							'subtract'                => 0,
+							'price'                   => isset($data['price']) ? (int)$data['price'] : 0,
 							'price_prefix'            => '+',
 							'points'                  => 0,
 							'points_prefix'           => '+',
@@ -267,7 +276,7 @@ class ModelToolExchange1c extends Model {
 						);
 
 						$product_option_data[] = array(
-							'option_id'            => $option_id,
+							'option_id'            => (int) $option_id,
 							'type'                 => 'select',
 							'product_option_value' => $product_option_value_data,
 							'required'             => 1
@@ -769,15 +778,21 @@ class ModelToolExchange1c extends Model {
 				,'tag'			=> isset($product['tag']) ? $product['tag']: (isset($data['product_description'][$language_id]['tag']) ? $data['product_description'][$language_id]['tag']: '')
 			),
 		);
-
-		if (isset($product['product_option'])) {
-			if (!empty($result['product_option'])) {
-				$result['product_option'][0]['product_option_value'][] = $product['product_option'][0]['product_option_value'][0];
-			}
-			else {
+		
+		
+		if(isset($product['product_option'])){
+			if(!empty($product['product_option'])){
 				$result['product_option'] = $product['product_option'];
+				if(!empty($data['product_option'])){
+					$result['product_option'][0]['product_option_value'] = array_merge($product['product_option'][0]['product_option_value'],$data['product_option'][0]['product_option_value']);
+				}
+			}else{
+				$result['product_option'] = $data['product_option'];
 			}
+		}else{
+			$product['product_option'] = array();
 		}
+		
 
 		if (isset($product['category_1c_id']) && isset($this->CATEGORIES[$product['category_1c_id']])) {
 			$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
@@ -845,22 +860,28 @@ class ModelToolExchange1c extends Model {
 
 		// Обновляем описание продукта
 		$product_old = $this->getProductWithAllData($product_id);
-
-		// Работаем с ценой на разные варианты товаров.
-		if ((!empty($product['product_option'])) && ((float)$product_old['price'] != 0)) {
-
-			$product['product_option'][0]['product_option_value'][0]['price'] = (float)$product['product_option'][0]['product_option_value'][0]['price'] - (float)$product_old['price'];
-			$product['price'] = (float)$product_old['price'];
-			$product['quantity'] = (int)$product['quantity'] + (int)$product_old['quantity'];
-
-		}
-		else if ((!empty($product['product_option'])) && ((float)$product_old['price'] == 0)){
-
-			$product['product_option'][0]['product_option_value'][0]['price'] = 0;
 		
+		
+		// Работаем с ценой на разные варианты товаров.
+		if(!empty($product['product_option'][0])){
+			if((float) $product_old['price'] > 0){
+			
+			
+				$price = (float) $product_old['price'] - (float) $product['product_option'][0]['product_option_value'][0]['price'];
+				
+				$product['product_option'][0]['product_option_value'][0]['price_prefix'] = ($price > 0) ? '-':'+';
+				$product['product_option'][0]['product_option_value'][0]['price'] = $price;
+				
+				$product['price'] = (float) $product_old['price'];
+				
+			}else{
+				$product['product_option'][0]['product_option_value'][0]['price'] = 0;
+			}
+			
 		}
 		
 		$this->load->model('catalog/product');
+		
 		$product_old = $this->initProduct($product, $product_old, $language_id);
 
 		//Редактируем продукт
@@ -982,6 +1003,9 @@ class ModelToolExchange1c extends Model {
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_download');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_layout');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'product_to_store');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'option_value_description');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'option_value');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'option_description');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
 		}
 
