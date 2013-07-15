@@ -1,7 +1,17 @@
 # OpenCart Exchange 1C #
 
- Модуль обмена данными с 1С 8.x в формате CommerceML2 для OpenCart
+ Форк модуля обмена данными с 1С 8.x в формате CommerceML2 для OpenCart
+ позволяет выгружать дополнительные цены в акции, вместо скидок, исправлена
+ обработка кавычек в артикулах - possible mysql inhection vulnerability
  
+    modified:   README.md
+    modified:   upload/admin/controller/module/exchange1c.php
+    modified:   upload/admin/language/english/module/exchange1c.php
+    modified:   upload/admin/language/russian/module/exchange1c.php
+    modified:   upload/admin/model/tool/exchange1c.php
+    modified:   upload/admin/view/template/module/exchange1c.tpl
+
+
  * Домашняя страница: http://zenwalker.ru/lab/opencart-exchange1c/
  * Видеоинструкция установки: http://zenwalker.ru/lab/opencart-exchange1c/installation.html
  * Исходные коды: https://github.com/ethernet1/opencart-exchange1c
@@ -9,6 +19,7 @@
 
 ## Возможности ##
  
+ * Выгрузка цен в акции вместо скидок
  * Выгрузка полной иерархии категорий
  * Выгрузка изображений
  * Выгрузка скидок

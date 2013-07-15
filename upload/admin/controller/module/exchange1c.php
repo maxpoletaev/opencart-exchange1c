@@ -37,6 +37,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
+        $this->data['entry_special_instead_discounts'] = $this->language->get('entry_special_instead_discounts');
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -208,6 +209,13 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_full_log'] = $this->config->get('exchange1c_full_log');
 		}
 
+        if (isset($this->request->post['exchange1c_special_instead_discounts'])) {
+			$this->data['exchange1c_special_instead_discounts'] = $this->request->post['exchange1c_special_instead_discounts'];
+		}
+		else {
+			$this->data['exchange1c_special_instead_discounts'] = $this->config->get('exchange1c_special_instead_discounts');
+		}
+        
 		if (isset($this->request->post['exchange1c_order_status'])) {
 			$this->data['exchange1c_order_status'] = $this->request->post['exchange1c_order_status'];
 		}
@@ -514,8 +522,10 @@ class ControllerModuleExchange1c extends Controller {
 			
 		}
 		else if (strpos($filename, 'offers') !== false) {
-			$exchange1c_price_type = $this->config->get('exchange1c_price_type');
-			$this->model_tool_exchange1c->parseOffers($filename, $exchange1c_price_type, $language_id);
+			$offers_config = array(
+            'price_type' => $this->config->get('exchange1c_price_type'),
+            'special_instead_discounts' =>  $this->config->get('exchange1c_special_instead_discounts'));
+			$this->model_tool_exchange1c->parseOffers($filename, $offers_config, $language_id);
 			
 			if (!$manual) {
 				echo "success\n";
