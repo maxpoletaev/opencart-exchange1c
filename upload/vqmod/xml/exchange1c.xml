@@ -1,0 +1,48 @@
+<modification>
+	<id><![CDATA[exchange1c]]></id>
+	<version><![CDATA[2.0]]></version>
+	<vqmver><![CDATA[]]></vqmver>
+	<author><![CDATA[zenwalker (http://zenwalker.ru/)]]></author>
+	
+	<file name="admin/model/catalog/attribute.php">
+		<operation>
+			<search position="before" offset="2"><![CDATA[public function editAttribute]]></search>
+			<add><![CDATA[return $attribute_id;]]></add>
+		</operation>
+	</file>
+	
+	<file name="admin/model/catalog/category.php">
+		<operation>
+			<search position="before" offset="2"><![CDATA[public function editCategory]]></search>
+			<add><![CDATA[return $category_id;]]></add>
+		</operation>
+	</file>
+	
+	<file name="admin/model/catalog/manufacturer.php">
+		<operation>
+			<search position="before" offset="2"><![CDATA[public function editManufacturer]]></search>
+			<add><![CDATA[return $manufacturer_id;]]></add>
+		</operation>
+	</file>
+	
+	<file name="admin/model/catalog/product.php">
+		<operation>
+			<search position="before" offset="2"><![CDATA[public function editProduct]]></search>
+			<add><![CDATA[return $product_id;]]></add>
+		</operation>
+	</file>
+
+	<file name="admin/controller/common/header.php">
+		<operation>
+			<search position="after"><![CDATA[$this->data['feed'] = $this->url->link('extension/feed', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add><![CDATA[$this->data['exchange1c'] = $this->url->link('module/exchange1c', 'token=' . $this->session->data['token'], 'SSL');]]></add>
+		</operation>
+	</file>
+
+	<file name="admin/view/template/common/header.tpl">
+		<operation>
+			<search position="after"><![CDATA[<li><a href="<?php echo $feed; ?>"><?php echo $text_feed; ?></a></li>]]></search>
+			<add><![CDATA[<li><a href="<?php echo $exchange1c; ?>">Exchange 1C</a></li>]]></add>
+		</operation>
+	</file>
+</modification>
