@@ -126,7 +126,9 @@ class ProductImport extends BaseImport {
 			
 			$category1cId = (string)$xmlProduct->Группы[0]->Ид;
 			
-			$mainCategoryId = $this->categoryMap[$category1cId];
+			$mainCategoryId = isset($this->categoryMap[$category1cId])?
+				$this->categoryMap[$category1cId] : 0
+			;
 
 			if (isset($this->productMap[$product1cId]))
 			{
@@ -142,15 +144,15 @@ class ProductImport extends BaseImport {
 			{
 				$productNewData = $this->getProductNewData($xmlProduct);
 
-				$productNewData['main_category_id'] = $mainCategoryId;
-				$productNewData['product_category'] = array();
-
 				foreach ($xmlProduct->Группы->Ид as $category1cId)
 				{
 					if ((string)$category1cId != $mainCategoryId)
 					{
-						$categoryId = $this->categoryMap[(string)$category1cId];
-						$productNewData['product_category'][] = $categoryId;
+						if (isset($this->categoryMap[(string)$category1cId]))
+						{
+							$categoryId = $this->categoryMap[(string)$category1cId];
+							$productNewData['product_category'][] = $categoryId;
+						}
 					}
 				}
 
