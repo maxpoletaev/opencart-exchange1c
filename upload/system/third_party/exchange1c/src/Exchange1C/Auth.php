@@ -1,4 +1,4 @@
-<?php namespace Exchange1C\Core;
+<?php namespace Exchange1C;
 
 class Auth {
 

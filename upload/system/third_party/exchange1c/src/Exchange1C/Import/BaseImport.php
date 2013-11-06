@@ -1,8 +1,8 @@
 <?php namespace Exchange1C\Import;
 
+use Exchange1C\Log;
+use Exchange1C\OpenCart;
 use Exchange1C\Plugin\PluginManager;
-use Exchange1C\Core\OpenCart;
-use Exchange1C\Core\Log;
 
 class BaseImport {
 

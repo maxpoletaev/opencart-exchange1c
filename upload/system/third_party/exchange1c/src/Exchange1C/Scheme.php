@@ -1,7 +1,7 @@
-<?php namespace Exchange1C\Core;
+<?php namespace Exchange1C;
 
-use \StdClass;
-use \SimpleXMLElement;
+use StdClass;
+use SimpleXMLElement;
 
 class Scheme {
 

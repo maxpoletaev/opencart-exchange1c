@@ -1,9 +1,9 @@
 <?php namespace Exchange1C\Import;
 
-use Exchange1C\Core\OpenCart;
-use Exchange1C\Core\Scheme;
-use Exchange1C\Core\Log;
-use \StdClass;
+use Exchange1C\OpenCart;
+use Exchange1C\Scheme;
+use Exchange1C\Log;
+use StdClass;
 
 class ProductImport extends BaseImport {
 

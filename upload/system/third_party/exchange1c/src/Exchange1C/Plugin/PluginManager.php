@@ -1,7 +1,7 @@
 <?php namespace Exchange1C\Plugin;
 
-use Exchange1C\Core\OpenCart;
-use Exchange1C\Core\Log;
+use Exchange1C\OpenCart;
+use Exchange1C\Log;
 
 class PluginManager {
 
@@ -46,19 +46,19 @@ class PluginManager {
 			if ($pluginFile != '.' && $pluginFile != '..')
 			{
 				$pluginName = explode('.', $pluginFile);
-				$pluginName = $pluginName[0];
+				$className = $pluginName[0];
 
 				if (isset($pluginName[1]) && $pluginName[1] == 'php')
 				{
-					require "{$this->pluginsDir}/{$pluginFile}";
+					require_once "{$this->pluginsDir}/{$pluginFile}";
 
-					$plugin = new $pluginName(OpenCart::getInstance());
+					$plugin = new $className(OpenCart::getInstance());
 					$plugin->init();
 
 					foreach ($plugin->events as $eventName => $funcName)
 					{
-						$this->registerPlugin($pluginName, $eventName, array($plugin, $funcName));
-						Log::write("Register event: {$pluginName}::{$funcName} on {$eventName}");
+						$this->registerPlugin($className, $eventName, array($plugin, $funcName));
+						Log::write("Register event: {$className}::{$funcName} on {$eventName}");
 					}
 				}
 			}
