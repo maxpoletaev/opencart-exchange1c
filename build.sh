@@ -25,7 +25,7 @@ for FILE in "${FILE_LIST[@]}"; do
 		if [ ! -d $(dirname $TO) ]; then
 			mkdir -p $(dirname $TO)
 		fi
-		cp -arT $FROM $TO
+		cp -aurT $FROM $TO
 	else
 		"No such file or directory: $FROM"
 	fi
