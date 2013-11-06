@@ -41,10 +41,10 @@ class ControllerModuleExchange1C extends Controller {
 
 
 	/**
-   * Install action.
-   *
-   * @return void.
-   */
+	 * Install action.
+	 *
+	 * @return void.
+	 */
 	public function install()
 	{
 		$this->load->model('module/exchange1c');
@@ -146,7 +146,7 @@ class ControllerModuleExchange1C extends Controller {
 	 */
 	protected function getVersion()
 	{
-		$vfile = DIR_SYSTEM . "/third_party/exchange1c/VERSION";
+		$vfile = DIR_SYSTEM . "/third_party/exchange1c/version";
 
 		if (file_exists($vfile) && is_readable($vfile))
 		{
@@ -166,7 +166,7 @@ class ControllerModuleExchange1C extends Controller {
 
 		if (is_null($new))
 		{
-			$new = @file_get_contents('https://raw.github.com/ethernet1/opencart-exchange1c/2.0-dev/upload/system/third_party/exchange1c/VERSION');
+			$new = @file_get_contents('https://raw.github.com/ethernet1/opencart-exchange1c/2.0-dev/upload/system/third_party/exchange1c/version');
 			$this->cache->set('e1c_version', $new);
 		}
 		
