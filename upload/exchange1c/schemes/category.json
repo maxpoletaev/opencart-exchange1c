@@ -1,0 +1,43 @@
+{
+	"status": {
+		"overwrite": true,
+		"type": "bool",
+		"default": true
+	},
+	"top": {
+		"overwrite": true,
+		"type": "bool",
+		"default": true
+	},
+	"parent_id": {
+		"overwrite": true,
+		"type": "int",
+		"default": 0
+	},
+	"category_store": {
+		"overwrite": true,
+		"type": "array",
+		"default": [0]
+	},
+	"keyword": {
+		"overwrite": true,
+		"type": "string",
+		"default": ""
+	},
+	"image": {
+		"overwrite": true,
+		"field": "Картинка",
+		"type": "string",
+		"default": ""
+	},
+	"sort_order": {
+		"overwrite": true,
+		"type": "int",
+		"default": 0
+	},
+	"column": {
+		"overwrite": true,
+		"type": "int",
+		"default": 1
+	}
+}

@@ -1,0 +1,39 @@
+{
+  "name": {
+    "overwrite": true,
+    "type": "string",
+    "field": "Наименование",
+    "default": ""
+  },
+  "meta_keyword": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "meta_description": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "description": {
+    "overwrite": true,
+    "type": "string",
+    "field": "Описание",
+    "default": ""
+  },
+  "seo_title": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "seo_h1": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "tag": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "model": {
+    "overwrite": true,
+    "type": "string",
+    "field": "Штрихкод",
+    "default": ""
+  },
+  "sku": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "upc": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "ean": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "jan": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "isbn": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "mpn": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "location": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "price": {
+    "overwrite": true,
+    "type": "float",
+    "default": 0
+  },
+  "tax_class_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 0
+  },
+  "quantity": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "minimum": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "subtract": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "stock_status_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "shipping": {
+    "overwrite": true,
+    "type": "bool",
+    "default": true
+  },
+  "keyword": {
+    "overwrite": true,
+    "type": "string",
+    "default": ""
+  },
+  "image": {
+    "overwrite": true,
+    "type": "string",
+    "default": "",
+    "field": "Картинка"
+  },
+  "length": {
+    "overwrite": true,
+    "type": "float",
+    "default": 0
+  },
+  "length_class_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "width": {
+    "overwrite": true,
+    "type": "float",
+    "default": 0
+  },
+  "height": {
+    "overwrite": true,
+    "type": "float",
+    "default": 0
+  },
+  "weight": {
+    "overwrite": true,
+    "type": "float",
+    "default": 0
+  },
+  "weight_class_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 1
+  },
+  "manufacturer_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 0
+  },
+  "main_category_id": {
+    "overwrite": true,
+    "type": "int",
+    "default": 0
+  },
+  "product_store": {
+    "overwrite": true,
+    "type": "array",
+    "default": [0]
+  },
+  "product_option": {
+    "overwrite": true,
+    "type": "array",
+    "default": []
+  },
+  "date_available": {
+    "overwrite": true,
+    "type": "string",
+    "default": "0000-00-00"
+  },
+  "status": {
+    "overwrite": true,
+    "type": "bool",
+    "default": true
+  },
+  "points": {
+    "overwrite": true,
+    "type": "int",
+    "default": 0
+  },
+  "sort_order": {
+    "overwrite": true,
+    "type": "int",
+    "default": 0
+  }
+}
