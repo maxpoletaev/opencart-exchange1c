@@ -1,5 +1,8 @@
 <?php namespace Exchange1C;
 
+use Exchange1C\Import\CategoryImport;
+use Exchange1C\Import\ProductImport;
+
 class Protocol {
 
 	/**
@@ -15,7 +18,7 @@ class Protocol {
 			$mode = ucfirst(Request::get('mode'));
 
 			$funcName = "{$type}{$mode}";
-
+			
 			if (is_callable(array($this, $funcName)))
 			{
 				$this->$funcName();
@@ -31,16 +34,26 @@ class Protocol {
 	 */
 	public function catalogCheckauth()
 	{
-		$username = Request::server('PHP_AUTH_USER');
-		$password = Request::server('PHP_AUTH_PW');
+		$username = Request::server('PHP_AUTH_USER',
+			Request::get('username')
+		);
+		
+		$password = Request::server('PHP_AUTH_PW',
+			Request::get('password')
+		);
+
+		Log::debug("Auth attempt of {$username}.");
 
 		if (Auth::attempt($username, $password))
 		{
 			$token = OpenCart::session()->data['token'];
+
+			Log::debug("Authentication succeeded.");
 			echo "success\n", "key\n", $token;
 		}
 		else
 		{
+			Log::error("Authentication failed.");
 			die("failure\n" . "Authentication failed.");
 		}
 	}
@@ -55,10 +68,14 @@ class Protocol {
 	{
 		if (Auth::check())
 		{
-			print "success";
+			$limit = (str_replace('M', '', ini_get('post_max_size')) * 1024 * 1024);
+			echo "zip=no\n", "file_limit={$limit}\n";
+
+			Log::debug("Catalog inited.");
 		}
 		else
 		{
+			Log::error("Authentication failed.");
 			die("failure\n" . "Authentication failed.");
 		}
 	}
@@ -73,10 +90,23 @@ class Protocol {
 	{
 		if (Auth::check())
 		{
+			$filename = Request::get('filename');
+
+			if (strrpos($filename, 'import_files'))
+			{
+				// @TODO: Uploading images.
+			}
+			else
+			{
+				File::stream(E1C_DIR . "/cache/{$filename}");
+			}
+			
+			Log::debug("File {$filename} is uploaded.");
 			print "success";
 		}
 		else
 		{
+			Log::error("Authentication failed.");
 			die("failure\n" . "Authentication failed.");
 		}
 	}
@@ -94,15 +124,20 @@ class Protocol {
 			if (Request::get('filename'))
 			{
 				$fileName = Request::get('filename');
+				$filePath = E1C_DIR . "/cache/{$fileName}";
 				
-				$this->importCategories($fileName);
-				$this->importProducts($fileName);
+				$this->importCategories($filePath);
+				$this->importProducts($filePath);
 
+				unlink($filePath);
+
+				Log::debug("Import completed.");
 				print "success";
 			}	
 		}
 		else
 		{
+			Log::error("Authentication failed.");
 			die("failure\n" . "Authentication failed.");
 		}
 	}
@@ -113,16 +148,16 @@ class Protocol {
 	 *
 	 * @return void
 	 */
-	private function importCategories($fileName)
+	private function importCategories($filePath)
 	{
-		$filePath = E1C_DIR . "/cache/{$fileName}";
-
 		$categoryImport = new CategoryImport();
-		$categoryImport->addPlugins();
 
-		if (strpos($fileName, 'import'))
+		switch(File::type($filePath))
 		{
-			$categoryImport->parseImport($filePath);
+			case 'import.xml':
+				Log::debug("Import categories from import.xml.");
+				$categoryImport->parseImport($filePath);
+			break;
 		}
 
 		unset($categoryImport);
@@ -134,20 +169,21 @@ class Protocol {
 	 *
 	 * @return void
 	 */
-	private function importProducts($fileName)
+	private function importProducts($filePath)
 	{
-		$filePath = E1C_DIR . "/cache/{$fileName}";
-
 		$productImport = new ProductImport();
-		$productImport->addPlugins();
 
-		if (strpos($fileName, 'import'))
+		switch (File::type($filePath))
 		{
-			$productImport->parseImport($filePath);
-		}
-		else if (strpos($fileName, 'offers'))
-		{
-			$productImport->parseOffers($filePath);
+			case 'import.xml':
+				Log::debug("Import products from import.xml.");
+				$productImport->parseImport($filePath);
+			break;
+
+			case 'offers.xml':
+				Log::debug("Import products form offers.xml.");
+				$productImport->parseOffers($filePath);
+			break;
 		}
 
 		unset($productImport);
