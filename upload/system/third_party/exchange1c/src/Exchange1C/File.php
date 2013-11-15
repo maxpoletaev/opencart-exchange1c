@@ -1,5 +1,7 @@
 <?php namespace Exchange1C;
 
+use Exception;
+
 class File {
 
 	/**
@@ -21,27 +23,17 @@ class File {
 	 */
 	public static function stream($savePath)
 	{
-		try
-		{
-			$content = file_get_contents('php://input');
-		}
-		catch
-		{
-			throw new Exception('Failed to open stream.');
-		}
+		$content = @file_get_contents('php://input');
 
-		if (is_writable($savePath))
+		if ($content && strlen($content) > 0)
 		{
-			if (strlen($content) > 0)
-			{
-				$upload = fopen($savePath, 'w');
-				fwrite($fp, $content);
-				fclose($upload);
-			}
+			$upload = fopen($savePath, 'w');
+			fwrite($upload, $content);
+			fclose($upload);
 		}
 		else
 		{
-			throw new Exception("{$savePath} is not writeable.");
+			Log::error('File upload error. Content is empty.');
 		}
 	}
 	
@@ -53,7 +45,7 @@ class File {
 	 * @param bool $isFile
 	 * @return mixed
 	 */
-	public static function type($content, $isFile = false)
+	public static function type($content, $isFile = true)
 	{
 		if ($isFile)
 		{
