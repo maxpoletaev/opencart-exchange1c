@@ -58,7 +58,7 @@ class PluginManager {
 					foreach ($plugin->events as $eventName => $funcName)
 					{
 						$this->registerPlugin($className, $eventName, array($plugin, $funcName));
-						Log::write("Register event: {$className}::{$funcName} on {$eventName}");
+						Log::debug("Register event: {$className}::{$funcName} on {$eventName}");
 					}
 				}
 			}
@@ -101,7 +101,7 @@ class PluginManager {
 
 				if (is_callable($func))
 				{
-					Log::write("Run plugin: {$plugin['plugin']} on {$plugin['event']}");
+					Log::debug("Run plugin: {$plugin['plugin']} on {$plugin['event']}");
 					return call_user_func_array($func, $args);
 				}
 			}

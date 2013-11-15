@@ -213,12 +213,12 @@ class ProductImport extends BaseImport {
 						if ($pirceType == $configPriceType)
 						{
 							$productData->price = str_replace(' ', '', (string)$price->ЦенаЗаЕдиницу);
-							Log::write("Found price: {$productData->price}.");
+							Log::debug("Found price: {$productData->price}.");
 						}
 						else
 						{
 							$productData->price = 0;
-							Log::write("Not found price, set to {$productData->price}.");
+							Log::debug("Not found price, set to {$productData->price}.");
 						}
 					}
 				}
@@ -315,7 +315,7 @@ class ProductImport extends BaseImport {
 			array($productId, $product1cId, $productData)
 		);
 
-		Log::write("Add product: {$productId}");
+		Log::debug("Add product: {$productId}");
 	}
 
 
@@ -337,6 +337,6 @@ class ProductImport extends BaseImport {
 			array($productId, $productData)
 		);
 
-		Log::write("Edit product: {$productId}");
+		Log::debug("Edit product: {$productId}");
 	}
 }

@@ -135,7 +135,7 @@ class CategoryImport extends BaseImport {
 			array($categoryId, $category1cId, $categoryData)
 		);
 
-		Log::write("Add category: {$categoryId} ({$category1cId})");
+		Log::debug("Add category: {$categoryId} ({$category1cId})");
 		
 		return $categoryId;
 	}
@@ -159,7 +159,7 @@ class CategoryImport extends BaseImport {
 			array($categoryId, $categoryData)
 		);
 
-		Log::write("Edit category: {$categoryId}");
+		Log::debug("Edit category: {$categoryId}");
 	}
 
 
