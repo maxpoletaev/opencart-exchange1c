@@ -17,8 +17,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version dev.52';
-		//$this->data['version'] = 'Version 1.4';
+		$this->data['version'] = 'Version 1.5.0';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');

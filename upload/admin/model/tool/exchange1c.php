@@ -33,35 +33,35 @@ class ModelToolExchange1c extends Model {
 				$time = date('H:i:s', strtotime($order['date_added']));
 
 				$document['Документ' . $document_counter] = array(
-					 'Ид'			=> $order['order_id']
-					,'Номер'		=> $order['order_id']
-					,'Дата'			=> $date
-					,'Время'		=> $time
-					,'Валюта'		=> $params['currency']
-					,'Курс'			=> 1
-					,'ХозОперация'		=> 'Заказ товара'
-					,'Роль'			=> 'Продавец'
-					,'Сумма'		=> $order['total']
-					,'Комментарий'	=> $order['comment']
+					 'Ид'          => $order['order_id']
+					,'Номер'       => $order['order_id']
+					,'Дата'        => $date
+					,'Время'       => $time
+					,'Валюта'      => $params['currency']
+					,'Курс'        => 1
+					,'ХозОперация' => 'Заказ товара'
+					,'Роль'        => 'Продавец'
+					,'Сумма'       => $order['total']
+					,'Комментарий' => $order['comment']
 				);
 
 				$document['Документ' . $document_counter]['Контрагенты']['Контрагент'] = array(
-					 'Ид'			=> $order['customer_id'] . '#' . $order['email']
-					,'Наименование'		=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-					,'Роль'			=> 'Покупатель'
+					 'Ид'                 => $order['customer_id'] . '#' . $order['email']
+					,'Наименование'		    => $order['payment_lastname'] . ' ' . $order['payment_firstname']
+					,'Роль'               => 'Покупатель'
 					,'ПолноеНаименование'	=> $order['payment_lastname'] . ' ' . $order['payment_firstname']
-					,'Фамилия'		=> $order['payment_lastname']
-					,'Имя'			=> $order['payment_firstname']
-					,'Адрес'	=> array(
+					,'Фамилия'            => $order['payment_lastname']
+					,'Имя'			          => $order['payment_firstname']
+					,'Адрес' => array(
 						'Представление'	=> $order['shipping_address_1'].', '.$order['shipping_city'].', '.$order['shipping_postcode'].', '.$order['shipping_country']
 					)
-					,'Контакты'	=> array(
-						'Контакт1'	=> array(
-							'Тип'		=> 'ТелефонРабочий'
+					,'Контакты' => array(
+						'Контакт1' => array(
+							'Тип' => 'ТелефонРабочий'
 							,'Значение'	=> $order['telephone']
 						)
 						,'Контакт2'	=> array(
-							 'Тип'		=> 'Почта'
+							 'Тип' => 'Почта'
 							,'Значение'	=> $order['email']
 						)
 					)
@@ -75,11 +75,11 @@ class ModelToolExchange1c extends Model {
 					$id = $this->get1CProductIdByProductId($product['product_id']);
 
 					$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter] = array(
-						 'Ид'			=> $id
-						,'Наименование'		=> $product['name']
-						,'ЦенаЗаЕдиницу'	=> $product['price']
-						,'Количество'		=> $product['quantity']
-						,'Сумма'		=> $product['total']
+						 'Ид'             => $id
+						,'Наименование'   => $product['name']
+						,'ЦенаЗаЕдиницу'  => $product['price']
+						,'Количество'     => $product['quantity']
+						,'Сумма'          => $product['total']
 					);
 
 					$product_counter++;
@@ -88,9 +88,9 @@ class ModelToolExchange1c extends Model {
 				$data = $order;
 
 				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
-					'order_status_id'	=> $params['new_status'],
-					'comment'		=> '',
-					'notify'		=> $params['notify']
+					'order_status_id' => $params['new_status'],
+					'comment'         => '',
+					'notify'          => $params['notify']
 				));
 
 				$document_counter++;
@@ -442,19 +442,19 @@ class ModelToolExchange1c extends Model {
 									}
 									else {
 										$data_manufacturer = array(
-											'name' 			=> $manufacturer_name,
-											'keyword'		=> '',
-											'sort_order'		=> 0,
-											'manufacturer_store'	=> array(0 => 0)
+											'name' => $manufacturer_name,
+											'keyword' => '',
+											'sort_order' => 0,
+											'manufacturer_store' => array(0 => 0)
 										);
 
 										$data_manufacturer['manufacturer_description'] = array(
 											$language_id => array(
-												'meta_keyword'		=> '',
-												'meta_description'	=> '',
-												'description'		=> '',
-												'seo_title'		=> '',
-												'seo_h1'		=> ''
+												'meta_keyword' => '',
+												'meta_description' => '',
+												'description' => '',
+												'seo_title' => '',
+												'seo_h1' => ''
 											),
 										);
 
@@ -530,24 +530,24 @@ class ModelToolExchange1c extends Model {
 	private function initCategory($category, $parent, $data = array(), $language_id) {
 
 		$result = array(
-			 'status' 		=> isset($data['status']) ? $data['status'] : 1
-			,'top'			=> isset($data['top']) ? $data['top'] : 1
-			,'parent_id'		=> $parent
-			,'category_store'	=> isset($data['category_store']) ? $data['category_store'] : array(0)
-			,'keyword'		=> isset($data['keyword']) ? $data['keyword'] : ''
-			,'image'		=> (isset($category->Картинка)) ? (string)$category->Картинка : ((isset($data['image'])) ? $data['image'] : '')
-			,'sort_order'		=> (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
-			,'column'		=> 1
+			 'status'         => isset($data['status']) ? $data['status'] : 1
+			,'top'            => isset($data['top']) ? $data['top'] : 1
+			,'parent_id'      => $parent
+			,'category_store' => isset($data['category_store']) ? $data['category_store'] : array(0)
+			,'keyword'        => isset($data['keyword']) ? $data['keyword'] : ''
+			,'image'          => (isset($category->Картинка)) ? (string)$category->Картинка : ((isset($data['image'])) ? $data['image'] : '')
+			,'sort_order'     => (isset($category->Сортировка)) ? (int)$category->Сортировка : ((isset($data['sort_order'])) ? $data['sort_order'] : 0)
+			,'column'         => 1
 		);
 
 		$result['category_description'] = array(
 			$language_id => array(
-				 'name'			=> (string)$category->Наименование
-				,'meta_keyword'		=> (isset($data['category_description'][$language_id]['meta_keyword'])) ? $data['category_description'][$language_id]['meta_keyword'] : ''
+				 'name'             => (string)$category->Наименование
+				,'meta_keyword'     => (isset($data['category_description'][$language_id]['meta_keyword'])) ? $data['category_description'][$language_id]['meta_keyword'] : ''
 				,'meta_description'	=> (isset($data['category_description'][$language_id]['meta_description'])) ? $data['category_description'][$language_id]['meta_description'] : ''
-				,'description'		=> (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][$language_id]['description'])) ? $data['category_description'][$language_id]['description'] : '')
-				,'seo_title'		=> (isset($data['category_description'][$language_id]['seo_title'])) ? $data['category_description'][$language_id]['seo_title'] : ''
-				,'seo_h1'		=> (isset($data['category_description'][$language_id]['seo_h1'])) ? $data['category_description'][$language_id]['seo_h1'] : ''
+				,'description'		  => (isset($category->Описание)) ? (string)$category->Описание : ((isset($data['category_description'][$language_id]['description'])) ? $data['category_description'][$language_id]['description'] : '')
+				,'seo_title'        => (isset($data['category_description'][$language_id]['seo_title'])) ? $data['category_description'][$language_id]['seo_title'] : ''
+				,'seo_h1'           => (isset($data['category_description'][$language_id]['seo_h1'])) ? $data['category_description'][$language_id]['seo_h1'] : ''
 			),
 		);
 
@@ -657,7 +657,7 @@ class ModelToolExchange1c extends Model {
 			}
 
 			$this->PROPERTIES[$id] = array(
-				'id'	 => $attribute_id,
+				'id'     => $attribute_id,
 				'name'   => $name,
 				'values' => $values
 			);
@@ -1022,66 +1022,66 @@ class ModelToolExchange1c extends Model {
 		if ($params['product']) {
 			if ($enable_log)
 				$this->log->write("Очистка таблиц товаров: ");
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_attribute`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_attribute`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_attribute`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_attribute`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_discount`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_discount`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_discount`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_image`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_discount`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_image`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_image`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_image`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_option`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_option_value`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_option`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_option_value`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_option_value`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_related`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_option_value`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_related`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_related`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_reward`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_related`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_reward`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_reward`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_special`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_reward`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_special`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_1c`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_1c`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_category`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_category`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_download`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_download`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_download`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_layout`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_download`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_layout`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_layout`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_store`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_layout`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_store`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_store`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_value_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_store`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_value_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_value_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_value_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_value`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_value`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_value`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`order_option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_value`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'order_option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`order_option`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'order_option`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option`');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
 			if ($enable_log)
 				$this->log->write('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
@@ -1101,6 +1101,9 @@ class ModelToolExchange1c extends Model {
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_store');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
+			if ($enable_log)
+				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_path');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_path');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_1c');
