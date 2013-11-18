@@ -1022,66 +1022,66 @@ class ModelToolExchange1c extends Model {
 		if ($params['product']) {
 			if ($enable_log)
 				$this->log->write("Очистка таблиц товаров: ");
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_attribute`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_attribute`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_attribute`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_attribute`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_discount`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_discount`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_discount`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_image`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_discount`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_image`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_image`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_image`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_option`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_option_value`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_option`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_option_value`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_option_value`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_related`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_option_value`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_related`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_related`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_reward`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_related`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_reward`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_reward`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_special`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_reward`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_special`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_1c`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_1c`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_category`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_category`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_download`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_download`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_download`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_layout`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_download`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_layout`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_layout`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_store`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_layout`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_store`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`product_to_store`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_value_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_store`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_value_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_value_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_description`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_value_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_description`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_description`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option_value`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_description`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option_value`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option_value`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`order_option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option_value`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'order_option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`order_option`');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . '`option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'order_option`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'option`');
 			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . '`option`');
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'option`');
 			$this->db->query('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
 			if ($enable_log)
 				$this->log->write('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%product_id=%"');
@@ -1101,6 +1101,9 @@ class ModelToolExchange1c extends Model {
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_store');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
+			if ($enable_log)
+				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_path');
+			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_path');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_layout');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'category_to_1c');
