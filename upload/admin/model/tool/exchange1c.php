@@ -881,7 +881,7 @@ class ModelToolExchange1c extends Model {
 				$price = (float) $product_old['price'] - (float) $product['product_option'][0]['product_option_value'][0]['price'];
 
 				$product['product_option'][0]['product_option_value'][0]['price_prefix'] = ($price > 0) ? '-':'+';
-				$product['product_option'][0]['product_option_value'][0]['price'] = $price;
+				$product['product_option'][0]['product_option_value'][0]['price'] = abs($price);
 
 				$product['price'] = (float) $product_old['price'];
 
