@@ -230,70 +230,54 @@ class ModelToolExchange1c extends Model {
 					$lang_id = (int)$this->config->get('config_language_id');
 					$count = count($offer->ХарактеристикиТовара->ХарактеристикаТовара);
 
-					$i = 0;
+					foreach ($offer->ХарактеристикиТовара->ХарактеристикаТовара as $i => $opt) {
+						$name_1c = (string)$opt->Наименование;
+						$value_1c = (string)$opt->Значение;
 
-					if ($count == 1) {
-						$name_1c = (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара[0]->Наименование;
-						$value_1c = (string)$offer->ХарактеристикиТовара->ХарактеристикаТовара[0]->Значение;
-					}
-					else{
-						$names_1c = array();
-						$values_1c = array();
+						if (!empty($name_1c) && !empty($value_1c)) {
+							if ($enable_log) $this->log->write(" Найдены характеристики: " . $name_1c . " -> " . $value_1c);
 
-						foreach ($offer->ХарактеристикиТовара->ХарактеристикаТовара as $i => $opt) {
-							$names_1c[] = (string)$opt->Наименование;
-							$values_1c[] = (string)$opt->Значение;
+							$query = $this->db->query("SELECT option_id FROM ". DB_PREFIX ."option_description WHERE name='". $name_1c ."'");
+							
+							if ($query->num_rows > 0) {
+								$option_id = $query->row['option_id'];
+							}
+							else {
+								//Нету такой опции
+								$option_id = $this->setOption($name_1c);
+							}
+					
+							//@TODO: Изменение на API OpenCart
+							//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+
+							$option_value_id = $this->setOptionValue($option_id,$value_1c);
+
+							//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+
+							$product_option_value_data[] = array(
+								'option_value_id'         => (int) $option_value_id,
+								'product_option_value_id' => '',
+								'quantity'                => isset($data['quantity']) ? (int)$data['quantity'] : 0,
+								'subtract'                => 0,
+								'price'                   => isset($data['price']) ? (int)$data['price'] : 0,
+								'price_prefix'            => '+',
+								'points'                  => 0,
+								'points_prefix'           => '+',
+								'weight'                  => 0,
+								'weight_prefix'           => '+'
+							);
+
+							$product_option_data[] = array(
+								'product_option_id'    => '',
+								'name'                 => (string)$name_1c,
+								'option_id'            => (int) $option_id,
+								'type'                 => 'select',
+								'required'             => 1,
+								'product_option_value' => $product_option_value_data
+							);
+
+							$data['product_option'] = $product_option_data;
 						}
-
-						$name_1c = implode(', ', $names_1c);
-						$value_1c = implode(', ', $values_1c);
-					}
-
-					if (!empty($name_1c) && !empty($value_1c)){
-						if ($enable_log)
-							$this->log->write(" Найдены характеристики: " . $name_1c . " -> " . $value_1c);
-
-						$query = $this->db->query("SELECT option_id FROM ". DB_PREFIX ."option_description WHERE name='". $name_1c ."'");
-						if ($query->num_rows > 0) {
-							$option_id = $query->row['option_id'];
-						}
-						else {
-							//Нету такой опции
-							$option_id = $this->setOption($name_1c);
-						}
-//@TODO: Изменение на API OpenCart
-
-
-
-//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
-
-						$option_value_id = $this->setOptionValue($option_id,$value_1c);
-
-//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
-
-						$product_option_value_data[] = array(
-							'option_value_id'         => (int) $option_value_id,
-							'product_option_value_id' => '',
-							'quantity'                => isset($data['quantity']) ? (int)$data['quantity'] : 0,
-							'subtract'                => 0,
-							'price'                   => isset($data['price']) ? (int)$data['price'] : 0,
-							'price_prefix'            => '+',
-							'points'                  => 0,
-							'points_prefix'           => '+',
-							'weight'                  => 0,
-							'weight_prefix'           => '+'
-						);
-
-						$product_option_data[] = array(
-							'product_option_id'    => '',
-							'name'                 => (string)$name_1c,
-							'option_id'            => (int) $option_id,
-							'type'                 => 'select',
-							'required'             => 1,
-							'product_option_value' => $product_option_value_data
-						);
-
-						$data['product_option'] = $product_option_data;
 					}
 				}
 
