@@ -893,7 +893,7 @@ class ModelToolExchange1c extends Model {
 	 */
 	private function getProductBySKU($sku) {
 
-		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `sku` = '" . $sku . "'");
+		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `sku` = '" . $this->db->escape($sku) . "'");
 
         if ($query->num_rows) {
 			return $query->row['product_id'];
