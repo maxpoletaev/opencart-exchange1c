@@ -247,12 +247,17 @@ class ModelToolExchange1c extends Model {
 								$option_id = $this->setOption($name_1c);
 							}
 					
-							//@TODO: Изменение на API OpenCart
-							//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+							//@TODO: Изменение на API OpenCart - WTF???
 
-							$option_value_id = $this->setOptionValue($option_id,$value_1c);
+							$query = $this->db->query("SELECT option_value_id FROM ". DB_PREFIX ."option_value_description WHERE name='". $value_1c ."' AND option_id='". $option_id ."'");
 
-							//@TODO: Проверка существования OptionValue (полное соответствие) + Изменение на API OpenCart
+							if ($query->num_rows > 0) {
+								$option_value_id = $query->row['option_value_id'];
+							}
+							else {
+								//Добавляем значение опции, только если нет в базе
+								$option_value_id = $this->setOptionValue($option_id, $value_1c);
+							}
 
 							$product_option_value_data[] = array(
 								'option_value_id'         => (int) $option_value_id,
