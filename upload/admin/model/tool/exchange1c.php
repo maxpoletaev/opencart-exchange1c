@@ -237,27 +237,9 @@ class ModelToolExchange1c extends Model {
 						if (!empty($name_1c) && !empty($value_1c)) {
 							if ($enable_log) $this->log->write(" Найдены характеристики: " . $name_1c . " -> " . $value_1c);
 
-							$query = $this->db->query("SELECT option_id FROM ". DB_PREFIX ."option_description WHERE name='". $name_1c ."'");
-							
-							if ($query->num_rows > 0) {
-								$option_id = $query->row['option_id'];
-							}
-							else {
-								//Нету такой опции
-								$option_id = $this->setOption($name_1c);
-							}
+							$option_id = $this->setOption($name_1c);
 					
-							//@TODO: Изменение на API OpenCart - WTF???
-
-							$query = $this->db->query("SELECT option_value_id FROM ". DB_PREFIX ."option_value_description WHERE name='". $value_1c ."' AND option_id='". $option_id ."'");
-
-							if ($query->num_rows > 0) {
-								$option_value_id = $query->row['option_value_id'];
-							}
-							else {
-								//Добавляем значение опции, только если нет в базе
-								$option_value_id = $this->setOptionValue($option_id, $value_1c);
-							}
+							$option_value_id = $this->setOptionValue($option_id, $value_1c);
 
 							$product_option_value_data[] = array(
 								'option_value_id'         => (int) $option_value_id,
@@ -324,17 +306,35 @@ class ModelToolExchange1c extends Model {
 
 	private function setOption($name){
 		$lang_id = (int)$this->config->get('config_language_id');
-		$this->db->query("INSERT INTO `" . DB_PREFIX . "option` SET type = 'select', sort_order = '0'");
-		$option_id = $this->db->getLastId();
-		$this->db->query("INSERT INTO " . DB_PREFIX . "option_description SET option_id = '" . $option_id . "', language_id = '" . $lang_id . "', name = '" . $this->db->escape($name) . "'");
+
+		$query = $this->db->query("SELECT option_id FROM ". DB_PREFIX ."option_description WHERE name='". $this->db->escape($name) ."'");
+
+		if ($query->num_rows > 0) {
+			$option_id = $query->row['option_id'];
+		}
+        else {
+			//Нет такой опции
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "option` SET type = 'select', sort_order = '0'");
+			$option_id = $this->db->getLastId();
+			$this->db->query("INSERT INTO " . DB_PREFIX . "option_description SET option_id = '" . $option_id . "', language_id = '" . $lang_id . "', name = '" . $this->db->escape($name) . "'");
+		}
 		return $option_id;
 	}
 
-	private function setOptionValue($option_id,$value){
+	private function setOptionValue($option_id, $value) {
 		$lang_id = (int)$this->config->get('config_language_id');
-		$this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', image = '', sort_order = '0'");
-		$option_value_id = $this->db->getLastId();
-		$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '".$option_value_id."', language_id = '" . $lang_id . "', option_id = '" . $option_id . "', name = '" . $this->db->escape($value) . "'");
+
+		$query = $this->db->query("SELECT option_value_id FROM ". DB_PREFIX ."option_value_description WHERE name='". $this->db->escape($value) ."' AND option_id='". $option_id ."'");
+
+		if ($query->num_rows > 0) {
+			$option_value_id = $query->row['option_value_id'];
+		}
+		else {
+			//Добавляем значение опции, только если нет в базе
+			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', image = '', sort_order = '0'");
+			$option_value_id = $this->db->getLastId();
+			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '".$option_value_id."', language_id = '" . $lang_id . "', option_id = '" . $option_id . "', name = '" . $this->db->escape($value) . "'");
+		}
 		return $option_value_id;
 	}
 
