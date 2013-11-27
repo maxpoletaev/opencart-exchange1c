@@ -865,7 +865,7 @@ class ModelToolExchange1c extends Model {
 				$price = (float) $product_old['price'] - (float) $product['product_option'][0]['product_option_value'][0]['price'];
 
 				$product['product_option'][0]['product_option_value'][0]['price_prefix'] = ($price > 0) ? '-':'+';
-				$product['product_option'][0]['product_option_value'][0]['price'] = $price;
+				$product['product_option'][0]['product_option_value'][0]['price'] = abs($price);
 
 				$product['price'] = (float) $product_old['price'];
 
@@ -893,7 +893,7 @@ class ModelToolExchange1c extends Model {
 	 */
 	private function getProductBySKU($sku) {
 
-		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `sku` = '" . $sku . "'");
+		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `sku` = '" . $this->db->escape($sku) . "'");
 
         if ($query->num_rows) {
 			return $query->row['product_id'];
