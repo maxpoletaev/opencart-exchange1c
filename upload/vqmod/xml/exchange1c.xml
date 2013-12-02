@@ -45,5 +45,49 @@
 			<add><![CDATA[<li><a href="<?php echo $exchange1c; ?>">Opencart Exchange 1C</a></li>]]></add>
 		</operation>
 	</file>
-	
+
+	<file name="system/library/image.php">
+		<operation>
+			<search position="replace"><![CDATA[$this->image = $this->create($file);]]></search>
+			<add><![CDATA[$this->image = $this->create($file, 'auto');]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[private function create($image) {]]></search>
+			<add><![CDATA[private function create($image, $mime) {
+        if ($mime == 'auto')]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[public function watermark($file, $position = 'bottomright') {]]></search>
+			<add><![CDATA[public function watermark($file, $position = 'bottomright', $mime = 'auto') {]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$watermark = $this->create($file);]]></search>
+			<add><![CDATA[$watermark = $this->create($file, $mime);]]></add>
+		</operation>
+		<operation info="add 'center' for watermark">
+			<search position="before"><![CDATA[case 'bottomright':]]></search>
+			<add><![CDATA[
+			case 'center':
+				$watermark_pos_x = ($this->info['width'])/3;
+				$watermark_pos_y = ($this->info['height'])/3;
+				break;
+			]]></add>
+		</operation>
+		<operation info="imagecopy to imagecopyresized">
+			<search position="replace"><![CDATA[imagecopy($this->image, $watermark, $watermark_pos_x, $watermark_pos_y, 0, 0, 120, 40);]]></search>
+			<add><![CDATA[
+			$new_watermark_width = $this->info['width'];
+			$new_watermark_height = $this->info['height'];
+			if ($watermark_width > 0) {
+				$new_watermark_width = $this->info['width'];
+				$new_watermark_height = $watermark_height * $this->info['width'] / $watermark_width;
+			}
+			imagecopyresized ($this->image , $watermark, 0, $watermark_pos_y, 0, 0, $new_watermark_width, $new_watermark_height, $watermark_width, $watermark_height);
+			]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$merge = $this->create($file);]]></search>
+			<add><![CDATA[$merge = $this->create($file, 'auto');]]></add>
+		</operation>
+	</file>
 </modification>

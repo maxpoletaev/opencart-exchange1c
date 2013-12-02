@@ -170,6 +170,13 @@
                 <input type="checkbox" value="1" id="exchange1c_full_log" name="exchange1c_full_log" <?php echo ($exchange1c_full_log == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
+
+            <tr>
+              <td><label for="exchange1c_apply_watermark"><?php echo $entry_apply_watermark; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_apply_watermark" name="exchange1c_apply_watermark" <?php echo ($exchange1c_apply_watermark == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
           </table>
         </div>
 

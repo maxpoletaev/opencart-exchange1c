@@ -36,6 +36,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
+		$this->data['entry_apply_watermark'] = $this->language->get('entry_apply_watermark');
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -205,6 +206,13 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_full_log'] = $this->config->get('exchange1c_full_log');
+		}
+
+		if (isset($this->request->post['exchange1c_apply_watermark'])) {
+			$this->data['exchange1c_apply_watermark'] = $this->request->post['exchange1c_apply_watermark'];
+		}
+		else {
+			$this->data['exchange1c_apply_watermark'] = $this->config->get('exchange1c_apply_watermark');
 		}
 
 		if (isset($this->request->post['exchange1c_order_status'])) {
@@ -388,6 +396,7 @@ class ControllerModuleExchange1c extends Controller {
 			'manufacturer'	=> $this->config->get('exchange1c_flush_manufacturer'),
 			'attribute'		=> $this->config->get('exchange1c_flush_attribute'),
 			'full_log'		=> $this->config->get('exchange1c_full_log'),
+			'apply_watermark'	=> $this->config->get('exchange1c_apply_watermark'),
 			'quantity'		=> $this->config->get('exchange1c_flush_quantity')
 		));
 

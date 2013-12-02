@@ -142,6 +142,7 @@ class ModelToolExchange1c extends Model {
 		$price_types = array();
 		$data['price'] = 0;
 		$enable_log = $this->config->get('exchange1c_full_log');
+
 		$this->load->model('catalog/option');
 
 		if ($enable_log)
@@ -346,6 +347,7 @@ class ModelToolExchange1c extends Model {
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 
 		$enable_log = $this->config->get('exchange1c_full_log');
+		$apply_watermark = $this->config->get('exchange1c_apply_watermark');
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();
@@ -374,11 +376,11 @@ class ModelToolExchange1c extends Model {
 					$this->log->write("Найден товар:" . $data['name'] . " арт: " . $data['sku'] . "1C UUID: " . $data['1c_id']);
 
 				if ($product->Картинка) {
-					$data['image'] =(string)$product->Картинка[0];
+					$data['image'] = $apply_watermark ? $this->applyWatermark((string)$product->Картинка[0]) : (string)$product->Картинка[0];
 					unset($product->Картинка[0]);
 					foreach ($product->Картинка as $image) {
 					  $data['product_image'][] =array(
-							'image' => (string)$image,
+							'image' => $apply_watermark ? $this->applyWatermark((string)$image) : (string)$image,
 							'sort_order' => 0
 						);
 					}
@@ -953,6 +955,28 @@ class ModelToolExchange1c extends Model {
 		}
 	}
 
+	/**
+	 * Получает путь к картинке и накладывает водяные знаки
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	private function applyWatermark($filename) {
+		if (!empty($filename)) {
+			$info = pathinfo($filename);
+			$wmfile = DIR_IMAGE . 'watermark.png';
+			$extension = $info['extension'];
+			$minfo = getimagesize($wmfile);
+			$image = new Image(DIR_IMAGE . $filename);
+			$image->watermark($wmfile, 'center', $minfo['mime']);
+			$new_image = utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '_watermark.' . $extension;
+			$image->save(DIR_IMAGE . $new_image);
+			return $new_image;
+		}
+		else {
+			return 'no_image.jpg';
+		}
+	}
 
 	/**
 	 * Заполняет продуктами родительские категории
