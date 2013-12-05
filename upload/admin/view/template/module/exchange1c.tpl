@@ -175,6 +175,19 @@
               <td><label for="exchange1c_apply_watermark"><?php echo $entry_apply_watermark; ?></label></td>
               <td>
                 <input type="checkbox" value="1" id="exchange1c_apply_watermark" name="exchange1c_apply_watermark" <?php echo ($exchange1c_apply_watermark == 1)? 'checked' : ''; ?>>
+                <div class="image"><img src="<?php echo $thumb; ?>" alt="" id="thumb" />
+                  <input type="hidden" name="exchange1c_watermark" value="<?php echo $exchange1c_watermark; ?>" id="image" />
+                  <br /><a onclick="image_upload('image', 'thumb');">
+                    <?php echo $text_browse; ?>
+                  </a>
+                  &nbsp;&nbsp;|&nbsp;&nbsp;
+                  <a onclick="$('#thumb').attr('src', '<?php echo $no_image; ?>'); $('#image').attr('value', '');">
+                    <?php echo $text_clear; ?>
+                  </a>
+                </div>
+                <?php if ($error_image) { ?>
+                <span class="error"><?php echo $error_image; ?></span>
+                <?php } ?>
               </td>
             </tr>
           </table>
@@ -288,6 +301,33 @@ function addConfigPriceType() {
     $('#config_price_type_row' + price_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});
     price_row++;
 }
+//--></script>
+<script type="text/javascript"><!--
+function image_upload(field, thumb) {
+	$('#dialog').remove();
+
+	$('#content').prepend('<div id="dialog" style="padding: 3px 0px 0px 0px;"><iframe src="index.php?route=common/filemanager&token=<?php echo $token; ?>&field=' + encodeURIComponent(field) + '" style="padding:0; margin: 0; display: block; width: 100%; height: 100%;" frameborder="no" scrolling="auto"></iframe></div>');
+
+	$('#dialog').dialog({
+		title: '<?php echo $text_image_manager; ?>',
+		close: function (event, ui) {
+			if ($('#' + field).attr('value')) {
+				$.ajax({
+					url: 'index.php?route=common/filemanager/image&token=<?php echo $token; ?>&image=' + encodeURIComponent($('#' + field).val()),
+					dataType: 'text',
+					success: function(data) {
+						$('#' + thumb).replaceWith('<img src="' + data + '" alt="" id="' + thumb + '" />');
+					}
+				});
+			}
+		},
+		bgiframe: false,
+		width: 800,
+		height: 400,
+		resizable: false,
+		modal: false
+	});
+};
 //--></script>
 
 <?php echo $footer; ?>

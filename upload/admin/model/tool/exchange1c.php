@@ -964,14 +964,19 @@ class ModelToolExchange1c extends Model {
 	private function applyWatermark($filename) {
 		if (!empty($filename)) {
 			$info = pathinfo($filename);
-			$wmfile = DIR_IMAGE . 'watermark.png';
-			$extension = $info['extension'];
-			$minfo = getimagesize($wmfile);
-			$image = new Image(DIR_IMAGE . $filename);
-			$image->watermark($wmfile, 'center', $minfo['mime']);
-			$new_image = utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '_watermark.' . $extension;
-			$image->save(DIR_IMAGE . $new_image);
-			return $new_image;
+			$wmfile = DIR_IMAGE . $this->config->get('exchange1c_watermark');
+			if (is_file($wmfile)) {
+				$extension = $info['extension'];
+				$minfo = getimagesize($wmfile);
+				$image = new Image(DIR_IMAGE . $filename);
+				$image->watermark($wmfile, 'center', $minfo['mime']);
+				$new_image = utf8_substr($filename, 0, utf8_strrpos($filename, '.')) . '_watermark.' . $extension;
+				$image->save(DIR_IMAGE . $new_image);
+				return $new_image;
+			}
+			else {
+				return $filename;
+			}
 		}
 		else {
 			return 'no_image.jpg';
