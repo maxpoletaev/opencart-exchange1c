@@ -42,6 +42,7 @@ $_['entry_apply_watermark']	= 'Apply watermark';
 $_['text_image_manager'] = 'Image Manager';
 $_['text_browse']        = 'Browse Files';
 $_['text_clear']         = 'Clear Image';
+$_['entry_special_instead_discounts']		= 'Load prices to special instead of discounts';
 
 $_['entry_order_status']	= 'Uploaded orders status:';
 $_['entry_order_notify']	= 'Notify users of status change:';

@@ -44,8 +44,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['text_clear'] = $this->language->get('text_clear');
 		$this->data['entry_name'] = $this->language->get('entry_name');
 		$this->data['entry_image'] = $this->language->get('entry_image');
-
-
+		$this->data['entry_special_instead_discounts'] = $this->language->get('entry_special_instead_discounts');
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -242,6 +241,12 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+
+		if (isset($this->request->post['exchange1c_special_instead_discounts'])) {
+			$this->data['exchange1c_special_instead_discounts'] = $this->request->post['exchange1c_special_instead_discounts'];
+		}
+		else {
+			$this->data['exchange1c_special_instead_discounts'] = $this->config->get('exchange1c_special_instead_discounts');
 		}
 
 		if (isset($this->request->post['exchange1c_order_status'])) {
@@ -551,9 +556,12 @@ class ControllerModuleExchange1c extends Controller {
 			
 		}
 		else if (strpos($filename, 'offers') !== false) {
-			$exchange1c_price_type = $this->config->get('exchange1c_price_type');
-			$this->model_tool_exchange1c->parseOffers($filename, $exchange1c_price_type, $language_id);
-			
+			$offers_config = array(
+				'price_type' => $this->config->get('exchange1c_price_type'),
+				'special_instead_discounts' =>  $this->config->get('exchange1c_special_instead_discounts')
+			);
+			$this->model_tool_exchange1c->parseOffers($filename, $offers_config, $language_id);
+
 			if (!$manual) {
 				echo "success\n";
 			}

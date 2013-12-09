@@ -134,8 +134,10 @@ class ModelToolExchange1c extends Model {
 	 *
 	 * @param    string    наименование типа цены
 	 */
-	public function parseOffers($filename, $config_price_type, $language_id) {
+	public function parseOffers($filename, $config, $language_id) {
 
+		$config_price_type = $config['price_type'];
+		$config_special_instead_discounts = $config['special_instead_discounts'];
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 		$xml = simplexml_load_file($importFile);
 		$data = array();
@@ -148,6 +150,9 @@ class ModelToolExchange1c extends Model {
 		if ($enable_log)
 			$this->log->write("Начат разбор файла: " . $filename);
 
+		if ($enable_log)
+			$this->log->write("Режим акции вместо скидок: " . $config_special_instead_discounts);
+
 		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
 			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
 				$price_types[(string)$type->Ид] = (string)$type->Наименование;
@@ -158,18 +163,31 @@ class ModelToolExchange1c extends Model {
 			$config_price_type_main = array_shift($config_price_type);
 		}
 
-		// Инициализация массива скидок для оптимизации алгоритма
-		if (!empty($config_price_type) && count($config_price_type) > 0) {
-			$discount_price_type = array();
-			foreach ($config_price_type as $obj) {
-				$discount_price_type[$obj['keyword']] = array(
-					'customer_group_id' => $obj['customer_group_id'],
-					'quantity' => $obj['quantity'],
-					'priority' => $obj['priority']
-				); 
+		if(!empty($config_special_instead_discounts)){
+			// Инициализация массива акций для оптимизации алгоритма
+			if (!empty($config_price_type) && count($config_price_type) > 0) {
+				$special_price_type = array();
+				foreach ($config_price_type as $obj) {
+					$special_price_type[$obj['keyword']] = array(
+						'customer_group_id' => $obj['customer_group_id'],
+						'priority' => $obj['priority']
+					);
+				}
 			}
-		} 
-
+		}
+		else {
+			// Инициализация массива скидок для оптимизации алгоритма
+			if (!empty($config_price_type) && count($config_price_type) > 0) {
+				$discount_price_type = array();
+				foreach ($config_price_type as $obj) {
+					$discount_price_type[$obj['keyword']] = array(
+						'customer_group_id' => $obj['customer_group_id'],
+						'quantity' => $obj['quantity'],
+						'priority' => $obj['priority']
+					);
+				}
+			}
+		}
 		if ($xml->ПакетПредложений->Предложения->Предложение) {
 			foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
 
@@ -201,21 +219,42 @@ class ModelToolExchange1c extends Model {
 						}
 					}
 
-					// Вторая цена и тд - $discount_price_type
-					if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
-						foreach ($offer->Цены->Цена as $price) {
-							$key = $price_types[(string)$price->ИдТипаЦены];
-							if (isset($discount_price_type[$key])) {
-								$value = array(
-									'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
-									'quantity'      => $discount_price_type[$key]['quantity'],
-									'priority'      => $discount_price_type[$key]['priority'],
-									'price'         => (float)$price->ЦенаЗаЕдиницу,
-									'date_start'    => '0000-00-00',
-									'date_end'      => '0000-00-00'
-								);
-								$data['product_discount'][] = $value;
-								unset($value);
+					if(!empty($config_special_instead_discounts)){
+						// Вторая цена и тд - $discount_price_type
+						if (!empty($special_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
+							foreach ($offer->Цены->Цена as $price) {
+								$key = $price_types[(string)$price->ИдТипаЦены];
+								if (isset($special_price_type[$key])) {
+									$value = array(
+										'customer_group_id' => $special_price_type[$key]['customer_group_id'],
+										'priority'  => $special_price_type[$key]['priority'],
+										'price'     => (float)$price->ЦенаЗаЕдиницу,
+										'date_start'=> '0000-00-00',
+										'date_end'  => '0000-00-00'
+									);
+									$data['product_special'][] = $value;
+									unset($value);
+								}
+							}
+						}
+					}
+					else {
+						// Вторая цена и тд - $discount_price_type
+						if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
+							foreach ($offer->Цены->Цена as $price) {
+								$key = $price_types[(string)$price->ИдТипаЦены];
+								if (isset($discount_price_type[$key])) {
+									$value = array(
+										'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
+										'quantity'      => $discount_price_type[$key]['quantity'],
+										'priority'      => $discount_price_type[$key]['priority'],
+										'price'         => (float)$price->ЦенаЗаЕдиницу,
+										'date_start'    => '0000-00-00',
+										'date_end'      => '0000-00-00'
+									);
+									$data['product_discount'][] = $value;
+									unset($value);
+								}
 							}
 						}
 					}

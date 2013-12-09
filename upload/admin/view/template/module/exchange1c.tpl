@@ -170,7 +170,6 @@
                 <input type="checkbox" value="1" id="exchange1c_full_log" name="exchange1c_full_log" <?php echo ($exchange1c_full_log == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
-
             <tr>
               <td><label for="exchange1c_apply_watermark"><?php echo $entry_apply_watermark; ?></label></td>
               <td>
@@ -188,6 +187,12 @@
                 <?php if ($error_image) { ?>
                 <span class="error"><?php echo $error_image; ?></span>
                 <?php } ?>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="exchange1c_special_instead_discounts"><?php echo $entry_special_instead_discounts; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_special_instead_discounts" name="exchange1c_special_instead_discounts" <?php echo ($exchange1c_special_instead_discounts == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
           </table>

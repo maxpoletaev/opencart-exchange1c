@@ -42,6 +42,7 @@ $_['entry_apply_watermark']	= 'Накладывать водяные знаки 
 $_['text_image_manager'] = 'Менеджер изображений';
 $_['text_browse']        = 'Обзор';
 $_['text_clear']         = 'Очистить';
+$_['entry_special_instead_discounts']		= 'Загружать цены в качестве "aкции" (вместо скидок)';
 
 $_['entry_order_status'] 	= 'Статус выгруженых заказов:';
 $_['entry_order_notify']	= 'Уведомлять пользователей о смене статуса:';
