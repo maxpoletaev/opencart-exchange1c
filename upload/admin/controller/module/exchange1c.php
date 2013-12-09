@@ -5,6 +5,7 @@ class ControllerModuleExchange1c extends Controller {
 	public function index() {
 
 		$this->load->language('module/exchange1c');
+		$this->load->model('tool/image');
 
 		//$this->document->title = $this->language->get('heading_title');
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -17,7 +18,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 1.5.0';
+		$this->data['version'] = 'Version 1.5.1';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
@@ -36,6 +37,15 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
+		$this->data['entry_apply_watermark'] = $this->language->get('entry_apply_watermark');
+		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
+		$this->data['text_image_manager'] = $this->language->get('text_image_manager');
+		$this->data['text_browse'] = $this->language->get('text_browse');
+		$this->data['text_clear'] = $this->language->get('text_clear');
+		$this->data['entry_name'] = $this->language->get('entry_name');
+		$this->data['entry_image'] = $this->language->get('entry_image');
+
+
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
 		$this->data['text_enabled'] = $this->language->get('text_enabled');
@@ -64,6 +74,12 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['error_warning'] = '';
+		}
+
+ 		if (isset($this->error['image'])) {
+			$this->data['error_image'] = $this->error['image'];
+		} else {
+			$this->data['error_image'] = '';
 		}
 
 		if (isset($this->error['exchange1c_username'])) {
@@ -205,6 +221,27 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_full_log'] = $this->config->get('exchange1c_full_log');
+		}
+
+		if (isset($this->request->post['exchange1c_apply_watermark'])) {
+			$this->data['exchange1c_apply_watermark'] = $this->request->post['exchange1c_apply_watermark'];
+		}
+		else {
+			$this->data['exchange1c_apply_watermark'] = $this->config->get('exchange1c_apply_watermark');
+		}
+
+		if (isset($this->request->post['exchange1c_watermark'])) {
+			$this->data['exchange1c_watermark'] = $this->request->post['exchange1c_watermark'];
+		}
+		else {
+			$this->data['exchange1c_watermark'] = $this->config->get('exchange1c_watermark');
+		}
+
+		if (isset($this->data['exchange1c_watermark'])) {
+			$this->data['thumb'] = $this->model_tool_image->resize($this->data['exchange1c_watermark'], 100, 100);
+		}
+		else {
+			$this->data['thumb'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
 		}
 
 		if (isset($this->request->post['exchange1c_order_status'])) {
@@ -388,6 +425,7 @@ class ControllerModuleExchange1c extends Controller {
 			'manufacturer'	=> $this->config->get('exchange1c_flush_manufacturer'),
 			'attribute'		=> $this->config->get('exchange1c_flush_attribute'),
 			'full_log'		=> $this->config->get('exchange1c_full_log'),
+			'apply_watermark'	=> $this->config->get('exchange1c_apply_watermark'),
 			'quantity'		=> $this->config->get('exchange1c_flush_quantity')
 		));
 
