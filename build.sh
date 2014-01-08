@@ -7,6 +7,7 @@ BUILD_PATH="./upload"
 
 FILE_LIST=(
 	"admin/language/russian/module/exchange1c.php"
+	"admin/language/english/module/exchange1c.php"
 	"admin/view/template/module/exchange1c.tpl"
 	"admin/controller/module/exchange1c.php"
 	"admin/model/module/exchange1c.php"
