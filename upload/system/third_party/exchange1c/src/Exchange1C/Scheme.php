@@ -6,58 +6,72 @@ use SimpleXMLElement;
 class Scheme {
 
 	/**
-	 * Load JSON scheme file.
-	 *
-	 * @param string $chemeName
-	 * @param SimpleXMLElement $newData
-	 * @param array [$oldData]
-	 * @return array
+	 * @var StdClass
 	 */
-	public static function process($schemeName, $newData, $oldData = array())
+	protected $scheme;
+
+	/**
+	 * @param string $schemeName
+	 */
+	public function __construct($schemeName)
 	{
-		$result = array();
-		
 		$schemePath = E1C_DIR."/schemes/{$schemeName}.json";
 
 		if (file_exists($schemePath))
 		{
-			$scheme = json_decode(file_get_contents($schemePath));
+			$this->scheme = json_decode(file_get_contents($schemePath));
+		}
+		else
+		{
+			Log::error("Scheme file not found");
+		}
+	}
 
-			if ($newData instanceof SimpleXMLElement)
-			{
-				self::prepareNewData($scheme, $newData);
-			}
+	/**
+	 * Load JSON scheme file.
+	 *
+	 * @param object $newData
+	 * @param array [$oldData]
+	 * @return array
+	 */
+	public function process($newData, $oldData = array())
+	{
+		$result = array();
 
-			foreach ($scheme as $schemeKey => $schemeData)
+		if ($newData instanceof SimpleXMLElement)
+		{
+			$newData = $this->prepareNewData($newData);
+		}
+
+		foreach ($this->scheme as $schemeKey => $schemeData)
+		{
+			if (isset($newData->$schemeKey))
 			{
-				if (isset($newData->$schemeKey))
+				if ($schemeData->overwrite || empty($oldData[$schemeKey]))
 				{
-					if ($schemeData->overwrite || empty($oldData[$schemeKey]))
+					switch($schemeData->type)
 					{
-						switch($schemeData->type)
-						{
-							case 'string': $result[$schemeKey] = (string)$newData->$schemeKey; break;
-							case 'int':    $result[$schemeKey] = (int)$newData->$schemeKey;    break;
-							case 'float':  $result[$schemeKey] = (float)$newData->$schemeKey;  break;
-							case 'array':  $result[$schemeKey] = (array)$newData->$schemeKey;  break;
-							case 'bool':   $result[$schemeKey] = (bool)$newData->$schemeKey;   break;
-						}
-					}
-					else
-					{
-						$result[$schemeKey] = $oldData[$schemeKey];
+						case 'string': $result[$schemeKey] = (string)$newData->$schemeKey; break;
+						case 'int':    $result[$schemeKey] = (int)$newData->$schemeKey;    break;
+						case 'float':  $result[$schemeKey] = (float)$newData->$schemeKey;  break;
+						case 'array':  $result[$schemeKey] = (array)$newData->$schemeKey;  break;
+						case 'bool':   $result[$schemeKey] = (bool)$newData->$schemeKey;   break;
 					}
 				}
 				else
 				{
-					if (isset($oldData[$schemeKey]))
-					{
-						$result[$schemeKey] = $oldData[$schemeKey];
-					}
-					else
-					{
-						$result[$schemeKey] = $schemeData->default;
-					}
+					$result[$schemeKey] = $oldData[$schemeKey];
+				}
+			}
+			else
+			{
+				if (isset($oldData[$schemeKey]))
+				{
+					$result[$schemeKey] = $oldData[$schemeKey];
+				}
+				else
+				{
+					$result[$schemeKey] = $schemeData->default;
 				}
 			}
 		}
@@ -69,15 +83,14 @@ class Scheme {
 	/**
 	 * Preparation scheme for parsing. 
 	 *
-	 * @param array $scheme
-	 * @param SimpleXMLElement &$newData
+	 * @param SimpleXMLElement $newData
 	 * @return void
 	 */
-	private static function prepareNewData($scheme, &$newData)
+	private function prepareNewData($newData)
 	{
 		$result = new StdClass;
 
-		foreach ($scheme as $schemeKey => $schemeData)
+		foreach ($this->scheme as $schemeKey => $schemeData)
 		{
 			if (isset($schemeData->field))
 			{
@@ -90,7 +103,7 @@ class Scheme {
 			}
 		}
 
-		$newData = $result;
+		return $result;
 	}
 
 }

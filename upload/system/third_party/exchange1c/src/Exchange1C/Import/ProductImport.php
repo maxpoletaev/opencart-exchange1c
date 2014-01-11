@@ -241,20 +241,23 @@ class ProductImport extends BaseImport {
 	 */
 	private function getProductNewData($xmlProduct, $oldData = array())
 	{
-		$newData = Scheme::process('product', $xmlProduct, $oldData);
+		$dataScheme = new Scheme('product');
+		$descrScheme = new Scheme('product_description');
+
+		$newData = $dataScheme->process($xmlProduct, $oldData);
 
 		if (empty($oldData))
 		{
 			foreach ($this->languageIds as $languageId)
 			{
-				$newData['product_description'][$languageId] = Scheme::process('product_description', $xmlProduct);
+				$newData['product_description'][$languageId] = $descrScheme->process($xmlProduct);
 			}
 		}
 		else
 		{
 			foreach ($this->languageIds as $languageId)
 			{
-				$newData['product_description'][$languageId] = Scheme::process('product_description', $xmlProduct, $oldData['product_description'][$languageId]);
+				$newData['product_description'][$languageId] = $descrScheme->processs($xmlProduct, $oldData['product_description'][$languageId]);
 			}
 		}
 

@@ -187,20 +187,23 @@ class CategoryImport extends BaseImport {
 	 */
 	private function getCategoryNewData($xmlCategory, $oldData = array())
 	{
-		$newData = Scheme::process('category', $xmlCategory, $oldData);
+		$dataScheme = new Scheme('category');
+		$descrScheme = new Scheme('category_description');
+
+		$newData = $dataScheme->process($xmlCategory, $oldData);
 
 		if (empty($oldData))
 		{
 			foreach ($this->languageIds as $languageId)
 			{
-				$newData['category_description'][$languageId] = Scheme::process('category_description', $xmlCategory);
+				$newData['category_description'][$languageId] = $descrScheme->process($xmlCategory);
 			}
 		}
 		else
 		{
 			foreach ($this->languageIds as $languageId)
 			{
-				$newData['category_description'][$languageId] = Scheme::process('category_description', $xmlCategory, $oldData['category_description'][$languageId]);
+				$newData['category_description'][$languageId] = $descrScheme->process($xmlCategory, $oldData['category_description'][$languageId]);
 			}
 		}
 
