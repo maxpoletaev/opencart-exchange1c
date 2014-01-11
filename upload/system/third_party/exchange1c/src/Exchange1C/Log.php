@@ -3,7 +3,7 @@
 class Log {
 
 	/**
-	 * Write log.
+	 * Write message to file.
 	 *
 	 * @param string $message
 	 * @param string $type
@@ -23,7 +23,6 @@ class Log {
 		fclose($handle);
 	}
 
-
 	/**
 	 * Write debug message.
 	 *
@@ -40,7 +39,6 @@ class Log {
 		$debugMessage = "{$message} ({$class}::{$method})";
 		static::write($debugMessage, 'debug');
 	}
-
 
 	/**
 	 * Write error message.

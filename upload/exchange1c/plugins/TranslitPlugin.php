@@ -12,16 +12,17 @@ class TranslitPlugin extends Plugin {
 
 	/**
 	 * Таблица транслитерации.
+	 *
 	 * @var array
 	 */
 	private $table = array();
 
 	/**
 	 * Идентификатор языка по умолчанию.
+	 *
 	 * @var int
 	 */
 	private $languageId;
-
 
 	/**
 	 * Инициализация плагина.
@@ -37,11 +38,10 @@ class TranslitPlugin extends Plugin {
 		$this->addEventListener('beforeAddProduct', 'translitProduct');
 	}
 
-
 	/**
 	 * Транслитерация имени категории.
-	 * @event beforeAddCategory
 	 *
+	 * @event beforeAddCategory
 	 * @param string $category1cId
 	 * @param array &$categoryData
 	 * @return void
@@ -56,18 +56,17 @@ class TranslitPlugin extends Plugin {
 				$this->translit($categoryName)
 			);
 
-			if (!$this->hasDuplicate($keyword))
+			if ( ! $this->hasDuplicate($keyword))
 			{
 				$categoryData['keyword'] = $keyword;
 			}
 		}
 	}
 
-
 	/**
 	 * Транслитерация имени товара.
-	 * @event beforeAddProduct
 	 *
+	 * @event beforeAddProduct
 	 * @param string $product1cId
 	 * @param array &$productData
 	 * @return void
@@ -82,13 +81,12 @@ class TranslitPlugin extends Plugin {
 				$this->translit($productName)
 			);
 			
-			if (!$this->hasDuplicate($keyword))
+			if ( ! $this->hasDuplicate($keyword))
 			{
 				$productData['keyword'] = $keyword;
 			}
 		}
 	}
-
 
 	/**
 	 * Транслитерация строки.
@@ -100,14 +98,13 @@ class TranslitPlugin extends Plugin {
 	{
 		$output = $string;
 
-		if (is_array($this->table) && !empty($this->table))
+		if (is_array($this->table) && ! empty($this->table))
 		{
 			$output = strtr($string, $this->table);
 		}
 
 		return $output;
 	}
-
 
 	/**
 	 * Проверка дубликатов URL.
@@ -125,7 +122,6 @@ class TranslitPlugin extends Plugin {
 
 		return false;
 	}
-
 
 	/**
 	 * Получение таблицы транслитерации.
@@ -172,7 +168,6 @@ class TranslitPlugin extends Plugin {
 			'ь'=>'','э'=>'e','ю'=>'yu','я'=>'ya'
 		);
 	}
-
 
 	/**
 	 * Очистка строки от ненужных символов.

@@ -20,7 +20,6 @@ class Auth {
 		return false;
 	}
 
-
 	/**
 	 * Check authentication.
 	 *

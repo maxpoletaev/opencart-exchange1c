@@ -9,14 +9,12 @@ abstract class Plugin {
 	 */
 	public $events = array();
 
-
 	/**
 	 * Active or non active.
 	 *
 	 * @var bool
 	 */
 	private $active = true;
-
 
 	/**
 	 * OpenCart DB instance.
@@ -25,13 +23,12 @@ abstract class Plugin {
 	 */
 	protected $db;
 
-
 	/**
 	 * OpenCart Config instance.
+	 *
 	 * @var Config
 	 */
 	protected $config;
-
 
 	/**
 	 * Plugin constructor.
@@ -45,7 +42,6 @@ abstract class Plugin {
 		$this->config = $registry->get('config');
 	}
 
-
 	/**
 	 * Add event to plugnin event map.
 	 *
@@ -56,10 +52,9 @@ abstract class Plugin {
 	{
 		if ($this->active)
 		{
-			$this->events[$event] = $funcName? $funcName : $event;
+			$this->events[$event] = ($funcName)? $funcName : $event;
 		}
 	}
-
 
 	/**
 	 * Disable plugin.
@@ -71,11 +66,11 @@ abstract class Plugin {
 		$this->active = false;
 	}
 
-
 	/**
 	 * Init plugin.
 	 *
 	 * @return void
 	 */
 	abstract function init();
+
 }

@@ -10,7 +10,7 @@ class Protocol {
 	 *
 	 * @return void
 	 */
-	public function run()
+	public function watch()
 	{
 		if (Request::get('mode') && Request::get('type'))
 		{
@@ -21,11 +21,10 @@ class Protocol {
 			
 			if (is_callable(array($this, $funcName)))
 			{
-				$this->$funcName();
+				$this->{$funcName}();
 			}
 		}
 	}
-
 
 	/**
 	 * Authentication.
@@ -42,22 +41,21 @@ class Protocol {
 			Request::get('password')
 		);
 
-		Log::debug("Auth attempt of {$username}.");
+		Log::debug("Auth attempt of {$username}");
 
 		if (Auth::attempt($username, $password))
 		{
 			$token = OpenCart::session()->data['token'];
 
-			Log::debug("Authentication succeeded.");
+			Log::debug("Authentication succeeded");
 			echo "success\n", "key\n", $token;
 		}
 		else
 		{
-			Log::error("Authentication failed.");
-			die("failure\n" . "Authentication failed.");
+			Log::error("Authentication failed");
+			die("failure\n" . "Authentication failed");
 		}
 	}
-
 
 	/**
 	 * Init catalog.
@@ -75,11 +73,10 @@ class Protocol {
 		}
 		else
 		{
-			Log::error("Authentication failed.");
-			die("failure\n" . "Authentication failed.");
+			Log::error("Authentication failed");
+			die("failure\n" . "Authentication failed");
 		}
 	}
-
 
 	/**
 	 * Upload file.
@@ -106,11 +103,10 @@ class Protocol {
 		}
 		else
 		{
-			Log::error("Authentication failed.");
-			die("failure\n" . "Authentication failed.");
+			Log::error("Authentication failed");
+			die("failure\n" . "Authentication failed");
 		}
 	}
-
 
 	/**
 	 * Run import.
@@ -131,17 +127,16 @@ class Protocol {
 
 				unlink($filePath);
 
-				Log::debug("Import completed.");
+				Log::debug("Import completed");
 				print "success";
 			}	
 		}
 		else
 		{
-			Log::error("Authentication failed.");
-			die("failure\n" . "Authentication failed.");
+			Log::error("Authentication failed");
+			die("failure\n" . "Authentication failed");
 		}
 	}
-
 
 	/**
 	 * Helper for categories parser.
@@ -155,14 +150,13 @@ class Protocol {
 		switch(File::type($filePath))
 		{
 			case 'import.xml':
-				Log::debug("Import categories from import.xml.");
+				Log::debug("Import categories from import.xml");
 				$categoryImport->parseImport($filePath);
 			break;
 		}
 
 		unset($categoryImport);
 	}
-
 
 	/**
 	 * Helper for product parser.
@@ -176,16 +170,17 @@ class Protocol {
 		switch (File::type($filePath))
 		{
 			case 'import.xml':
-				Log::debug("Import products from import.xml.");
+				Log::debug("Import products from import.xml");
 				$productImport->parseImport($filePath);
 			break;
 
 			case 'offers.xml':
-				Log::debug("Import products form offers.xml.");
+				Log::debug("Import products form offers.xml");
 				$productImport->parseOffers($filePath);
 			break;
 		}
 
 		unset($productImport);
 	}
+
 }

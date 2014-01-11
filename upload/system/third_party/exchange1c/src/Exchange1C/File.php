@@ -5,18 +5,6 @@ use Exception;
 class File {
 
 	/**
-	 * Uploading file.
-	 *
-	 * @param string $filename
-	 * @param string $savePath
-	 */
-	public static function upload($filename, $savePath)
-	{
-
-	}
-
-
-	/**
 	 * Read raw post data from php://input.
 	 *
 	 * @param string $savePath.
@@ -33,10 +21,9 @@ class File {
 		}
 		else
 		{
-			Log::error('File upload error. Content is empty.');
+			Log::error('File upload error: content is empty');
 		}
 	}
-	
 
 	/**
 	 * Detect file type (import.xml or offers.xml) of signature.

@@ -14,14 +14,12 @@ class ProductImport extends BaseImport {
 	 */
 	private $productModel;
 
-
 	/**
 	 * OpenCart model for Exchange1C module.
 	 *
 	 * @var ModelModuleExchange1C
 	 */
 	private $exchangeModel;
-
 
 	/**
 	 * 1C categories to OpenCart categories relations.
@@ -30,7 +28,6 @@ class ProductImport extends BaseImport {
 	 */
 	private $categoryMap = array();
 
-
 	/**
 	 * 1C products to OpenCart products relations.
 	 *
@@ -38,14 +35,12 @@ class ProductImport extends BaseImport {
 	 */
 	private $productMap = array();
 
-
 	/**
 	 * 1C price types cache.
 	 *
 	 * @var array
 	 */
 	private $priceTypes = array();
-
 
 	/**
 	 * Class constructor.
@@ -64,7 +59,6 @@ class ProductImport extends BaseImport {
 		$this->productMap = $this->exchangeModel->getProductsMaps();
 	}
 
-
 	/**
 	 * Class destuctor.
 	 *
@@ -74,7 +68,6 @@ class ProductImport extends BaseImport {
 	{
 		$this->exchangeModel->setProductsMaps($this->productMap);
 	}
-
 
 	/**
 	 * Import.xml entry point.
@@ -91,7 +84,6 @@ class ProductImport extends BaseImport {
 			$this->processProducts($importXml->Каталог->Товары);
 		}
 	}
-
 
 	/**
 	 * Offers.xml entry point.
@@ -111,7 +103,6 @@ class ProductImport extends BaseImport {
 		}
 	}
 
-
 	/**
 	 * Products parser.
 	 *
@@ -122,9 +113,9 @@ class ProductImport extends BaseImport {
 	{
 		foreach ($xmlProducts->Товар as $xmlProduct)
 		{
-			$product1cId = (string)$xmlProduct->Ид;
+			$product1cId = (string) $xmlProduct->Ид;
 			
-			$category1cId = (string)$xmlProduct->Группы[0]->Ид;
+			$category1cId = (string) $xmlProduct->Группы[0]->Ид;
 			
 			$mainCategoryId = isset($this->categoryMap[$category1cId])?
 				$this->categoryMap[$category1cId] : 0
@@ -146,11 +137,11 @@ class ProductImport extends BaseImport {
 
 				foreach ($xmlProduct->Группы->Ид as $category1cId)
 				{
-					if ((string)$category1cId != $mainCategoryId)
+					if ((string) $category1cId != $mainCategoryId)
 					{
-						if (isset($this->categoryMap[(string)$category1cId]))
+						if (isset($this->categoryMap[(string) $category1cId]))
 						{
-							$categoryId = $this->categoryMap[(string)$category1cId];
+							$categoryId = $this->categoryMap[(string) $category1cId];
 							$productNewData['product_category'][] = $categoryId;
 						}
 					}
@@ -160,7 +151,6 @@ class ProductImport extends BaseImport {
 			}
 		}
 	}
-
 
 	/**
 	 * Price types parser.
@@ -172,12 +162,11 @@ class ProductImport extends BaseImport {
 	{
 		foreach ($xmlPriceTypes->ТипЦены as $priceType)
 		{
-			$priceTypeId = (string)$priceType->Ид;
+			$priceTypeId = (string) $priceType->Ид;
 
-			$this->priceTypes[$priceTypeId] = (string)$priceType->Наименование;
+			$this->priceTypes[$priceTypeId] = (string) $priceType->Наименование;
 		}
 	}
-
 
 	/**
 	 * Prices parser.
@@ -189,7 +178,7 @@ class ProductImport extends BaseImport {
 	{
 		foreach ($xmlPrices->Предложение as $offer)
 		{
-			$product1cId = (string)$offer->Ид;
+			$product1cId = (string) $offer->Ид;
 		
 			if (isset($this->productMap[$product1cId]))
 			{
@@ -199,7 +188,7 @@ class ProductImport extends BaseImport {
 
 				$productData = new StdClass();
 
-				$productData->quantity = (int)$offer->Количество;
+				$productData->quantity = (int) $offer->Количество;
 
 				$configPriceType = OpenCart::config()->get('e1c_import_pricetype');
 
@@ -207,18 +196,18 @@ class ProductImport extends BaseImport {
 				{
 					foreach ($offer->Цены->Цена as $price)
 					{
-						$priceTypeId = (string)$price->ИдТипаЦены;
+						$priceTypeId = (string) $price->ИдТипаЦены;
 						$pirceType = $this->priceTypes[$priceTypeId];
 
 						if ($pirceType == $configPriceType)
 						{
-							$productData->price = str_replace(' ', '', (string)$price->ЦенаЗаЕдиницу);
-							Log::debug("Found price: {$productData->price}.");
+							$productData->price = str_replace(' ', '', (string) $price->ЦенаЗаЕдиницу);
+							Log::debug("Found price: {$productData->price}");
 						}
 						else
 						{
 							$productData->price = 0;
-							Log::debug("Not found price, set to {$productData->price}.");
+							Log::debug("Not found price, set to {$productData->price}");
 						}
 					}
 				}
@@ -230,7 +219,6 @@ class ProductImport extends BaseImport {
 			}
 		}
 	}
-
 
 	/**
 	 * Compare and build new data for product.
@@ -257,13 +245,12 @@ class ProductImport extends BaseImport {
 		{
 			foreach ($this->languageIds as $languageId)
 			{
-				$newData['product_description'][$languageId] = $descrScheme->processs($xmlProduct, $oldData['product_description'][$languageId]);
+				$newData['product_description'][$languageId] = $descrScheme->process($xmlProduct, $oldData['product_description'][$languageId]);
 			}
 		}
 
 		return $newData;
 	}
-
 
 	/**
 	 * Get all data of the product.
@@ -288,7 +275,8 @@ class ProductImport extends BaseImport {
 		$productData['product_layout'] = $this->productModel->getProductLayouts($productId);
 		$productData['product_store'] = $this->productModel->getProductStores($productId);
 
-		// getProduct() not return the 'main_category_id', set manually
+		// Function getProduct() not return 'main_category_id', set manually.
+		// Used in ocStore.
 		if ( ! empty($productData['product_category']))
 		{
 			$productData['main_category_id'] = $productData['product_category'][0];
@@ -296,7 +284,6 @@ class ProductImport extends BaseImport {
 
 		return $productData;
 	}
-
 
 	/**
 	 * Create product and link.
@@ -321,7 +308,6 @@ class ProductImport extends BaseImport {
 		Log::debug("Add product: {$productId}");
 	}
 
-
 	/**
 	 * Edit product.
 	 *
@@ -342,4 +328,5 @@ class ProductImport extends BaseImport {
 
 		Log::debug("Edit product: {$productId}");
 	}
+
 }

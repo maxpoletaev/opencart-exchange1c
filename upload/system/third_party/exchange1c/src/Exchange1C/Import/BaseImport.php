@@ -13,7 +13,6 @@ class BaseImport {
 	 */
 	protected $languageIds = array();
 
-
 	/**
 	 * Plugin manager instance.
 	 *
@@ -21,11 +20,9 @@ class BaseImport {
 	 */
 	protected $pluginManager;
 
-
 	/**
 	 * Class constructor.
 	 *
-	 * @param Registry $registry
 	 * @return void
 	 */
 	public function __construct()

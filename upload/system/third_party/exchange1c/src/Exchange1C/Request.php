@@ -3,10 +3,10 @@
 class Request {
 
 	/**
-	 * $_GET.
+	 * $_GET
 	 *
 	 * @param string $key
-	 * @param string $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function get($key, $default = false)
@@ -15,12 +15,11 @@ class Request {
 		return $out;
 	}
 
-
 	/**
-	 * $_POST.
+	 * $_POST
 	 *
 	 * @param string $key
-	 * @param string $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function post($key, $default = false)
@@ -29,12 +28,11 @@ class Request {
 		return $out;
 	}
 
-
 	/**
-	 * $_REQUEST.
+	 * $_REQUEST
 	 *
 	 * @param string $key
-	 * @param string $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function all($key, $default = false)
@@ -43,12 +41,11 @@ class Request {
 		return $out;
 	}
 
-
 	/**
-	 * $_SERVER.
+	 * $_SERVER
 	 *
 	 * @param string $key
-	 * @param string $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function server($key, $default = false)
@@ -57,12 +54,11 @@ class Request {
 		return $out;
 	}
 
-
 	/**
-	 * $_COOKIE.
+	 * $_COOKIE
 	 *
 	 * @param string $key
-	 * @param string $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function cookie($key, $default = false)

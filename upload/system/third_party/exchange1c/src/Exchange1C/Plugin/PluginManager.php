@@ -12,14 +12,12 @@ class PluginManager {
 	 */
 	protected $eventMap = array();
 
-
 	/**
 	 * Directory for plugins.
 	 *
 	 * @var string
 	 */
 	protected $pluginsDir;
-
 
 	/**
 	 * Class constructor.
@@ -31,7 +29,6 @@ class PluginManager {
 	{
 		$this->pluginsDir = $dir;
 	}
-
 
 	/**
 	 * Load plugins from dir.
@@ -65,7 +62,6 @@ class PluginManager {
 		}
 	}
 
-
 	/**
 	 * Register new plugin.
 	 *
@@ -82,7 +78,6 @@ class PluginManager {
 			'func'   => $func
 		);
 	}
-
 
 	/**
 	 * Run all plugins on event.

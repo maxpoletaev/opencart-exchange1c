@@ -45,17 +45,17 @@ class Scheme {
 
 		foreach ($this->scheme as $schemeKey => $schemeData)
 		{
-			if (isset($newData->$schemeKey))
+			if (isset($newData->{$schemeKey}))
 			{
 				if ($schemeData->overwrite || empty($oldData[$schemeKey]))
 				{
 					switch($schemeData->type)
 					{
-						case 'string': $result[$schemeKey] = (string)$newData->$schemeKey; break;
-						case 'int':    $result[$schemeKey] = (int)$newData->$schemeKey;    break;
-						case 'float':  $result[$schemeKey] = (float)$newData->$schemeKey;  break;
-						case 'array':  $result[$schemeKey] = (array)$newData->$schemeKey;  break;
-						case 'bool':   $result[$schemeKey] = (bool)$newData->$schemeKey;   break;
+						case 'string': $result[$schemeKey] = (string) $newData->{$schemeKey}; break;
+						case 'int':    $result[$schemeKey] = (int) $newData->{$schemeKey};    break;
+						case 'float':  $result[$schemeKey] = (float) $newData->{$schemeKey};  break;
+						case 'array':  $result[$schemeKey] = (array) $newData->{$schemeKey};  break;
+						case 'bool':   $result[$schemeKey] = (bool) $newData->{$schemeKey};   break;
 					}
 				}
 				else
@@ -79,9 +79,8 @@ class Scheme {
 		return $result;
 	}
 
-
 	/**
-	 * Preparation scheme for parsing. 
+	 * Preparation new data for parsing.
 	 *
 	 * @param SimpleXMLElement $newData
 	 * @return void
@@ -96,9 +95,9 @@ class Scheme {
 			{
 				$fieldName = $schemeData->field;
 
-				if (isset($newData->$fieldName))
+				if (isset($newData->{$fieldName}))
 				{
-					$result->$schemeKey = $newData->$fieldName;
+					$result->{$schemeKey} = $newData->{$fieldName};
 				}
 			}
 		}

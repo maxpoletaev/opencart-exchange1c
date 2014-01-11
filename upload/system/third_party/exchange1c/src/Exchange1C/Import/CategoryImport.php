@@ -12,7 +12,6 @@ class CategoryImport extends BaseImport {
 	 * @var ModelCatalogCategory
 	 */
 	private $categoryModel;
-
 	
 	/**
 	 * OpenCart model for Exchange1C module.
@@ -20,7 +19,6 @@ class CategoryImport extends BaseImport {
 	 * @var ModelModuleExchange1C
 	 */
 	private $exchangeModel;
-
 	
 	/**
 	 * 1C categories to OpenCart categories relations.
@@ -28,7 +26,6 @@ class CategoryImport extends BaseImport {
 	 * @var array
 	 */
 	private $categoryMap = array();
-
 
 	/**
 	 * Class constructor.
@@ -46,7 +43,6 @@ class CategoryImport extends BaseImport {
 		$this->categoryMap = $this->exchangeModel->getCategoriesMaps();
 	}
 
-
 	/**
 	 * Class destuctor.
 	 *
@@ -56,7 +52,6 @@ class CategoryImport extends BaseImport {
 	{
 		$this->exchangeModel->setCategoriesMaps($this->categoryMap);
 	}
-
 
 	/**
 	 * Import.xml entry point.
@@ -77,7 +72,6 @@ class CategoryImport extends BaseImport {
 		}
 	}
 
-
 	/**
 	 * Categories parser.
 	 *
@@ -88,7 +82,7 @@ class CategoryImport extends BaseImport {
 	{
 		foreach ($xmlCategories->Группа as $xmlCategory)
 		{
-			$category1cId = (string)$xmlCategory->Ид;
+			$category1cId = (string) $xmlCategory->Ид;
 
 			if (isset($this->categoryMap[$category1cId]))
 			{
@@ -114,7 +108,6 @@ class CategoryImport extends BaseImport {
 		}
 	}
 
-	
 	/**
 	 * Create category and link.
 	 *
@@ -140,7 +133,6 @@ class CategoryImport extends BaseImport {
 		return $categoryId;
 	}
 
-
 	/**
 	 * Edit category.
 	 *
@@ -162,7 +154,6 @@ class CategoryImport extends BaseImport {
 		Log::debug("Edit category: {$categoryId}");
 	}
 
-
 	/**
 	 * Get all data of the category.
 	 *
@@ -176,7 +167,6 @@ class CategoryImport extends BaseImport {
 
 		return $categoryData;
 	}
-
 
 	/**
 	 * Compare and build new data for category.
@@ -209,4 +199,5 @@ class CategoryImport extends BaseImport {
 
 		return $newData;
 	}
+
 }

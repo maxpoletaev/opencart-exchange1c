@@ -1,6 +1,5 @@
 <?php
 
-
 class ModelModuleExchange1C extends Model {
 
 	/**
@@ -9,7 +8,6 @@ class ModelModuleExchange1C extends Model {
 	 * @var string
 	 */
 	protected $dbPrefix = DB_PREFIX;
-	
 
 	/**
 	 * Create tables on install module.
@@ -35,7 +33,6 @@ class ModelModuleExchange1C extends Model {
 		");
 	}
 
-
 	/**
 	 * Drop tables on uninstall modules.
 	 *
@@ -46,7 +43,6 @@ class ModelModuleExchange1C extends Model {
 		$this->db->query("DROP TABLE {$this->dbPrefix}category_to_1c");
 		$this->db->query("DROP TABLE {$this->dbPrefix}product_to_1c");
 	}
-
 
 	/**
 	 * Get categories relations to 1C.
@@ -63,7 +59,7 @@ class ModelModuleExchange1C extends Model {
 		{
 			$category1cId = $row['category_1c_id'];
 
-			if (!empty($category1cId))
+			if ( ! empty($category1cId))
 			{
 				$result[$category1cId] = $row['category_id'];
 			}
@@ -71,7 +67,6 @@ class ModelModuleExchange1C extends Model {
 
 		return $result;
 	}
-
 
 	/**
 	 * Get products relations to 1C.
@@ -88,7 +83,7 @@ class ModelModuleExchange1C extends Model {
 		{
 			$product1cId = $row['product_1c_id'];
 
-			if (!empty($product1cId))
+			if ( ! empty($product1cId))
 			{
 				$result[$product1cId] = $row['product_id'];
 			}
@@ -96,7 +91,6 @@ class ModelModuleExchange1C extends Model {
 
 		return $result;
 	}
-
 
 	/**
 	 * Save categories relations.
@@ -114,7 +108,6 @@ class ModelModuleExchange1C extends Model {
 		}
 	}
 
-
 	/**
 	 * Save products relations.
 	 *
@@ -131,7 +124,6 @@ class ModelModuleExchange1C extends Model {
 		}
 	}
 
-
 	/**
 	 * Delete categories relations.
 	 *
@@ -142,7 +134,6 @@ class ModelModuleExchange1C extends Model {
 		$this->db->query("TRUNCATE TABLE {$this->dbPrefix}category_to_1c");
 	}
 
-
 	/**
 	 * Delete products relations.
 	 *
@@ -152,4 +143,5 @@ class ModelModuleExchange1C extends Model {
 	{
 		$this->db->query("TRUNCATE TABLE {$this->dbPrefix}product_to_1c");
 	}
+
 }

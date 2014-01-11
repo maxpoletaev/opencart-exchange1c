@@ -9,19 +9,17 @@ class OpenCart {
 	 */
 	protected static $registry;
 
-
 	/**
 	 * Get OpenCart object from registry.
 	 *
-	 * @param $name
-	 * @param $args
-	 * @return object
+	 * @param string $name
+	 * @param array $args
+	 * @return mixed
 	 */
 	public static function __callStatic($name, $args = array())
 	{
 		return self::$registry->get($name);
 	}
-
 
 	/**
 	 * Set registry instance.
@@ -34,7 +32,6 @@ class OpenCart {
 		self::$registry = $registry;
 	}
 
-
 	/**
 	 * Get OpenCart registry instance.
 	 *
@@ -44,7 +41,6 @@ class OpenCart {
 	{
 		return self::$registry;
 	}
-
 
 	/**
 	 * OpenCart models loader.
