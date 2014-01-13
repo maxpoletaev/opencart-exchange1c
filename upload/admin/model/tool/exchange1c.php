@@ -364,19 +364,14 @@ class ModelToolExchange1c extends Model {
 							unset($value);
 						}
 					}
-	
 					$data['status'] = 1;
 				}
 				
 				if (!$exchange1c_relatedoptions || $offer_cnt == count($xml->ПакетПредложений->Предложения->Предложение)
 					|| $data['1c_id'] != substr($xml->ПакетПредложений->Предложения->Предложение[$offer_cnt]->Ид, 0, strlen($data['1c_id'])) ) {
-						
 						$this->updateProduct($data, $product_id, $language_id);
 						unset($data);
 				}
-				
-
-				
 			}
 		}
 
@@ -483,6 +478,8 @@ class ModelToolExchange1c extends Model {
 				if ($product->Описание) $data['description'] = (string)$product->Описание;
 				if ($product->Статус) $data['status'] = (string)$product->Статус;
 
+				unset($product_filter);
+
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
 					if ($enable_log)
@@ -501,8 +498,12 @@ class ModelToolExchange1c extends Model {
 							else {
 								continue;
 							}
+
+							$filter_id = $this->getProductFilter($attribute['name'], $attribute_value);
+							$product_filter[$filter_id] = $filter_id;
+
 							if ($enable_log)
-								$this->log->write("   > " . $attribute_value);
+				 				$this->log->write("   > " . $attribute_value);
 
 							switch ($attribute['name']) {
 
@@ -580,8 +581,18 @@ class ModelToolExchange1c extends Model {
 						}
 					}
 				}
+				if (isset($product_filter)) {
+					$data['product_filter'] = $product_filter;
+				}
 
 				$this->setProduct($data, $language_id);
+
+				if (isset($product_filter)) {
+					$product_id = $this->getProductIdBy1CProductId ($uuid[0]);
+					$this->insertCategoryFilters($product_id, $product_filter);
+				}
+
+
 				unset($data);
 			}
 		}
@@ -589,6 +600,7 @@ class ModelToolExchange1c extends Model {
 		unset($xml);
 		if ($enable_log)
 			$this->log->write("Окончен разбор файла: " . $filename );
+
 	}
 
 
@@ -777,6 +789,7 @@ class ModelToolExchange1c extends Model {
 			
 			$data = array_merge($data, array('product_discount' => $this->model_catalog_product->getProductDiscounts($product_id)));
 			$data = array_merge($data, array('product_special' => $this->model_catalog_product->getProductSpecials($product_id)));
+			$data = array_merge($data, array('product_filter' => $this->model_catalog_product->getProductFilters($product_id)));
 			$data = array_merge($data, array('product_download' => $this->model_catalog_product->getProductDownloads($product_id)));
 			$data = array_merge($data, array('product_category' => $this->model_catalog_product->getProductCategories($product_id)));
 			$data = array_merge($data, array('product_store' => $this->model_catalog_product->getProductStores($product_id)));
@@ -848,6 +861,9 @@ class ModelToolExchange1c extends Model {
 			,'product_related'  => (isset($product['product_related'])) ? $product['product_related'] : (isset($data['product_related']) ? $data['product_related']: array())
 			,'product_attribute'    => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
 		);
+
+		$result['product_filter']   = (isset($product['product_filter'])) ? $product['product_filter'] : (isset($data['product_filter']) ? $data['product_filter'] : array());
+        //$this->log->write("initProduct" . print_r(result['product_filter'], true));
 
 		if (VERSION == '1.5.3.1') {
 			$result['product_tag'] = (isset($product['product_tag'])) ? $product['product_tag'] : (isset($data['product_tag']) ? $data['product_tag']: array());
@@ -1065,6 +1081,38 @@ class ModelToolExchange1c extends Model {
 		}
 	}
 
+	private function getFilterGroupIdByName($name) {
+		$query = $this->db->query("SELECT filter_group_id FROM `" . DB_PREFIX . "filter_group_description` WHERE `name` = '" . $name . "'");
+		if ($query->num_rows) {
+			return $query->row['filter_group_id'];
+		}
+		else {
+			//Нет такой группы фильтров
+			return false;
+		}
+	}
+
+	private function getFilterIdByName($name, $group_id) {
+
+		if ($group_id === false)
+			return false;
+
+        $this->log->write("Поиск фильтра по имени (". $name . ")");
+		$query = $this->db->query("SELECT filter_id FROM `" . DB_PREFIX . "filter_description` WHERE `name` = '" . $name . "'");
+		if ($query->num_rows) {
+			$this->log->write("ID фильтра " . $query->row['filter_id']);
+			return $query->row['filter_id'];
+		}
+		else {
+			//Нет такого фильтра, добавляем
+			$lang_id = (int)$this->config->get('config_language_id');
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter` SET filter_group_id ='" . $group_id . "', sort_order = '0'");
+			$filter_id = $this->db->getLastId();
+			$this->db->query("INSERT INTO " . DB_PREFIX . "filter_description SET filter_id = '" . $filter_id . "', filter_group_id ='" . $group_id . "', language_id = '" . $lang_id . "', name = '" . $this->db->escape($name) . "'");
+			return $filter_id;
+		}
+	}
+
 	/**
 	 * Получает путь к картинке и накладывает водяные знаки
 	 *
@@ -1090,6 +1138,42 @@ class ModelToolExchange1c extends Model {
 		}
 		else {
 			return 'no_image.jpg';
+		}
+	}
+
+	/**
+	 * Получает id фильтра по имени
+	 *
+	 * @param	string
+	 * @param	string
+	 * @return	int
+	 */
+	private function getProductFilter($filter_name, $filter_value) {
+		$group_id = $this->getFilterGroupIdByName($filter_name);
+		$filter_id = $this->getFilterIdByName($filter_value, $group_id);
+		return $filter_id;
+	}
+
+	private function insertCategoryFilters($product_id, $filters) {
+		$query = $this->db->query("SELECT `category_id` FROM `" .DB_PREFIX . "product_to_category` WHERE `product_id` = '" .$product_id."'");
+		if ($query->num_rows > 0) {
+			foreach ($query->rows as $row) {
+				$category_id = $row['category_id'];
+				foreach ($filters as $filter_id) {
+					$this->log->write("обновление фильтров категорий: category_id =" .$category_id. " product_id: " . $product_id . " filter_id: ". $filter_id);
+
+					$querycat = $this->db->query("SELECT filter_id FROM `" . DB_PREFIX . "category_filter` WHERE filter_id = '" . $filter_id . "' and category_id = '" . $category_id . "'");
+					if ($querycat->num_rows) {
+						$this->log->write(" фильтр категории найден ");
+					}
+					else {
+						$this->log->write(" фильтр  категории не найден, создается новый ");
+						$sqlq = "INSERT INTO `category_filter` (`category_id`, `filter_id`) VALUES (". (int) $category_id.",". (int)$filter_id.")";
+						$this->db->query($sqlq);
+						$this->log->write($sqlq);
+					}
+				}
+			}
 		}
 	}
 
@@ -1178,6 +1262,9 @@ class ModelToolExchange1c extends Model {
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_reward`');
 			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
+			if ($enable_log)
+				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_filter`');
+			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_filter`');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_special`');
 			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
