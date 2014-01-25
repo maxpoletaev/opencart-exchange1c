@@ -13,6 +13,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->load->model('setting/setting');
 			
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+			$this->request->post['exchange1c_order_date'] = $this->config->get('exchange1c_order_date');
 			$this->model_setting_setting->editSetting('exchange1c', $this->request->post);
 			$this->session->data['success'] = $this->language->get('text_success');
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
