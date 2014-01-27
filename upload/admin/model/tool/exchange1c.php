@@ -484,7 +484,7 @@ class ModelToolExchange1c extends Model {
 						$this->log->write("   свойства загружены... ");
 				}
 
-				// Реквезиты продукта
+				// Реквизиты продукта
 				if($product->ЗначенияРеквизитов) {
 					foreach ($product->ЗначенияРеквизитов->ЗначениеРеквизита as $requisite){
 						switch ($requisite->Наименование){
