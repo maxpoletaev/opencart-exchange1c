@@ -163,6 +163,14 @@
                 <input type="checkbox" value="1" id="exchange1c_seo_url" name="exchange1c_seo_url" <?php echo ($exchange1c_seo_url == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
+            
+            <tr>
+              <td><label for="exchange1c_relatedoptions"><?php echo $entry_relatedoptions; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_relatedoptions" name="exchange1c_relatedoptions" <?php echo ($exchange1c_relatedoptions == 1)? 'checked' : ''; ?>>
+                <span class="help"><?php echo $entry_relatedoptions_help; ?></span>
+              </td>
+            </tr>
 
             <tr>
               <td><label for="exchange1c_full_log"><?php echo $entry_full_log; ?></label></td>
@@ -195,7 +203,19 @@
 
         <div id="tab-order">
           <table class="form">
-
+            
+            <tr>
+              <td><?php echo $entry_order_status_to_exchange; ?></td>
+              <td>
+                <select name="exchange1c_order_status_to_exchange">
+                  <option value="0" <?php echo ($exchange1c_order_status_to_exchange == 0)? 'selected' : '' ;?>><?php echo $entry_order_status_to_exchange_not; ?></option>
+                  <?php foreach ($order_statuses as $order_status) { ?>
+                    <option value="<?php echo $order_status['order_status_id'];?>" <?php echo ($exchange1c_order_status_to_exchange == $order_status['order_status_id'])? 'selected' : '' ;?>><?php echo $order_status['name']; ?></option>
+                  <?php } ?>
+                </select>
+              </td>
+            </tr>
+            
             <tr>
               <td><?php echo $entry_order_status; ?></td>
               <td>

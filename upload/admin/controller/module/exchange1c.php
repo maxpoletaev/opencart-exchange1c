@@ -46,6 +46,10 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_name'] = $this->language->get('entry_name');
 		$this->data['entry_image'] = $this->language->get('entry_image');
 
+		$this->data['entry_relatedoptions'] = $this->language->get('entry_relatedoptions');
+		$this->data['entry_relatedoptions_help'] = $this->language->get('entry_relatedoptions_help');
+		$this->data['entry_order_status_to_exchange'] = $this->language->get('entry_order_status_to_exchange');
+		$this->data['entry_order_status_to_exchange_not'] = $this->language->get('entry_order_status_to_exchange_not');
 
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
@@ -208,6 +212,17 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_fill_parent_cats'] = $this->config->get('exchange1c_fill_parent_cats');
+		}
+		
+		if (isset($this->request->post['exchange1c_relatedoptions'])) {
+			$this->data['exchange1c_relatedoptions'] = $this->request->post['exchange1c_relatedoptions'];
+		} else {
+			$this->data['exchange1c_relatedoptions'] = $this->config->get('exchange1c_relatedoptions');
+		}
+		if (isset($this->request->post['exchange1c_order_status_to_exchange'])) {
+			$this->data['exchange1c_order_status_to_exchange'] = $this->request->post['exchange1c_order_status_to_exchange'];
+		} else {
+			$this->data['exchange1c_order_status_to_exchange'] = $this->config->get('exchange1c_order_status_to_exchange');
 		}
 
 		if (isset($this->request->post['exchange1c_seo_url'])) {
@@ -574,6 +589,7 @@ class ControllerModuleExchange1c extends Controller {
 
 		$orders = $this->model_tool_exchange1c->queryOrders(array(
 			 'from_date' 	=> $this->config->get('exchange1c_order_date')
+			,'exchange_status'	=> $this->config->get('exchange1c_order_status_to_exchange')
 			,'new_status'	=> $this->config->get('exchange1c_order_status')
 			,'notify'		=> $this->config->get('exchange1c_order_notify')
 			,'currency'		=> $this->config->get('exchange1c_order_currency') ? $this->config->get('exchange1c_order_currency') : 'руб.'

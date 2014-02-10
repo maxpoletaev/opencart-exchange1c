@@ -17,6 +17,7 @@ $_['text_max_filesize']		= 'Max upload size %s MB';
 
 $_['text_empty']		= 'Settings are missing';
 $_['text_homepage']		= 'Module homepage';
+$_['text_price_default']	= 'Price for OpenCart';
 
 
 // Entry
@@ -42,6 +43,11 @@ $_['entry_apply_watermark']	= 'Apply watermark';
 $_['text_image_manager'] = 'Image Manager';
 $_['text_browse']        = 'Browse Files';
 $_['text_clear']         = 'Clear Image';
+
+$_['entry_order_status_to_exchange'] 	= 'Orders status to exchange:';
+$_['entry_order_status_to_exchange_not'] 	= "- don not use -";
+$_['entry_relatedoptions']	= 'Load characteristics as related options (need extension <a href="http://opencartforum.ru/files/file/1501-связанные-опции/">Related Options</a>):';
+$_['entry_relatedoptions_help']	= 'Related options settings should be turned on: "Recalc quantity", "Update options", "Use different related options variants" ';
 
 $_['entry_order_status']	= 'Uploaded orders status:';
 $_['entry_order_notify']	= 'Notify users of status change:';
