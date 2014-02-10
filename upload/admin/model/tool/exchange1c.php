@@ -18,7 +18,11 @@ class ModelToolExchange1c extends Model {
 
 		$this->load->model('sale/order');
 
-		$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `date_added` >= '" . $params['from_date'] . "'");
+		if ($params['exchange_status'] != 0) {
+			$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `order_status_id` = " . $params['exchange_status'] . "");
+		} else {
+			$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `date_added` >= '" . $params['from_date'] . "'");
+		}
 
 		$document = array();
 		$document_counter = 0;
@@ -73,7 +77,7 @@ class ModelToolExchange1c extends Model {
 				$product_counter = 0;
 				foreach ($products as $product) {
 					$id = $this->get1CProductIdByProductId($product['product_id']);
-
+					
 					$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter] = array(
 						 'Ид'             => $id
 						,'Наименование'   => $product['name']
@@ -81,6 +85,28 @@ class ModelToolExchange1c extends Model {
 						,'Количество'     => $product['quantity']
 						,'Сумма'          => $product['total']
 					);
+					
+					if ($this->config->get('exchange1c_relatedoptions')) {
+						$this->load->model('module/related_options');
+						if ($this->model_module_related_options->get_product_related_options_use($product['product_id'])) {
+							$order_options = $this->model_sale_order->getOrderOptions($orders_data['order_id'], $product['order_product_id']);
+							$options = array();
+							foreach ($order_options as $order_option) {
+								$options[$order_option['product_option_id']] = $order_option['product_option_value_id'];
+							}
+							if (count($options) > 0) {
+								$ro = $this->model_module_related_options->get_related_options_set_by_poids($product['product_id'], $options);
+								if ($ro != FALSE) {
+									$char_id = $this->model_module_related_options->get_char_id($ro['relatedoptions_id']);
+									if ($char_id != FALSE) {
+										$document['Документ' . $document_counter]['Товары']['Товар' . $product_counter]['Ид'] .= "#".$char_id;
+									}
+								}
+							}
+							
+						}
+						
+					}
 
 					$product_counter++;
 				}
@@ -138,10 +164,11 @@ class ModelToolExchange1c extends Model {
 
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 		$xml = simplexml_load_file($importFile);
-		$data = array();
+		
 		$price_types = array();
-		$data['price'] = 0;
+		
 		$enable_log = $this->config->get('exchange1c_full_log');
+		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
 
 		$this->load->model('catalog/option');
 
@@ -168,80 +195,103 @@ class ModelToolExchange1c extends Model {
 					'priority' => $obj['priority']
 				); 
 			}
-		} 
+		}
+		
+		$offer_cnt = 0;
 
 		if ($xml->ПакетПредложений->Предложения->Предложение) {
 			foreach ($xml->ПакетПредложений->Предложения->Предложение as $offer) {
 
-				//UUID без номера после #
-				$uuid = explode("#", $offer->Ид);
-				$data['1c_id'] = $uuid[0];
-				if ($enable_log)
-					$this->log->write("Товар: [UUID]:" . $data['1c_id']);
-
-				$product_id = $this->getProductIdBy1CProductId ($uuid[0]);
-
-				//Цена за единицу
-				if ($offer->Цены) {
-
-					// Первая цена по умолчанию - $config_price_type_main
-					if (!$config_price_type_main['keyword']) {
-						$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
-					}
-					else {
-						if ($offer->Цены->Цена->ИдТипаЦены) {
+				$new_product = (!isset($data));
+				
+				$offer_cnt++;
+				
+				if (!$exchange1c_relatedoptions || $new_product) {
+					
+					$data = array();
+					$data['price'] = 0;
+					
+					//UUID без номера после #
+					$uuid = explode("#", $offer->Ид);
+					$data['1c_id'] = $uuid[0];
+					if ($enable_log)
+						$this->log->write("Товар: [UUID]:" . $data['1c_id']);
+	
+					$product_id = $this->getProductIdBy1CProductId ($uuid[0]);
+	
+					//Цена за единицу
+					if ($offer->Цены) {
+	
+						// Первая цена по умолчанию - $config_price_type_main
+						if (!$config_price_type_main['keyword']) {
+							$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
+						}
+						else {
+							if ($offer->Цены->Цена->ИдТипаЦены) {
+								foreach ($offer->Цены->Цена as $price) {
+									if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
+										$data['price'] = (float)$price->ЦенаЗаЕдиницу;
+										if ($enable_log)
+											$this->log->write(" найдена цена  > " . $data['price']);
+	
+									}
+								}
+							}
+						}
+	
+						// Вторая цена и тд - $discount_price_type
+						if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
 							foreach ($offer->Цены->Цена as $price) {
-								if ($price_types[(string)$price->ИдТипаЦены] == $config_price_type_main['keyword']) {
-									$data['price'] = (float)$price->ЦенаЗаЕдиницу;
-									if ($enable_log)
-										$this->log->write(" найдена цена  > " . $data['price']);
-
+								$key = $price_types[(string)$price->ИдТипаЦены];
+								if (isset($discount_price_type[$key])) {
+									$value = array(
+										'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
+										'quantity'      => $discount_price_type[$key]['quantity'],
+										'priority'      => $discount_price_type[$key]['priority'],
+										'price'         => (float)$price->ЦенаЗаЕдиницу,
+										'date_start'    => '0000-00-00',
+										'date_end'      => '0000-00-00'
+									);
+									$data['product_discount'][] = $value;
+									unset($value);
 								}
 							}
 						}
 					}
-
-					// Вторая цена и тд - $discount_price_type
-					if (!empty($discount_price_type) && $offer->Цены->Цена->ИдТипаЦены) {
-						foreach ($offer->Цены->Цена as $price) {
-							$key = $price_types[(string)$price->ИдТипаЦены];
-							if (isset($discount_price_type[$key])) {
-								$value = array(
-									'customer_group_id'	=> $discount_price_type[$key]['customer_group_id'],
-									'quantity'      => $discount_price_type[$key]['quantity'],
-									'priority'      => $discount_price_type[$key]['priority'],
-									'price'         => (float)$price->ЦенаЗаЕдиницу,
-									'date_start'    => '0000-00-00',
-									'date_end'      => '0000-00-00'
-								);
-								$data['product_discount'][] = $value;
-								unset($value);
-							}
-						}
-					}
+	
+					//Количество
+					$data['quantity'] = isset($offer->Количество) ? (int)$offer->Количество : 0;
 				}
 
-				//Количество
-				$data['quantity'] = isset($offer->Количество) ? (int)$offer->Количество : 0;
-
 				//Характеристики
-				if ($offer->ХарактеристикиТовара) {
+				if ($offer->ХарактеристикиТовара->ХарактеристикаТовара) {
+					
 					$product_option_value_data = array();
 					$product_option_data = array();
+					
 					$lang_id = (int)$this->config->get('config_language_id');
 					$count = count($offer->ХарактеристикиТовара->ХарактеристикаТовара);
-
+	
 					foreach ($offer->ХарактеристикиТовара->ХарактеристикаТовара as $i => $opt) {
 						$name_1c = (string)$opt->Наименование;
 						$value_1c = (string)$opt->Значение;
-
+	
 						if (!empty($name_1c) && !empty($value_1c)) {
+							
+							if ($exchange1c_relatedoptions) {
+								$uuid = explode("#", $offer->Ид);
+								if (!isset($char_id) || $char_id != $uuid[1]) {
+									$char_id = $uuid[1];
+									if ($enable_log) $this->log->write("Характеристика: ".$char_id);
+								}
+							}
+							
 							if ($enable_log) $this->log->write(" Найдены характеристики: " . $name_1c . " -> " . $value_1c);
-
+	
 							$option_id = $this->setOption($name_1c);
-					
+							
 							$option_value_id = $this->setOptionValue($option_id, $value_1c);
-
+							
 							$product_option_value_data[] = array(
 								'option_value_id'         => (int) $option_value_id,
 								'product_option_value_id' => '',
@@ -254,7 +304,7 @@ class ModelToolExchange1c extends Model {
 								'weight'                  => 0,
 								'weight_prefix'           => '+'
 							);
-
+	
 							$product_option_data[] = array(
 								'product_option_id'    => '',
 								'name'                 => (string)$name_1c,
@@ -263,38 +313,70 @@ class ModelToolExchange1c extends Model {
 								'required'             => 1,
 								'product_option_value' => $product_option_value_data
 							);
+							
+							if ($exchange1c_relatedoptions) {
+								
+								if ( !isset($data['relatedoptions'])) {
+									$data['relatedoptions'] = array();
+									$data['related_options_variant_search'] = TRUE;
+									$data['related_options_use'] = TRUE;
+								}
+								
+								$ro_found = FALSE;
+								foreach ($data['relatedoptions'] as $ro_num => $relatedoptions) {
+									if ($relatedoptions['char_id'] == $char_id) {
+										$data['relatedoptions'][$ro_num]['options'][$option_id] = $option_value_id;
+										$ro_found = TRUE;
+										break;
+									}
+								}
+								if (!$ro_found) {
+									$data['relatedoptions'][] = array('char_id' => $char_id, 'quantity' => (isset($offer->Количество) ? (int)$offer->Количество : 0), 'options' => array($option_id => $option_value_id));
+								}
 
-							$data['product_option'] = $product_option_data;
+							} else { 
+								$data['product_option'] = $product_option_data;
+							}
 						}
 					}
 				}
 
-				if ($offer->СкидкиНаценки) {
-					$value = array();
-					foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
-						$value = array(
-							 'customer_group_id'	=> 1
-							,'priority'     => isset($discount->Приоритет) ? (int)$discount->Приоритет : 0
-							,'price'        => (int)(($data['price'] * (100 - (float)str_replace(',', '.', (string)$discount->Процент))) / 100)
-							,'date_start'   => isset($discount->ДатаНачала) ? (string)$discount->ДатаНачала : ''
-							,'date_end'     => isset($discount->ДатаОкончания) ? (string)$discount->ДатаОкончания : ''
-							,'quantity'     => 0
-						);
-
-						$data['product_discount'][] = $value;
-
-						if ($discount->ЗначениеУсловия) {
-							$value['quantity'] = (int)$discount->ЗначениеУсловия;
+				if (!$exchange1c_relatedoptions || $new_product) {
+					
+					if ($offer->СкидкиНаценки) {
+						$value = array();
+						foreach ($offer->СкидкиНаценки->СкидкаНаценка as $discount) {
+							$value = array(
+								 'customer_group_id'	=> 1
+								,'priority'     => isset($discount->Приоритет) ? (int)$discount->Приоритет : 0
+								,'price'        => (int)(($data['price'] * (100 - (float)str_replace(',', '.', (string)$discount->Процент))) / 100)
+								,'date_start'   => isset($discount->ДатаНачала) ? (string)$discount->ДатаНачала : ''
+								,'date_end'     => isset($discount->ДатаОкончания) ? (string)$discount->ДатаОкончания : ''
+								,'quantity'     => 0
+							);
+	
+							$data['product_discount'][] = $value;
+	
+							if ($discount->ЗначениеУсловия) {
+								$value['quantity'] = (int)$discount->ЗначениеУсловия;
+							}
+	
+							unset($value);
 						}
-
-						unset($value);
 					}
+	
+					$data['status'] = 1;
 				}
+				
+				if (!$exchange1c_relatedoptions || $offer_cnt == count($xml->ПакетПредложений->Предложения->Предложение)
+					|| $data['1c_id'] != substr($xml->ПакетПредложений->Предложения->Предложение[$offer_cnt]->Ид, 0, strlen($data['1c_id'])) ) {
+						
+						$this->updateProduct($data, $product_id, $language_id);
+						unset($data);
+				}
+				
 
-				$data['status'] = 1;
-				$this->updateProduct($data, $product_id, $language_id);
-
-				unset($data);
+				
 			}
 		}
 
@@ -304,7 +386,7 @@ class ModelToolExchange1c extends Model {
 			$this->log->write("Окончен разбор файла: " . $filename );
 
 	}
-
+	
 	private function setOption($name){
 		$lang_id = (int)$this->config->get('config_language_id');
 
@@ -805,6 +887,16 @@ class ModelToolExchange1c extends Model {
 			$result['product_category'] = isset($data['product_category']) ? $data['product_category']: array(0);
 			$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: 0;
 		}
+		
+		if (isset($product['related_options_use'])) {
+			$result['related_options_use'] = $product['related_options_use'];
+		}
+		if (isset($product['related_options_variant_search'])) {
+			$result['related_options_variant_search'] = $product['related_options_variant_search'];
+		}
+		if (isset($product['relatedoptions'])) {
+			$result['relatedoptions'] = $product['relatedoptions'];
+		}
 
 		return $result;
 	}
@@ -858,8 +950,15 @@ class ModelToolExchange1c extends Model {
 	private function updateProduct($product, $product_id = false, $language_id) {
 
 		// Проверяем что обновлять?
-		if ($product_id !== false) {
-			$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
+		if ($this->config->get('exchange1c_relatedoptions')) {
+			if ($product_id == false) {
+				$this->setProduct($product, $language_id);
+				return;
+			}
+		} else {
+			if ($product_id !== false) {
+				$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
+			}
 		}
 
 		// Обновляем описание продукта
@@ -1073,6 +1172,26 @@ class ModelToolExchange1c extends Model {
 			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
+				
+			if ($this->config->get('exchange1c_relatedoptions'))	{
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_to_char`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_to_char`');
+				
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions`');
+				
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_option`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_option`');
+				
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant`');
+				
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant_option`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant_option`');
+				
+				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant_product`');
+				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_variant_product`');	
+			}
 			$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_category`');
@@ -1197,7 +1316,6 @@ class ModelToolExchange1c extends Model {
 						) ENGINE=MyISAM DEFAULT CHARSET=utf8'
 			);
 		}
-
 
 		$query = $this->db->query('SHOW TABLES LIKE "' . DB_PREFIX . 'category_to_1c"');
 
