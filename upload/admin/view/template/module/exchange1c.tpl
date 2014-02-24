@@ -156,6 +156,13 @@
                 <input type="checkbox" value="1" id="exchange1c_fill_parent_cats" name="exchange1c_fill_parent_cats" <?php echo ($exchange1c_fill_parent_cats == 1)? 'checked' : ''; ?>>
               </td>
             </tr>
+            
+            <tr>
+              <td><label for="exchange1c_dont_use_artsync"><?php echo $entry_dont_use_artsync; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_dont_use_artsync" name="exchange1c_dont_use_artsync" <?php echo ($exchange1c_dont_use_artsync == 1)? 'checked' : ''; ?>>
+              </td>
+            </tr>
 
             <tr>
               <td><label for="exchange1c_seo_url"><?php echo $entry_seo_url; ?></label></td>

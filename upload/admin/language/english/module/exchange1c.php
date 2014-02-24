@@ -48,6 +48,7 @@ $_['entry_order_status_to_exchange'] 	= 'Orders status to exchange:';
 $_['entry_order_status_to_exchange_not'] 	= "- don not use -";
 $_['entry_relatedoptions']	= 'Load characteristics as related options (need extension <a href="http://opencartforum.ru/files/file/1501-связанные-опции/">Related Options</a>):';
 $_['entry_relatedoptions_help']	= 'Related options settings should be turned on: "Recalc quantity", "Update options", "Use different related options variants" ';
+$_['entry_dont_use_artsync'] = 'Do not search products by sku:';
 
 $_['entry_order_status']	= 'Uploaded orders status:';
 $_['entry_order_notify']	= 'Notify users of status change:';

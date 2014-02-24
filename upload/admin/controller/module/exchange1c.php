@@ -50,6 +50,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_relatedoptions_help'] = $this->language->get('entry_relatedoptions_help');
 		$this->data['entry_order_status_to_exchange'] = $this->language->get('entry_order_status_to_exchange');
 		$this->data['entry_order_status_to_exchange_not'] = $this->language->get('entry_order_status_to_exchange_not');
+		$this->data['entry_dont_use_artsync'] = $this->language->get('entry_dont_use_artsync');
 
 		$this->data['text_yes'] = $this->language->get('text_yes');
 		$this->data['text_no'] = $this->language->get('text_no');
@@ -223,6 +224,12 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_order_status_to_exchange'] = $this->request->post['exchange1c_order_status_to_exchange'];
 		} else {
 			$this->data['exchange1c_order_status_to_exchange'] = $this->config->get('exchange1c_order_status_to_exchange');
+		}
+		
+		if (isset($this->request->post['exchange1c_dont_use_artsync'])) {
+			$this->data['exchange1c_dont_use_artsync'] = $this->request->post['exchange1c_dont_use_artsync'];
+		} else {
+			$this->data['exchange1c_dont_use_artsync'] = $this->config->get('exchange1c_dont_use_artsync');
 		}
 
 		if (isset($this->request->post['exchange1c_seo_url'])) {

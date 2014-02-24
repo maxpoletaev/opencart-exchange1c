@@ -920,17 +920,23 @@ class ModelToolExchange1c extends Model {
 			$this->updateProduct($product, $product_id, $language_id);
 		}
 		else {
-			// Проверяем, существует ли товар с тем-же артикулом
-			// Если есть, то обновляем его
-			$product_id = $this->getProductBySKU($data['sku']);
-			if ($product_id !== false) {
-				$this->updateProduct($product, $product_id, $language_id);
-			}
-			// Если нет, то создаем новый
-			else {
+			
+			if ($this->config->get('exchange1c_dont_use_artsync')) {
 				$this->load->model('catalog/product');
-				$this->model_catalog_product->addProduct($data);
+				$product_id =	$this->model_catalog_product->addProduct($data);
+			} else {
+				// Проверяем, существует ли товар с тем-же артикулом
+				// Если есть, то обновляем его
 				$product_id = $this->getProductBySKU($data['sku']);
+				if ($product_id !== false) {
+					$this->updateProduct($product, $product_id, $language_id);
+				}
+				// Если нет, то создаем новый
+				else {
+					$this->load->model('catalog/product');
+					$this->model_catalog_product->addProduct($data);
+					$product_id = $this->getProductBySKU($data['sku']);
+				}
 			}
 
 			// Добавляем линк
@@ -988,6 +994,8 @@ class ModelToolExchange1c extends Model {
 
 		//Редактируем продукт
 		$product_id = $this->model_catalog_product->editProduct($product_id, $product_old);
+		
+		
 
 	}
 
