@@ -27,7 +27,7 @@ $_['entry_status']		= 'Status:';
 $_['entry_allow_ip']		= 'Allow IPs (Share a line break. If empty, all addresses are allowed.):';
 
 
-$_['entry_price_type']		= 'Price type:';
+$_['entry_config_price_type']		= 'Price type:';
 $_['entry_customer_group']	= 'Customer group:';
 $_['entry_quantity']		= 'Quantity:';
 $_['entry_priority']		= 'Priority:';
@@ -36,7 +36,7 @@ $_['entry_flush_category']	= 'Flush categories:';
 $_['entry_flush_manufacturer']	= 'Flush manufacturers:';
 $_['entry_flush_quantity']	= 'Flush quantity:';
 $_['entry_flush_attribute']	= 'Flush attributes:';
-$_['entry_fill_parent_cats']	= 'Fill parent categories:';
+$_['entry_fill_parent_cats']	= 'Fill parent categories:<br /><span class="help">May not work with some versions of Opencart</span>';
 $_['entry_seo_url']		= 'Generate SEO URL (depends on <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>):';
 $_['entry_full_log']		= 'Enable log';
 $_['entry_apply_watermark']	= 'Apply watermark';
