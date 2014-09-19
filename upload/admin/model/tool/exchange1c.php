@@ -111,8 +111,6 @@ class ModelToolExchange1c extends Model {
 					$product_counter++;
 				}
 
-				$data = $order;
-
 				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
 					'order_status_id' => $params['new_status'],
 					'comment'         => '',
@@ -166,23 +164,27 @@ class ModelToolExchange1c extends Model {
 		$xml = simplexml_load_file($importFile);
 		
 		$price_types = array();
-		
-		$enable_log = $this->config->get('exchange1c_full_log');
-		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
+        $config_price_type_main = array();
+
+        $enable_log = $this->config->get('exchange1c_full_log');
+        $exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
 
 		$this->load->model('catalog/option');
 
 		if ($enable_log)
 			$this->log->write("Начат разбор файла: " . $filename);
 
-		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
-			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
-				$price_types[(string)$type->Ид] = (string)$type->Наименование;
-			}
-		}
-
 		if (!empty($config_price_type) && count($config_price_type) > 0) {
 			$config_price_type_main = array_shift($config_price_type);
+		}
+
+		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
+			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $key => $type) {
+				$price_types[(string)$type->Ид] = (string)$type->Наименование;
+				if($key == 0 && !isset($config_price_type_main)){
+					$config_price_type_main['keyword'] = (string)$type->Наименование;
+				}
+			}
 		}
 
 		// Инициализация массива скидок для оптимизации алгоритма
@@ -221,7 +223,9 @@ class ModelToolExchange1c extends Model {
 	
 					//Цена за единицу
 					if ($offer->Цены) {
-	
+
+
+
 						// Первая цена по умолчанию - $config_price_type_main
 						if (!$config_price_type_main['keyword']) {
 							$data['price'] = (float)$offer->Цены->Цена->ЦенаЗаЕдиницу;
@@ -471,7 +475,7 @@ class ModelToolExchange1c extends Model {
 				if($product->ХарактеристикиТовара){
 
 					$count_options = count($product->ХарактеристикиТовара->ХарактеристикаТовара);
-
+					$option_desc = '';
 					foreach($product->ХарактеристикиТовара->ХарактеристикаТовара as $option ) {
 						$option_desc .= (string)$option->Наименование . ': ' . (string)$option->Значение . ';';
 					}
@@ -479,7 +483,7 @@ class ModelToolExchange1c extends Model {
 
 				}
 
-				if ($product->Группы) $data['category_1c_id'] = (string)$product->Группы->Ид;
+				if ($product->Группы) $data['category_1c_id'] = $product->Группы->Ид;
 				if ($product->Описание) $data['description'] = (string)$product->Описание;
 				if ($product->Статус) $data['status'] = (string)$product->Статус;
 
@@ -882,14 +886,29 @@ class ModelToolExchange1c extends Model {
 			$product['product_option'] = array();
 		}
 
-		if (isset($product['category_1c_id']) && isset($this->CATEGORIES[$product['category_1c_id']])) {
-			$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
-			$result['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
+		if (isset($product['category_1c_id'])) {
+			if (is_object($product['category_1c_id'])) {
+				foreach ($product['category_1c_id'] as $category_item) {
+					if (isset($this->CATEGORIES[(string) $category_item])) {
+						$result['product_category'][] = (int) $this->CATEGORIES[(string) $category_item];
+						$result['main_category_id'] = 0;
+					}
+				}
+			} else {
+				$product['category_1c_id'] = (string) $product['category_1c_id'];
+				if (isset($this->CATEGORIES[$product['category_1c_id']])) {
+					$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
+					$result['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
+				} else {
+					$result['product_category'] = isset($data['product_category']) ? $data['product_category'] : array(0);
+					$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id'] : 0;
+				}
+			}
 		}
-		else {
-			$result['product_category'] = isset($data['product_category']) ? $data['product_category']: array(0);
-			$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: 0;
-		}
+
+        if(!isset($result['product_category']) && isset($data['product_category'])){
+            $result['product_category'] = $data['product_category'];
+        }
 		
 		if (isset($product['related_options_use'])) {
 			$result['related_options_use'] = $product['related_options_use'];
@@ -992,7 +1011,6 @@ class ModelToolExchange1c extends Model {
 		}
 
 		$this->load->model('catalog/product');
-
 		$product_old = $this->initProduct($product, $product_old, $language_id);
 
 		//Редактируем продукт
@@ -1097,6 +1115,13 @@ class ModelToolExchange1c extends Model {
 	 * Заполняет продуктами родительские категории
 	 */
 	public function fillParentsCategories() {
+        $this->load->model('catalog/product');
+
+        if (!method_exists($this->model_catalog_product, 'getProductMainCategoryId')) {
+            $this->log->write("--- Exchange1c: Заполнение родительскими категориями отменено. Отсутствует main_category_id.");
+            return;
+        }
+
 		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
 		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
 
@@ -1264,14 +1289,17 @@ class ModelToolExchange1c extends Model {
 
 		// Очищает таблицы от всех производителей
 		if ($params['manufacturer']) {
-			if ($enable_log)
+            $query = $this->db->query("SHOW TABLES FROM " . DB_DATABASE . " LIKE '" . DB_PREFIX . "manufacturer_description'");
+            if($query->num_rows){
+                if ($enable_log)
+                    $this->log->write("Очистка таблиц описания производителей:");
+                $this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
+            }
+            if ($enable_log)
 				$this->log->write("Очистка таблиц производителей:");
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
-			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
-			if ($enable_log)
-				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_to_store');
