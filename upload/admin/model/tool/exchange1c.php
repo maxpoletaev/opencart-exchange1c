@@ -164,9 +164,10 @@ class ModelToolExchange1c extends Model {
 		$xml = simplexml_load_file($importFile);
 		
 		$price_types = array();
-		
-		$enable_log = $this->config->get('exchange1c_full_log');
-		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
+        $config_price_type_main = array();
+
+        $enable_log = $this->config->get('exchange1c_full_log');
+        $exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
 
 		$this->load->model('catalog/option');
 
@@ -904,6 +905,10 @@ class ModelToolExchange1c extends Model {
 				}
 			}
 		}
+
+        if(!isset($result['product_category']) && isset($data['product_category'])){
+            $result['product_category'] = $data['product_category'];
+        }
 		
 		if (isset($product['related_options_use'])) {
 			$result['related_options_use'] = $product['related_options_use'];
@@ -1006,7 +1011,6 @@ class ModelToolExchange1c extends Model {
 		}
 
 		$this->load->model('catalog/product');
-
 		$product_old = $this->initProduct($product, $product_old, $language_id);
 
 		//Редактируем продукт
