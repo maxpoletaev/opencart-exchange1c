@@ -1287,17 +1287,14 @@ class ModelToolExchange1c extends Model {
 				$this->log->write('DELETE FROM ' . DB_PREFIX . 'url_alias WHERE query LIKE "%category_id=%"');
 		}
 
-
 		// Очищает таблицы от всех производителей
 		if ($params['manufacturer']) {
-            if(file_exists(DIR_SYSTEM . 'library/ocstore.php')){
+            $query = $this->db->query("SHOW TABLES FROM " . DB_DATABASE . " LIKE '" . DB_PREFIX . "manufacturer_description'");
+            if($query->num_rows){
                 if ($enable_log)
                     $this->log->write("Очистка таблиц описания производителей:");
                 $this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer_description');
             }
-
-
-
             if ($enable_log)
 				$this->log->write("Очистка таблиц производителей:");
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
