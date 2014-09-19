@@ -947,8 +947,14 @@ class ModelToolExchange1c extends Model {
 				$this->db->query('INSERT INTO `' .  DB_PREFIX . 'product_to_1c` SET product_id = ' . (int)$product_id . ', `1c_id` = "' . $this->db->escape($product['1c_id']) . '"');
 			}
 		}
+		// Устанавливаем SEO URL
+		if ($product_id){
+			//только если тип 'translit'
+			if ($this->config->get('exchange1c_seo_url') == 2) {
+				$this->setSeoURL('product_id', $product_id, $product['name']);
+			}
+		}
 	}
-
 
 	/**
 	 * Обновляет продукт
@@ -997,9 +1003,36 @@ class ModelToolExchange1c extends Model {
 
 		//Редактируем продукт
 		$product_id = $this->model_catalog_product->editProduct($product_id, $product_old);
-		
-		
 
+	}
+
+	/**
+	 * Устанавливает SEO URL (ЧПУ) для заданного товара
+	 *
+	 * @param 	inf
+	 * @param 	string
+	 */
+	private function setSeoURL($url_type, $element_id, $element_name) {
+		$this->db->query("DELETE FROM `" . DB_PREFIX . "url_alias` WHERE `query` = '" . $url_type . "=" . $element_id . "'");
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "url_alias` SET `query` = '" . $url_type . "=" . $element_id ."', `keyword`='" . $this->transString($element_name) . "'");
+	}
+
+	/**
+	 * Транслиетрирует RUS->ENG
+	 * @param string $aString
+	 * @return string type
+	 */
+	private function transString($aString) {
+		$rus = array(" ", "/", "*", "-", "+", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "[", "]", "{", "}", "~", ";", ":", "'", "\"", "<", ">", ",", ".", "?", "А", "Б", "В", "Г", "Д", "Е", "З", "И", "Й", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ъ", "Ы", "Ь", "Э", "а", "б", "в", "г", "д", "е", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", "у", "ф", "х", "ъ", "ы", "ь", "э", "ё",  "ж",  "ц",  "ч",  "ш",  "щ",   "ю",  "я",  "Ё",  "Ж",  "Ц",  "Ч",  "Ш",  "Щ",   "Ю",  "Я");
+		$lat = array("-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-",  "-", "-", "-", "-", "-", "-", "a", "b", "v", "g", "d", "e", "z", "i", "y", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "",  "i", "",  "e", "a", "b", "v", "g", "d", "e", "z", "i", "j", "k", "l", "m", "n", "o", "p", "r", "s", "t", "u", "f", "h", "",  "i", "",  "e", "yo", "zh", "ts", "ch", "sh", "sch", "yu", "ya", "yo", "zh", "ts", "ch", "sh", "sch", "yu", "ya");
+
+		$string = str_replace($rus, $lat, $aString);
+
+		while (mb_strpos($string, '--')) {
+			$string = str_replace('--', '-', $string);
+		}
+
+		return $string;
 	}
 
 	/**
