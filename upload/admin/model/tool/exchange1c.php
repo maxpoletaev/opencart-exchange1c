@@ -533,6 +533,12 @@ class ModelToolExchange1c extends Model {
 
 										$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
 										$data['manufacturer_id'] = $manufacturer_id;
+
+										//только если тип 'translit'
+										if ($this->config->get('exchange1c_seo_url') == 2) {
+											$man_name = "brand-" . $manufacturer_name;
+											$this->setSeoURL('manufacturer_id', $manufacturer_id, $man_name);
+										}
 									}
 								break;
 
@@ -662,6 +668,12 @@ class ModelToolExchange1c extends Model {
 				}
 
 				$this->CATEGORIES[$id] = $category_id;
+			}
+
+			//только если тип 'translit'
+			if ($this->config->get('exchange1c_seo_url') == 2) {
+				$cat_name = "category-" . $data['parent_id'] . "-" . $data['category_description'][$language_id]['name'];
+				$this->setSeoURL('category_id', $category_id, $cat_name);
 			}
 
 			if ($category->Группы) $this->insertCategory($category->Группы->Группа, $category_id, $language_id);
