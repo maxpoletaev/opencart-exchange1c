@@ -11,7 +11,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('setting/setting');
-			
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$this->request->post['exchange1c_order_date'] = $this->config->get('exchange1c_order_date');
 			$this->model_setting_setting->editSetting('exchange1c', $this->request->post);
@@ -45,6 +45,9 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['text_clear'] = $this->language->get('text_clear');
 		$this->data['entry_name'] = $this->language->get('entry_name');
 		$this->data['entry_image'] = $this->language->get('entry_image');
+
+		$this->data['entry_exportfilters'] = $this->language->get('entry_exportfilters');
+		$this->data['entry_exportfilters_help'] = $this->language->get('entry_exportfilters_help');
 
 		$this->data['entry_relatedoptions'] = $this->language->get('entry_relatedoptions');
 		$this->data['entry_relatedoptions_help'] = $this->language->get('entry_relatedoptions_help');
@@ -101,7 +104,7 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['error_exchange1c_password'] = '';
 		}
-		
+
 		$this->data['breadcrumbs'] = array();
 
 		$this->data['breadcrumbs'][] = array(
@@ -149,8 +152,8 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['exchange1c_allow_ip'] = $this->config->get('exchange1c_allow_ip'); 
-		} 
-		
+		}
+
 		if (isset($this->request->post['exchange1c_status'])) {
 			$this->data['exchange1c_status'] = $this->request->post['exchange1c_status'];
 		}
@@ -193,7 +196,7 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_flush_manufacturer'] = $this->config->get('exchange1c_flush_manufacturer');
 		}
-        
+
 		if (isset($this->request->post['exchange1c_flush_quantity'])) {
 			$this->data['exchange1c_flush_quantity'] = $this->request->post['exchange1c_flush_quantity'];
 		}
@@ -214,22 +217,30 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_fill_parent_cats'] = $this->config->get('exchange1c_fill_parent_cats');
 		}
-		
+
 		if (isset($this->request->post['exchange1c_relatedoptions'])) {
 			$this->data['exchange1c_relatedoptions'] = $this->request->post['exchange1c_relatedoptions'];
 		} else {
 			$this->data['exchange1c_relatedoptions'] = $this->config->get('exchange1c_relatedoptions');
 		}
+
 		if (isset($this->request->post['exchange1c_order_status_to_exchange'])) {
 			$this->data['exchange1c_order_status_to_exchange'] = $this->request->post['exchange1c_order_status_to_exchange'];
 		} else {
 			$this->data['exchange1c_order_status_to_exchange'] = $this->config->get('exchange1c_order_status_to_exchange');
 		}
-		
+
 		if (isset($this->request->post['exchange1c_dont_use_artsync'])) {
 			$this->data['exchange1c_dont_use_artsync'] = $this->request->post['exchange1c_dont_use_artsync'];
 		} else {
 			$this->data['exchange1c_dont_use_artsync'] = $this->config->get('exchange1c_dont_use_artsync');
+		}
+
+		if (isset($this->request->post['exchange1c_exportfilters'])) {
+			$this->data['exchange1c_exportfilters'] = $this->request->post['exchange1c_exportfilters'];
+		}
+		else {
+			$this->data['exchange1c_exportfilters'] = $this->config->get('exchange1c_exportfilters');
 		}
 
 		if (isset($this->request->post['exchange1c_seo_url'])) {

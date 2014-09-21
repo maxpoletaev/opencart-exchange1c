@@ -44,6 +44,9 @@ $_['text_image_manager'] = 'Image Manager';
 $_['text_browse']        = 'Browse Files';
 $_['text_clear']         = 'Clear Image';
 
+$_['entry_exportfilters'] 	= 'Export filters from Options:';
+$_['entry_exportfilters_help'] 	= 'Create Filter groups before export. Name of Filter group must be equal Options';
+
 $_['entry_order_status_to_exchange'] 	= 'Orders status to exchange:';
 $_['entry_order_status_to_exchange_not'] 	= "- don not use -";
 $_['entry_relatedoptions']	= 'Load characteristics as related options (need extension <a href="http://opencartforum.ru/files/file/1501-связанные-опции/">Related Options</a>):';

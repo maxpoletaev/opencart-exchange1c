@@ -63,7 +63,7 @@ class ModelToolExchange1c extends Model {
 						'Контакт1' => array(
 							'Тип' => 'ТелефонРабочий'
 							,'Значение'	=> $order['telephone']
-						)
+						  )
 						,'Контакт2'	=> array(
 							 'Тип' => 'Почта'
 							,'Значение'	=> $order['email']
@@ -425,6 +425,7 @@ class ModelToolExchange1c extends Model {
 
 		$enable_log = $this->config->get('exchange1c_full_log');
 		$apply_watermark = $this->config->get('exchange1c_apply_watermark');
+		$exportfilters = $this->config->get('exchange1c_exportfilters');
 
 		$xml = simplexml_load_file($importFile);
 		$data = array();
@@ -478,7 +479,9 @@ class ModelToolExchange1c extends Model {
 				if ($product->Описание) $data['description'] = (string)$product->Описание;
 				if ($product->Статус) $data['status'] = (string)$product->Статус;
 
-				unset($product_filter);
+				if ($exportfilters) {
+					unset($product_filter);
+				}
 
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
@@ -499,8 +502,10 @@ class ModelToolExchange1c extends Model {
 								continue;
 							}
 
-							$filter_id = $this->getProductFilter($attribute['name'], $attribute_value);
-							$product_filter[$filter_id] = $filter_id;
+							if ($exportfilters) {
+								$filter_id = $this->getProductFilter($attribute['name'], $attribute_value);
+								$product_filter[$filter_id] = $filter_id;
+							}
 
 							if ($enable_log)
 				 				$this->log->write("   > " . $attribute_value);
@@ -581,17 +586,20 @@ class ModelToolExchange1c extends Model {
 						}
 					}
 				}
-				if (isset($product_filter)) {
-					$data['product_filter'] = $product_filter;
+				if ($exportfilters) {
+					if (isset($product_filter)) {
+						$data['product_filter'] = $product_filter;
+					}
 				}
 
 				$this->setProduct($data, $language_id);
 
-				if (isset($product_filter)) {
-					$product_id = $this->getProductIdBy1CProductId ($uuid[0]);
-					$this->insertCategoryFilters($product_id, $product_filter);
+				if ($exportfilters) {
+					if (isset($product_filter)) {
+						$product_id = $this->getProductIdBy1CProductId ($uuid[0]);
+						$this->insertCategoryFilters($product_id, $product_filter);
+					}
 				}
-
 
 				unset($data);
 			}
@@ -761,6 +769,7 @@ class ModelToolExchange1c extends Model {
 
 	private function getProductWithAllData($product_id) {
 		$this->load->model('catalog/product');
+		$exportfilters = $this->config->get('exchange1c_exportfilters');
 		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 
 		$data = array();
@@ -789,7 +798,9 @@ class ModelToolExchange1c extends Model {
 			
 			$data = array_merge($data, array('product_discount' => $this->model_catalog_product->getProductDiscounts($product_id)));
 			$data = array_merge($data, array('product_special' => $this->model_catalog_product->getProductSpecials($product_id)));
-			$data = array_merge($data, array('product_filter' => $this->model_catalog_product->getProductFilters($product_id)));
+			if ($exportfilters) {
+				$data = array_merge($data, array('product_filter' => $this->model_catalog_product->getProductFilters($product_id)));
+			}
 			$data = array_merge($data, array('product_download' => $this->model_catalog_product->getProductDownloads($product_id)));
 			$data = array_merge($data, array('product_category' => $this->model_catalog_product->getProductCategories($product_id)));
 			$data = array_merge($data, array('product_store' => $this->model_catalog_product->getProductStores($product_id)));
@@ -817,6 +828,7 @@ class ModelToolExchange1c extends Model {
 	private function initProduct($product, $data = array(), $language_id) {
 
 		$this->load->model('tool/image');
+		$exportfilters = $this->config->get('exchange1c_exportfilters');
 
 		$result = array(
 			'product_description' => array()
@@ -862,9 +874,9 @@ class ModelToolExchange1c extends Model {
 			,'product_attribute'    => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
 		);
 
-		$result['product_filter']   = (isset($product['product_filter'])) ? $product['product_filter'] : (isset($data['product_filter']) ? $data['product_filter'] : array());
-        //$this->log->write("initProduct" . print_r(result['product_filter'], true));
-
+		if ($exportfilters) {
+			$result['product_filter']   = (isset($product['product_filter'])) ? $product['product_filter'] : (isset($data['product_filter']) ? $data['product_filter'] : array());
+        }
 		if (VERSION == '1.5.3.1') {
 			$result['product_tag'] = (isset($product['product_tag'])) ? $product['product_tag'] : (isset($data['product_tag']) ? $data['product_tag']: array());
 		}
@@ -1271,7 +1283,7 @@ class ModelToolExchange1c extends Model {
 			if ($enable_log)
 				$this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'product_to_1c`');
 				
-			if ($this->config->get('exchange1c_relatedoptions'))	{
+			if ($this->config->get('exchange1c_relatedoptions')) {
 				$this->db->query('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_to_char`');
 				if ($enable_log) $this->log->write('TRUNCATE TABLE `' . DB_PREFIX . 'relatedoptions_to_char`');
 				
