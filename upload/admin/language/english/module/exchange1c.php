@@ -27,7 +27,7 @@ $_['entry_status']		= 'Status:';
 $_['entry_allow_ip']		= 'Allow IPs (Share a line break. If empty, all addresses are allowed.):';
 
 
-$_['entry_price_type']		= 'Price type:';
+$_['entry_config_price_type']		= 'Price type:';
 $_['entry_customer_group']	= 'Customer group:';
 $_['entry_quantity']		= 'Quantity:';
 $_['entry_priority']		= 'Priority:';
