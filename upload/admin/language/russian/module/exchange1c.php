@@ -36,7 +36,10 @@ $_['entry_flush_manufacturer']	= 'Сбрасывать производител�
 $_['entry_flush_quantity']	= 'Сбрасывать количество товаров:';
 $_['entry_flush_attribute']	= 'Сбрасывать атрибуты:';
 $_['entry_fill_parent_cats']	= 'Заполнять родительские категории:';
-$_['entry_seo_url']		= 'Генерировать SEO URL (требуется модуль <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>):';
+$_['entry_seo_url']		= 'Генерировать SEO URL: <br> требуется модуль <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>)';
+$_['entry_seo_url_deadcow']		= 'через Deadcow SEO';
+$_['entry_seo_url_translit']	= 'Транслитерация';
+
 $_['entry_full_log']		= 'Включить подробный лог загрузки';
 $_['entry_apply_watermark']	= 'Накладывать водяные знаки при загрузке';
 $_['text_image_manager'] = 'Менеджер изображений';

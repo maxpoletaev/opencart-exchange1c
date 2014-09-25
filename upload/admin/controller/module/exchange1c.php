@@ -37,6 +37,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_flush_attribute'] = $this->language->get('entry_flush_attribute');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
+		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
+		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
 		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
 		$this->data['entry_apply_watermark'] = $this->language->get('entry_apply_watermark');
 		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
@@ -560,8 +562,8 @@ class ControllerModuleExchange1c extends Controller {
 			if ($this->config->get('exchange1c_fill_parent_cats')) {
 				$this->model_tool_exchange1c->fillParentsCategories();
 			}
-
-			if ($this->config->get('exchange1c_seo_url')) {
+            // Только если выбран способ deadcow_seo
+			if ($this->config->get('exchange1c_seo_url') == 1) {
 				$this->load->model('module/deadcow_seo');
 				$this->model_module_deadcow_seo->generateCategories($this->config->get('deadcow_seo_categories_template'), 'Russian');
 				$this->model_module_deadcow_seo->generateProducts($this->config->get('deadcow_seo_products_template'), 'Russian');

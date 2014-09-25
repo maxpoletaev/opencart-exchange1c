@@ -165,17 +165,14 @@
             </tr>
 
             <tr>
-              <td><label for="exchange1c_seo_url"><?php echo $entry_seo_url; ?></label></td>
+              <td><?php echo $entry_seo_url; ?></td>
               <td>
-                <input type="checkbox" value="1" id="exchange1c_seo_url" name="exchange1c_seo_url" <?php echo ($exchange1c_seo_url == 1)? 'checked' : ''; ?>>
-              </td>
-            </tr>
-            
-            <tr>
-              <td><label for="exchange1c_relatedoptions"><?php echo $entry_relatedoptions; ?></label></td>
-              <td>
-                <input type="checkbox" value="1" id="exchange1c_relatedoptions" name="exchange1c_relatedoptions" <?php echo ($exchange1c_relatedoptions == 1)? 'checked' : ''; ?>>
-                <span class="help"><?php echo $entry_relatedoptions_help; ?></span>
+
+                <select name="exchange1c_seo_url">
+                  <option value="0" <?php echo ($exchange1c_seo_url == 0) ? 'selected' : '' ;?>><?php echo $text_disabled; ?></option>
+                  <option value="1" <?php echo ($exchange1c_seo_url == 1) ? 'selected' : '' ;?>><?php echo $entry_seo_url_deadcow; ?></option>
+                  <option value="2" <?php echo ($exchange1c_seo_url == 2) ? 'selected' : '' ;?>><?php echo $entry_seo_url_translit; ?></option>
+                </select>
               </td>
             </tr>
 
