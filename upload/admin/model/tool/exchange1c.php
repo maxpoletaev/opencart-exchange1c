@@ -111,8 +111,6 @@ class ModelToolExchange1c extends Model {
 					$product_counter++;
 				}
 
-				$data = $order;
-
 				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
 					'order_status_id' => $params['new_status'],
 					'comment'         => '',
