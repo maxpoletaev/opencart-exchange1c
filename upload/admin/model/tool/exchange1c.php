@@ -162,9 +162,8 @@ class ModelToolExchange1c extends Model {
 
 		$importFile = DIR_CACHE . 'exchange1c/' . $filename;
 		$xml = simplexml_load_file($importFile);
-		
 		$price_types = array();
-		
+		$config_price_type_main = array();
 		$enable_log = $this->config->get('exchange1c_full_log');
 		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
 
@@ -173,14 +172,17 @@ class ModelToolExchange1c extends Model {
 		if ($enable_log)
 			$this->log->write("Начат разбор файла: " . $filename);
 
-		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
-			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $type) {
-				$price_types[(string)$type->Ид] = (string)$type->Наименование;
-			}
-		}
-
 		if (!empty($config_price_type) && count($config_price_type) > 0) {
 			$config_price_type_main = array_shift($config_price_type);
+		}
+
+		if ($xml->ПакетПредложений->ТипыЦен->ТипЦены) {
+			foreach ($xml->ПакетПредложений->ТипыЦен->ТипЦены as $key => $type) {
+				$price_types[(string)$type->Ид] = (string)$type->Наименование;
+				if($key == 0 && !isset($config_price_type_main)) {
+					$config_price_type_main['keyword'] = (string)$type->Наименование;
+				}
+			}
 		}
 
 		// Инициализация массива скидок для оптимизации алгоритма
