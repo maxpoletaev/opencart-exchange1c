@@ -894,13 +894,28 @@ class ModelToolExchange1c extends Model {
 			$product['product_option'] = array();
 		}
 
-		if (isset($product['category_1c_id']) && isset($this->CATEGORIES[$product['category_1c_id']])) {
-			$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
-			$result['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
+		if (isset($product['category_1c_id'])) {
+			if (is_object($product['category_1c_id'])) {
+				foreach ($product['category_1c_id'] as $category_item) {
+					if (isset($this->CATEGORIES[(string)$category_item])) {
+						$result['product_category'][] = (int)$this->CATEGORIES[(string)$category_item];
+						$result['main_category_id'] = 0;
+					}
+				}
+			} else {
+				$product['category_1c_id'] = (string)$product['category_1c_id'];
+				if (isset($this->CATEGORIES[$product['category_1c_id']])) {
+					$result['product_category'] = array((int)$this->CATEGORIES[$product['category_1c_id']]);
+					$result['main_category_id'] = (int)$this->CATEGORIES[$product['category_1c_id']];
+				} else {
+					$result['product_category'] = isset($data['product_category']) ? $data['product_category'] : array(0);
+					$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id'] : 0;
+				}
+			}
 		}
-		else {
-			$result['product_category'] = isset($data['product_category']) ? $data['product_category']: array(0);
-			$result['main_category_id'] = isset($data['main_category_id']) ? $data['main_category_id']: 0;
+
+		if (!isset($result['product_category']) && isset($data['product_category'])) {
+			$result['product_category'] = $data['product_category'];
 		}
 		
 		if (isset($product['related_options_use'])) {
@@ -1144,6 +1159,12 @@ class ModelToolExchange1c extends Model {
 	 * Заполняет продуктами родительские категории
 	 */
 	public function fillParentsCategories() {
+		$this->load->model('catalog/product');
+		if (!method_exists($this->model_catalog_product, 'getProductMainCategoryId')) {
+			$this->log->write("  !!!: Заполнение родительскими категориями отменено. Отсутствует main_category_id.");
+			return;
+		}
+
 		$this->db->query('DELETE FROM `' .DB_PREFIX . 'product_to_category` WHERE `main_category` = 0');
 		$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'product_to_category` WHERE `main_category` = 1');
 
