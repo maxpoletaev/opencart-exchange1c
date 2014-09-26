@@ -480,7 +480,7 @@ class ModelToolExchange1c extends Model {
 
 				}
 
-				if ($product->Группы) $data['category_1c_id'] = (string)$product->Группы->Ид;
+				if ($product->Группы) $data['category_1c_id'] = $product->Группы->Ид;
 				if ($product->Описание) $data['description'] = (string)$product->Описание;
 				if ($product->Статус) $data['status'] = (string)$product->Статус;
 
