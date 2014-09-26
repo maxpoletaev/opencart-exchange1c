@@ -471,6 +471,7 @@ class ModelToolExchange1c extends Model {
 				if($product->ХарактеристикиТовара){
 
 					$count_options = count($product->ХарактеристикиТовара->ХарактеристикаТовара);
+					$option_desc = '';
 
 					foreach($product->ХарактеристикиТовара->ХарактеристикаТовара as $option ) {
 						$option_desc .= (string)$option->Наименование . ': ' . (string)$option->Значение . ';';
