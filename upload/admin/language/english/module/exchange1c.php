@@ -17,6 +17,7 @@ $_['text_max_filesize']		= 'Max upload size %s MB';
 
 $_['text_empty']		= 'Settings are missing';
 $_['text_homepage']		= 'Module homepage';
+$_['source_code']       = 'Source code on GitHub';
 $_['text_price_default']	= 'Price for OpenCart';
 
 

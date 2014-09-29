@@ -19,7 +19,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 1.5.1';
+		$this->data['version'] = 'Version 1.6.0';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
@@ -65,6 +65,7 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['text_empty'] = $this->language->get('text_empty');
 		$this->data['text_max_filesize'] = sprintf($this->language->get('text_max_filesize'), @ini_get('max_file_uploads'));
 		$this->data['text_homepage'] = $this->language->get('text_homepage');
+		$this->data['source_code'] = $this->language->get('source_code');
 		$this->data['entry_status'] = $this->language->get('entry_status');
 		$this->data['entry_order_status'] = $this->language->get('entry_order_status');
 		$this->data['entry_order_currency'] = $this->language->get('entry_order_currency');

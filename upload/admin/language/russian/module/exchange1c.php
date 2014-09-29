@@ -17,6 +17,7 @@ $_['text_max_filesize']		= 'Загружаемый файл не должен п
 
 $_['text_empty']		= 'Настроек пока нет';
 $_['text_homepage']		= 'Домашняя страничка модуля';
+$_['source_code']       = 'Исходный код на GitHub';
 $_['text_price_default']	= 'Цена на сайте';
 
 
