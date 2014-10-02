@@ -451,7 +451,7 @@ class ModelToolExchange1c extends Model {
 
 				$data['model'] = $product->Артикул? (string)$product->Артикул : 'не задана';
 				$data['name'] = $product->Наименование? (string)$product->Наименование : 'не задано';
-				$data['weight'] = $product->Вес? (float)$product->Вес : 0;
+				$data['weight'] = $product->Вес? (float)$product->Вес : null;
 				$data['sku'] = $product->Артикул? (string)$product->Артикул : '';
 
 				if ($enable_log)
