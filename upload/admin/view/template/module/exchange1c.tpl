@@ -158,6 +158,14 @@
             </tr>
             
             <tr>
+              <td><label for="exchange1c_relatedoptions"><?php echo $entry_relatedoptions; ?></label></td>
+              <td>
+                <input type="checkbox" value="1" id="exchange1c_relatedoptions" name="exchange1c_relatedoptions" <?php echo ($exchange1c_relatedoptions == 1)? 'checked' : ''; ?>>
+                <span class="help"><?php echo $entry_relatedoptions_help; ?></span>
+              </td>
+            </tr>
+            
+            <tr>
               <td><label for="exchange1c_dont_use_artsync"><?php echo $entry_dont_use_artsync; ?></label></td>
               <td>
                 <input type="checkbox" value="1" id="exchange1c_dont_use_artsync" name="exchange1c_dont_use_artsync" <?php echo ($exchange1c_dont_use_artsync == 1)? 'checked' : ''; ?>>
