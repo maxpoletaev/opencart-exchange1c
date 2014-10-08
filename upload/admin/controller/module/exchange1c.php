@@ -36,6 +36,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_flush_quantity'] = $this->language->get('entry_flush_quantity');
 		$this->data['entry_flush_attribute'] = $this->language->get('entry_flush_attribute');
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
+		$this->data['entry_delimiter'] = $this->language->get('entry_delimiter');
+		$this->data['entry_delimiter_help'] = $this->language->get('entry_delimiter_help');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
 		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
@@ -153,6 +155,13 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['exchange1c_allow_ip'] = $this->config->get('exchange1c_allow_ip'); 
 		} 
+		
+		if (isset($this->request->post['delimiter_symbol'])) {
+			$this->data['delimiter_symbol'] = $this->request->post['delimiter_symbol'];
+		}
+		else {
+			$this->data['delimiter_symbol'] = $this->config->get('delimiter_symbol');
+		}
 		
 		if (isset($this->request->post['exchange1c_status'])) {
 			$this->data['exchange1c_status'] = $this->request->post['exchange1c_status'];
