@@ -692,12 +692,13 @@ class ModelToolExchange1c extends Model {
 	private function insertAttribute($xml) {
 		$this->load->model('catalog/attribute');
 		$this->load->model('catalog/attribute_group');
+		$lang_id = (int)$this->config->get('config_language_id');
 
 		$attribute_group = $this->model_catalog_attribute_group->getAttributeGroup(1);
 
 		if (!$attribute_group) {
 
-			$attribute_group_description[1] = array (
+			$attribute_group_description[$lang_id] = array (
 				'name' => 'Свойства'
 			);
 
@@ -729,7 +730,7 @@ class ModelToolExchange1c extends Model {
 				'sort_order'            => 0,
 			);
 
-			$data['attribute_description'][1]['name'] = (string)$name;
+			$data['attribute_description'][$lang_id]['name'] = (string)$name;
 
 			// Если атрибут уже был добавлен, то возвращаем старый id, если атрибута нет, то создаем его и возвращаем его id
 			$current_attribute = $this->db->query('SELECT attribute_id FROM ' . DB_PREFIX . 'attribute_to_1c WHERE 1c_attribute_id = "' . $id . '"');
