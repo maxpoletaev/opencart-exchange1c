@@ -166,6 +166,7 @@ class ModelToolExchange1c extends Model {
 		$config_price_type_main = array();
 		$enable_log = $this->config->get('exchange1c_full_log');
 		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
+		$delimiter_symbol = $this->config->get('delimiter_symbol');
 
 		$this->load->model('catalog/option');
 
@@ -275,7 +276,13 @@ class ModelToolExchange1c extends Model {
 					foreach ($offer->ХарактеристикиТовара->ХарактеристикаТовара as $i => $opt) {
 						$name_1c = (string)$opt->Наименование;
 						$value_1c = (string)$opt->Значение;
-	
+						
+						if (!empty($delimiter_symbol)) {
+								$str=strpos($name_1c, $this->config->get('delimiter_symbol'));
+								$name_1c = substr($name_1c, 0, $str);
+						
+						}
+						
 						if (!empty($name_1c) && !empty($value_1c)) {
 							
 							if ($exchange1c_relatedoptions) {
@@ -483,6 +490,36 @@ class ModelToolExchange1c extends Model {
 				if ($product->Группы) $data['category_1c_id'] = $product->Группы->Ид;
 				if ($product->Описание) $data['description'] = (string)$product->Описание;
 				if ($product->Статус) $data['status'] = (string)$product->Статус;
+				if ($product->Изготовитель) {
+								$manufacturer_name = (string)$product->Изготовитель->Наименование;
+				
+								$query = $this->db->query("SELECT manufacturer_id FROM ". DB_PREFIX ."manufacturer WHERE name='". $manufacturer_name ."'");
+                                
+									if ($query->num_rows) {
+                                        $data['manufacturer_id'] = $query->row['manufacturer_id'];
+                                }
+									else {
+													$data_manufacturer = array(
+														'name'                  => $manufacturer_name,
+														'keyword'               => '',
+														'sort_order'            => 0,
+														'manufacturer_store'    => array(0 => 0)
+													);
+                                        
+													$data_manufacturer['manufacturer_description'] = array(
+														$language_id => array(
+															'meta_keyword'          => '',
+															'meta_description'      => '',
+															'description'           => '',
+															'seo_title'             => '',
+															'seo_h1'                => ''
+														),
+													);
+
+											$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
+											$data['manufacturer_id'] = $manufacturer_id;
+										}
+							}
 
 				// Свойства продукта
 				if ($product->ЗначенияСвойств) {
@@ -714,7 +751,7 @@ class ModelToolExchange1c extends Model {
 			$id	= (string)$attribute->Ид;
 			$name = (string)$attribute->Наименование;
 			$values	= array();
-
+			
 			if ((string)$attribute->ВариантыЗначений) {
 				if ((string)$attribute->ТипЗначений == 'Справочник') {
 					foreach($attribute->ВариантыЗначений->Справочник as $option_value){
