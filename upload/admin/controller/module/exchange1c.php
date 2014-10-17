@@ -407,9 +407,9 @@ class ControllerModuleExchange1c extends Controller {
 			}
 			else {
 
-				// Читаем первые 256 байт и определяем файл по сигнатуре, ибо мало ли, какое у него имя
+				// Читаем первые 1024 байт и определяем файл по сигнатуре, ибо мало ли, какое у него имя
 				$handle = fopen($this->request->files['file']['tmp_name'], 'r');
-				$buffer = fread($handle, 256);
+				$buffer = fread($handle, 1024);
 				fclose($handle);
 
 				if (strpos($buffer, 'Классификатор')) {
