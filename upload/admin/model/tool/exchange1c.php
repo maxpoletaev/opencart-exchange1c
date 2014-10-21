@@ -111,12 +111,6 @@ class ModelToolExchange1c extends Model {
 					$product_counter++;
 				}
 
-				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
-					'order_status_id' => $params['new_status'],
-					'comment'         => '',
-					'notify'          => $params['notify']
-				));
-
 				$document_counter++;
 			}
 		}
@@ -125,6 +119,29 @@ class ModelToolExchange1c extends Model {
 		$xml = $this->array_to_xml($document, new SimpleXMLElement($root));
 
 		return $xml->asXML();
+	}
+
+	public function queryOrdersStatus($params){
+
+		$this->load->model('sale/order');
+
+		if ($params['exchange_status'] != 0) {
+			$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `order_status_id` = " . $params['exchange_status'] . "");
+		} else {
+			$query = $this->db->query("SELECT order_id FROM `" . DB_PREFIX . "order` WHERE `date_added` >= '" . $params['from_date'] . "'");
+		}
+
+		if ($query->num_rows) {
+			foreach ($query->rows as $orders_data) {
+				$this->model_sale_order->addOrderHistory($orders_data['order_id'], array(
+					'order_status_id' => $params['new_status'],
+					'comment'         => '',
+					'notify'          => $params['notify']
+				));
+			}
+		}
+
+		return true;
 	}
 
 
