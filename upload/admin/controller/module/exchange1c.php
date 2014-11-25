@@ -594,6 +594,16 @@ class ControllerModuleExchange1c extends Controller {
 	}
 
 	public function modeQueryOrders() {
+		if (!isset($this->request->cookie['key'])) {
+			echo "Cookie fail\n";
+			return;
+		}
+
+		if ($this->request->cookie['key'] != md5($this->config->get('exchange1c_password'))) {
+			echo "failure\n";
+			echo "Session error";
+			return;
+		}
 
 		$this->load->model('tool/exchange1c');
 
@@ -605,13 +615,44 @@ class ControllerModuleExchange1c extends Controller {
 			,'currency'		=> $this->config->get('exchange1c_order_currency') ? $this->config->get('exchange1c_order_currency') : 'руб.'
 		));
 
-		// Обновляем данные о последнем запросе заказов
-		$this->load->model('setting/setting');
-		$config = $this->model_setting_setting->getSetting('exchange1c');
-		$config['exchange1c_order_date'] = date('Y-m-d H:i:s');
-		$this->model_setting_setting->editSetting('exchange1c', $config);
-		
 		echo iconv('utf-8', 'cp1251', $orders);
+	}
+
+	/**
+	 * Changing order statuses.
+	 */
+	public function modeOrdersChangeStatus(){
+		if (!isset($this->request->cookie['key'])) {
+			echo "Cookie fail\n";
+			return;
+		}
+
+		if ($this->request->cookie['key'] != md5($this->config->get('exchange1c_password'))) {
+			echo "failure\n";
+			echo "Session error";
+			return;
+		}
+
+		$this->load->model('tool/exchange1c');
+
+		$result = $this->model_tool_exchange1c->queryOrdersStatus(array(
+			'from_date' 		=> $this->config->get('exchange1c_order_date'),
+			'exchange_status'	=> $this->config->get('exchange1c_order_status_to_exchange'),
+			'new_status'		=> $this->config->get('exchange1c_order_status'),
+			'notify'			=> $this->config->get('exchange1c_order_notify')
+		));
+
+		if($result){
+			$this->load->model('setting/setting');
+			$config = $this->model_setting_setting->getSetting('exchange1c');
+			$config['exchange1c_order_date'] = date('Y-m-d H:i:s');
+			$this->model_setting_setting->editSetting('exchange1c', $config);
+		}
+
+		if($result)
+			echo "success\n";
+		else
+			echo "fail\n";
 	}
 
 

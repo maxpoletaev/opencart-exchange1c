@@ -186,6 +186,10 @@ if (isset($request->get['mode']) && $request->get['type'] == 'catalog') {
 			$action = new Action('module/exchange1c/modeQueryOrders');
 		break;
 
+		case 'success':
+			$action = new Action('module/exchange1c/modeOrdersChangeStatus');
+		break;
+
 		default:
 			echo "success\n";
 	}
