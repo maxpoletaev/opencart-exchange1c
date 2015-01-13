@@ -165,13 +165,25 @@
               </td>
             </tr>
 			
-			<tr>
-              <td><?php echo $entry_delimiter; ?></td>
-              <td><input name="delimiter_symbol" type="delimiter" value="<?php echo $delimiter_symbol; ?>" />
-			  <span class="help"><?php echo $entry_delimiter_help; ?></span>
-			  </td>
+	    <tr>
+              <td>
+		    <?php echo $entry_delimiter; ?>
+	      </td>
+              <td>
+		    <input name="delimiter_symbol" type="delimiter" value="<?php echo $delimiter_symbol; ?>" />
+		    <span class="help"><?php echo $entry_delimiter_help; ?></span>
+	      </td>
             </tr>
-			            
+	    <tr>
+	      <td>
+		    <?php echo $autofill_image_category; ?>
+	      </td>
+	      <td>
+		    <input name="autofill_image_category_path" type="search_image_category_path" value="<?php echo $autofill_image_category_path; ?>" />
+		    <span class="help"><?php echo $autofill_image_category_help; ?></span>
+	      </td>
+	    </tr>
+
             <tr>
               <td><label for="exchange1c_dont_use_artsync"><?php echo $entry_dont_use_artsync; ?></label></td>
               <td>

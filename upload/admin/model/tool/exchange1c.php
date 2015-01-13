@@ -168,6 +168,8 @@ class ModelToolExchange1c extends Model {
 		$exchange1c_relatedoptions = $this->config->get('exchange1c_relatedoptions');
 		$delimiter_symbol = $this->config->get('delimiter_symbol');
 
+		$autofill_image_category_path = $this->config->get('autofill_image_category_path');
+
 		$this->load->model('catalog/option');
 
 		if ($enable_log)
@@ -283,6 +285,11 @@ class ModelToolExchange1c extends Model {
 						
 						}
 						
+						if (!empty($autofill_image_category_path)) {
+								$str=strpos($name_1c, $this->config->get('autofill_image_category_path'));
+								$name_1c = substr($name_1c, 0, $str);
+						
+						}
 						if (!empty($name_1c) && !empty($value_1c)) {
 							
 							if ($exchange1c_relatedoptions) {
@@ -688,7 +695,6 @@ class ModelToolExchange1c extends Model {
 				$id =  (string)$category->Ид;
 
 				$data = array();
-
 				$query = $this->db->query('SELECT * FROM `' . DB_PREFIX . 'category_to_1c` WHERE `1c_category_id` = "' . $this->db->escape($id) . '"');
 
 				if ($query->num_rows) {
@@ -707,6 +713,25 @@ class ModelToolExchange1c extends Model {
 
 				$this->CATEGORIES[$id] = $category_id;
 			}
+
+//			if ($this->config->get('autofill_image_category_path' $$ !$data['image'])
+
+			if ($this->config->get('autofill_image_category_path')) {
+				$cat_name = $data['category_description'][$language_id]['name'];
+				$path_to_img = "data/". $this->config->get('autofill_image_category_path') . "/". $this->transString($cat_name) .".jpg";
+				$this->log->write("Вызов из категории:". $category_id );
+				$this->log->write("Строка для вставки:". $path_to_img );
+				$this->log->write("UPDATE `". DB_PREFIX . "category` SET `image` = '" . $path_to_img .  "' WHERE `category_id`=". $category_id);
+				 $this->db->query("UPDATE `". DB_PREFIX . "category` SET `image` = '" . $path_to_img .  "' WHERE `category_id`=". $category_id);
+				}
+
+//				
+//				$data['image'] = "data/" ;//. $this->config->get('autofill_image_category_path' . $this->transString($cat_name) . ".jpg"
+
+//	private function setSeoURL($url_type, $element_id, $element_name) {
+//		$this->db->query("DELETE FROM `" . DB_PREFIX . "url_alias` WHERE `query` = '" . $url_type . "=" . $element_id . "'");
+//		$this->db->query("INSERT INTO `" . DB_PREFIX . "url_alias` SET `query` = '" . $url_type . "=" . $element_id ."', `keyword`='" . $this->transString($element_name) . "'");
+
 
 			//только если тип 'translit'
 			if ($this->config->get('exchange1c_seo_url') == 2) {

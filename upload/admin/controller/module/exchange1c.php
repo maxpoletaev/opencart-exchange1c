@@ -38,6 +38,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_fill_parent_cats'] = $this->language->get('entry_fill_parent_cats');
 		$this->data['entry_delimiter'] = $this->language->get('entry_delimiter');
 		$this->data['entry_delimiter_help'] = $this->language->get('entry_delimiter_help');
+		$this->data['autofill_image_category'] = $this->language->get('autofill_image_category');
+		$this->data['autofill_image_category_help'] = $this->language->get('autofill_image_category_help');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
 		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
@@ -162,7 +164,14 @@ class ControllerModuleExchange1c extends Controller {
 		else {
 			$this->data['delimiter_symbol'] = $this->config->get('delimiter_symbol');
 		}
-		
+
+		if (isset($this->request->post['autofill_image_category_path'])) {
+			$this->data['autofill_image_category_path'] = $this->request->post['autofill_image_category_path'];
+		}
+		else {
+			$this->data['autofill_image_category_path'] = $this->config->get('autofill_image_category_path');
+		}
+
 		if (isset($this->request->post['exchange1c_status'])) {
 			$this->data['exchange1c_status'] = $this->request->post['exchange1c_status'];
 		}
