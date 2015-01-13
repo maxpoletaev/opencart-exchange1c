@@ -66,7 +66,7 @@ $_['button_upload']		= 'Upload';
 $_['error_permission']		= 'Premission denied!';
 
 //Autload images
-$_['autofill_image_category']	= 'Автоматически назначать изображения категориям';
-$_['autofill_image_category_help']	= 'Если указано значение будет выполнен поиск изображения по данному пути относительно каталого images. Формат изображения jpg. Название изображения должно соответствовать названию атегории в транслите (пробелы и спецсимволы заменяются на подчеркивание)';
-$_['autofill_image_options']	= 'Автоматически назначать изображения опциям товаров';
+$_['autofill_image_category']	= 'Automatically assign pictures on categories';
+$_['autofill_image_category_help']	= '';
+$_['autofill_image_options']	= 'Automatically assign pictures on product options';
 $_['autofill_image_options_help']	= '';

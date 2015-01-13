@@ -169,6 +169,7 @@ class ModelToolExchange1c extends Model {
 		$delimiter_symbol = $this->config->get('delimiter_symbol');
 
 		$autofill_image_category_path = $this->config->get('autofill_image_category_path');
+		$autofill_image_options_path  = $this->config->get('autofill_image_options_path');
 
 		$this->load->model('catalog/option');
 
@@ -299,7 +300,7 @@ class ModelToolExchange1c extends Model {
 	
 							$option_id = $this->setOption($name_1c);
 							
-							$option_value_id = $this->setOptionValue($option_id, $value_1c);
+							$option_value_id = $this->setOptionValue($option_id, $value_1c, $name_1c);
 							
 							$product_option_value_data[] = array(
 								'option_value_id'         => (int) $option_value_id,
@@ -413,7 +414,7 @@ class ModelToolExchange1c extends Model {
 		return $option_id;
 	}
 
-	private function setOptionValue($option_id, $value) {
+	private function setOptionValue($option_id, $value, $options_name) {
 		$lang_id = (int)$this->config->get('config_language_id');
 
 		$query = $this->db->query("SELECT option_value_id FROM ". DB_PREFIX ."option_value_description WHERE name='". $this->db->escape($value) ."' AND option_id='". $option_id ."'");
@@ -423,7 +424,15 @@ class ModelToolExchange1c extends Model {
 		}
 		else {
 			//Добавляем значение опции, только если нет в базе
-			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', image = '', sort_order = '0'");
+			$option_image_path = $this->config->get('autofill_image_options_path');
+			    if ($option_image_path) {$option_image_path = "data/". $option_image_path . "/" . $this->transString($this->db->escape($options_name)) . "/" . $this->transString($this->db->escape($value)) . ".jpg";
+			    $this->log->write(" Картинка для опции: " . $option_image_path);
+			    
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', image = '" . $option_image_path . "', sort_order = '0'");
+			}
+			else {
+			    $this->db->query("INSERT INTO " . DB_PREFIX . "option_value SET option_id = '" . $option_id . "', image = '', sort_order = '0'");
+			}
 			$option_value_id = $this->db->getLastId();
 			$this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET option_value_id = '".$option_value_id."', language_id = '" . $lang_id . "', option_id = '" . $option_id . "', name = '" . $this->db->escape($value) . "'");
 		}

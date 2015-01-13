@@ -19,7 +19,7 @@ class ControllerModuleExchange1c extends Controller {
 			$this->redirect($this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'));
 		}
 
-		$this->data['version'] = 'Version 1.6.0';
+		$this->data['version'] = 'Version 1.6.0.1';
 
 		$this->data['heading_title'] = $this->language->get('heading_title');
 		$this->data['entry_username'] = $this->language->get('entry_username');
@@ -40,6 +40,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_delimiter_help'] = $this->language->get('entry_delimiter_help');
 		$this->data['autofill_image_category'] = $this->language->get('autofill_image_category');
 		$this->data['autofill_image_category_help'] = $this->language->get('autofill_image_category_help');
+		$this->data['autofill_image_options'] = $this->language->get('autofill_image_options');
+		$this->data['autofill_image_options_help'] = $this->language->get('autofill_image_options_help');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
 		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
@@ -170,6 +172,13 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['autofill_image_category_path'] = $this->config->get('autofill_image_category_path');
+		}
+
+		if (isset($this->request->post['autofill_image_options_path'])) {
+			$this->data['autofill_image_options_path'] = $this->request->post['autofill_image_options_path'];
+		}
+		else {
+			$this->data['autofill_image_options_path'] = $this->config->get('autofill_image_options_path');
 		}
 
 		if (isset($this->request->post['exchange1c_status'])) {

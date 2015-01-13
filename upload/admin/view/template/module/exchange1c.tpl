@@ -185,6 +185,17 @@
 	    </tr>
 
             <tr>
+
+	      <td>
+		    <?php echo $autofill_image_options; ?>
+	      </td>
+	      <td>
+		    <input name="autofill_image_options_path" type="search_image_options_path" value="<?php echo $autofill_image_options_path; ?>" />
+		    <span class="help"><?php echo $autofill_image_options_help; ?></span>
+	      </td>
+	    </tr>
+
+            <tr>
               <td><label for="exchange1c_dont_use_artsync"><?php echo $entry_dont_use_artsync; ?></label></td>
               <td>
                 <input type="checkbox" value="1" id="exchange1c_dont_use_artsync" name="exchange1c_dont_use_artsync" <?php echo ($exchange1c_dont_use_artsync == 1)? 'checked' : ''; ?>>
