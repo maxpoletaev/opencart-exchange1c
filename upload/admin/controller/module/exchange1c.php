@@ -42,6 +42,11 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['autofill_image_category_help'] = $this->language->get('autofill_image_category_help');
 		$this->data['autofill_image_options'] = $this->language->get('autofill_image_options');
 		$this->data['autofill_image_options_help'] = $this->language->get('autofill_image_options_help');
+		$this->data['type_created_options'] = $this->language->get('type_created_options');
+		$this->data['type_created_options_listbox'] = $this->language->get('type_created_options_listbox');
+		$this->data['type_created_options_image_radio'] = $this->language->get('type_created_options_image_radio');
+		$this->data['type_created_options_checkbox'] = $this->language->get('type_created_options_checkbox');
+		$this->data['type_created_options_picture'] = $this->language->get('type_created_options_picture');
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
 		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
@@ -179,6 +184,13 @@ class ControllerModuleExchange1c extends Controller {
 		}
 		else {
 			$this->data['autofill_image_options_path'] = $this->config->get('autofill_image_options_path');
+		}
+
+		if (isset($this->request->post['created_options_type'])) {
+			$this->data['created_options_type'] = $this->request->post['created_options_type'];
+		}
+		else {
+			$this->data['created_options_type'] = $this->config->get('created_options_type');
 		}
 
 		if (isset($this->request->post['exchange1c_status'])) {

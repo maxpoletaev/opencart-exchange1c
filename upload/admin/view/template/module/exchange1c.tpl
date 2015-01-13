@@ -196,6 +196,18 @@
 	    </tr>
 
             <tr>
+              <td><?php echo $type_created_options; ?></td>
+              <td>
+                <select name="created_options_type">
+                  <option value="0" <?php echo ($created_options_type == 0) ? 'selected' : '' ;?>><?php echo $type_created_options_listbox; ?></option>
+                  <option value="1" <?php echo ($created_options_type == 1) ? 'selected' : '' ;?>><?php echo $type_created_options_image_radio; ?></option>
+                  <option value="2" <?php echo ($created_options_type == 2) ? 'selected' : '' ;?>><?php echo $type_created_options_checkbox; ?></option>
+                  <option value="3" <?php echo ($created_options_type == 3) ? 'selected' : '' ;?>><?php echo $type_created_options_picture; ?></option>
+                </select>
+              </td>
+            </tr>
+
+            <tr>
               <td><label for="exchange1c_dont_use_artsync"><?php echo $entry_dont_use_artsync; ?></label></td>
               <td>
                 <input type="checkbox" value="1" id="exchange1c_dont_use_artsync" name="exchange1c_dont_use_artsync" <?php echo ($exchange1c_dont_use_artsync == 1)? 'checked' : ''; ?>>

@@ -407,7 +407,16 @@ class ModelToolExchange1c extends Model {
 		}
         else {
 			//Нет такой опции
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "option` SET type = 'select', sort_order = '0'");
+			$opt_type = $this->config->get('created_options_type');
+			switch ($opt_type) {
+			    case 0:  $selector_type = 'select'; break;
+			    case 1:  $selector_type = 'radio'; break;
+			    case 2:  $selector_type = 'checkbox'; break;
+			    case 3:  $selector_type = 'image'; break;
+			    default: $selector_type = 'select'; break;
+			}
+
+			$this->db->query("INSERT INTO `" . DB_PREFIX . "option` SET type = '". $selector_type ."', sort_order = '0'");
 			$option_id = $this->db->getLastId();
 			$this->db->query("INSERT INTO " . DB_PREFIX . "option_description SET option_id = '" . $option_id . "', language_id = '" . $lang_id . "', name = '" . $this->db->escape($name) . "'");
 		}
