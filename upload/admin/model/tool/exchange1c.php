@@ -285,11 +285,6 @@ class ModelToolExchange1c extends Model {
 						
 						}
 						
-						if (!empty($autofill_image_category_path)) {
-								$str=strpos($name_1c, $this->config->get('autofill_image_category_path'));
-								$name_1c = substr($name_1c, 0, $str);
-						
-						}
 						if (!empty($name_1c) && !empty($value_1c)) {
 							
 							if ($exchange1c_relatedoptions) {
