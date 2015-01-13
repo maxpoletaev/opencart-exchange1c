@@ -592,6 +592,9 @@ class ModelToolExchange1c extends Model {
 										$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
 										$data['manufacturer_id'] = $manufacturer_id;
 
+//										if ($enable_log)
+//											$this->log->write($manufacturer_name . "   > " . $manufacturer_id);
+
 										//только если тип 'translit'
 										if ($this->config->get('exchange1c_seo_url') == 2) {
 											$man_name = "brand-" . $manufacturer_name;
@@ -1412,10 +1415,11 @@ class ModelToolExchange1c extends Model {
 			if ($enable_log)
 				$this->log->write("Очистка таблиц производителей:");
 			$this->db->query('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
-			if ($enable_log)
+			if ($enable_log) {
 				$this->log->write('TRUNCATE TABLE ' . DB_PREFIX . 'manufacturer');
-
-			$query = $this->db->query("SHOW TABLES FROM " . DB_DATABASE . " LIKE '" . DB_PREFIX . "manufacturer_description'");
+				$this->log->write("SHOW TABLES FROM " . DB_DATABASE . " LIKE '" . DB_PREFIX . "manufacturer_description'");
+			}
+			$query = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "manufacturer_description'");
 			if ($query->num_rows) {
 				if ($enable_log) {
 					$this->log->write("Очистка таблиц описания производителей:");
