@@ -196,6 +196,17 @@
 	    </tr>
 
             <tr>
+
+	      <td>
+		    <?php echo $autofill_image_manufacturers; ?>
+	      </td>
+	      <td>
+		    <input name="autofill_image_manufacturers_path" type="autofill_image_manufacturers_path" value="<?php echo $autofill_image_manufacturers_path; ?>" />
+		    <span class="help"><?php echo $autofill_image_manufacturers_help; ?></span>
+	      </td>
+	    </tr>
+
+            <tr>
               <td><?php echo $type_created_options; ?></td>
               <td>
                 <select name="created_options_type">

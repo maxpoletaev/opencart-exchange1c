@@ -77,3 +77,7 @@ $_['type_created_options_listbox']	='Listbox';
 $_['type_created_options_image_radio']	='Radiobox';
 $_['type_created_options_checkbox']	='Checkbox';
 $_['type_created_options_picture']	='Picture';
+
+//Autoload manufacturers images
+$_['autofill_image_manufacturers']	= 'Automatically assign pictures for manufacturers';
+$_['autofill_image_manufacturers_help']	= 'Assign JPG pictures from preferences folder';

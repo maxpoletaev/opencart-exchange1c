@@ -519,8 +519,10 @@ class ModelToolExchange1c extends Model {
                                         $data['manufacturer_id'] = $query->row['manufacturer_id'];
                                 }
 									else {
+										if ($this->config->get('autofill_image_manufacturers_path')) { $manufacturer_name_image_path = "data/" . $this->config->get('autofill_image_manufacturers_path') . "/"  .  $this->transString($manufacturer_name) . ".jpg" ; } else { $manufacturer_name_image_path = ''; }
 													$data_manufacturer = array(
 														'name'                  => $manufacturer_name,
+														'image'			=> $manufacturer_name_image_path,
 														'keyword'               => '',
 														'sort_order'            => 0,
 														'manufacturer_store'    => array(0 => 0)
@@ -592,8 +594,8 @@ class ModelToolExchange1c extends Model {
 										$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($data_manufacturer);
 										$data['manufacturer_id'] = $manufacturer_id;
 
-//										if ($enable_log)
-//											$this->log->write($manufacturer_name . "   > " . $manufacturer_id);
+										if ($enable_log)
+											$this->log->write($manufacturer_name . "   > " . $manufacturer_id);
 
 										//только если тип 'translit'
 										if ($this->config->get('exchange1c_seo_url') == 2) {
