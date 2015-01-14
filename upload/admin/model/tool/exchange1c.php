@@ -574,8 +574,10 @@ class ModelToolExchange1c extends Model {
 										$data['manufacturer_id'] = $query->row['manufacturer_id'];
 									}
 									else {
+										if ($this->config->get('autofill_image_manufacturers_path')) { $manufacturer_name_image_path = "data/" . $this->config->get('autofill_image_manufacturers_path') . "/"  .  $this->transString($manufacturer_name) . ".jpg" ; } else { $manufacturer_name_image_path = ''; }
 										$data_manufacturer = array(
 											'name' => $manufacturer_name,
+											'image' => $manufacturer_name_image_path,
 											'keyword' => '',
 											'sort_order' => 0,
 											'manufacturer_store' => array(0 => 0)
