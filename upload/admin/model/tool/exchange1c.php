@@ -726,15 +726,12 @@ class ModelToolExchange1c extends Model {
 				}
 				else {
 					$data = $this->initCategory($category, $parent, array(), $language_id);
-					//$category_id = $this->getCategoryIdByName($data['category_description'][1]['name']) ? $this->getCategoryIdByName($data['category_description'][1]['name']) : $this->model_catalog_category->addCategory($data);
 					$category_id = $this->model_catalog_category->addCategory($data);
 					$this->db->query('INSERT INTO `' . DB_PREFIX . 'category_to_1c` SET category_id = ' . (int)$category_id . ', `1c_category_id` = "' . $this->db->escape($id) . '"');
 				}
 
 				$this->CATEGORIES[$id] = $category_id;
 			}
-
-//			if ($this->config->get('autofill_image_category_path' $$ !$data['image'])
 
 			if ($this->config->get('autofill_image_category_path')) {
 				$cat_name = $data['category_description'][$language_id]['name'];
@@ -744,13 +741,6 @@ class ModelToolExchange1c extends Model {
 				$this->log->write("UPDATE `". DB_PREFIX . "category` SET `image` = '" . $path_to_img .  "' WHERE `category_id`=". $category_id);
 				 $this->db->query("UPDATE `". DB_PREFIX . "category` SET `image` = '" . $path_to_img .  "' WHERE `category_id`=". $category_id);
 				}
-
-//				
-//				$data['image'] = "data/" ;//. $this->config->get('autofill_image_category_path' . $this->transString($cat_name) . ".jpg"
-
-//	private function setSeoURL($url_type, $element_id, $element_name) {
-//		$this->db->query("DELETE FROM `" . DB_PREFIX . "url_alias` WHERE `query` = '" . $url_type . "=" . $element_id . "'");
-//		$this->db->query("INSERT INTO `" . DB_PREFIX . "url_alias` SET `query` = '" . $url_type . "=" . $element_id ."', `keyword`='" . $this->transString($element_name) . "'");
 
 
 			//только если тип 'translit'

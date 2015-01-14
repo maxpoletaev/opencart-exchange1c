@@ -561,7 +561,7 @@ class ControllerModuleExchange1c extends Controller {
 				if ($result === strlen($data)) {
 					echo "success\n";
 
-					chmod($uplod_file , 0777);
+					chmod($uplod_file , 0644);
 					//echo "success\n";
 				}
 				else {

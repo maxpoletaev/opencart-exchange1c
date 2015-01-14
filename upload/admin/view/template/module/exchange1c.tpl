@@ -330,7 +330,7 @@
     </div>
 
     <div style="text-align:center; opacity: .5">
-      <p><?php echo $version; ?> | <a href=https://github.com/zenwalker/opencart-exchange1c><?php echo $source_code; ?></a> <a href="http://zenwalker.ru/lab/opencart-exchange1c"><?php echo $text_homepage; ?></a></p>
+      <p><?php echo $version; ?> | <a href=https://github.com/zenwalker/opencart-exchange1c><?php echo $source_code; ?></a> <a href="http://zenwalker.ru/lab/opencart-exchange1c"><?php echo $text_homepage; ?></a> | <a href="http://kharkevich.org"> Fork by Aliaksandr Kharkevich</a></p>
     </div>
   </div>
 </div>
