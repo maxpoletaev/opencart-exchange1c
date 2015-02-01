@@ -27,13 +27,31 @@ class Protocol:
             cookie_name = data[1]
             cookie_value = data[2]
             self.cookies[cookie_name] = cookie_value
-            return True, None
+            return (True, None)
 
         elif status == "failure":
             message = data[1]
-            return False, "ERROR: %s \n" % message
+            return (False, "ERROR: %s \n" % message)
 
-        return False, "Unknown answer: %s \n" % response.text
+        return (False, "Unknown answer: %s \n" % response.text)
+
+    def query_orders(self):
+        response = requests.get(self.get_url(),
+            params={"type": "sale", "mode": "query"},
+            cookies=self.cookies
+        )
+
+        if not response.text.startswith("<?xml"):
+            data = response.text.split("\n")
+            status = data[0]
+
+            if status == "failure":
+                message = data[1]
+                return (False, "ERROR: %s \n" % message)
+            else:
+                return (False, "Unknown answer: %s \n" % response.text)
+
+        return (True, None)
 
 
 if __name__ == "__main__":
@@ -46,13 +64,15 @@ if __name__ == "__main__":
     username = argv[2]
     password = argv[3]
     protocol = Protocol(url)
-    failure = False
 
     success, message = protocol.checkauth(username, password)
     if not success:
-        failure = True
         stdout.write(message)
+        exit()
 
-    if not failure:
-        stdout.write("All right, Sir! \n")
+    success, message = protocol.query_orders()
+    if not success:
+        stdout.write(message)
+        exit()
 
+    stdout.write("All right, Sir! \n")
