@@ -412,15 +412,15 @@ class ControllerModuleExchange1c extends Controller {
 				$buffer = fread($handle, 1024);
 				fclose($handle);
 
-				if (strpos($buffer, 'Классификатор')) {
+				if (strpos($buffer, 'ПакетПредложений')) {
+					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
+					$this->modeImport('offers.xml');
+				}
+				else if (strpos($buffer, 'Классификатор')) {
 					$this->modeCatalogInit(false);
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'import.xml');
 					$this->modeImport('import.xml');
 				
-				}
-				else if (strpos($buffer, 'ПакетПредложений')) {
-					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
-					$this->modeImport('offers.xml');
 				}
 				else {
 					$json['error'] = $this->language->get('text_upload_error');
