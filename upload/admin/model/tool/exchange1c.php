@@ -467,7 +467,7 @@ class ModelToolExchange1c extends Model {
 				$data['1c_id'] = $uuid[0];
 
 				$data['model'] = $product->Артикул? (string)$product->Артикул : 'не задана';
-				$data['name'] = $product->Наименование? (string)$product->Наименование : 'не задано';
+				$data['name'] = $product->Наименование? (string)htmlspecialchars($product->Наименование,ENT_QUOTES) : 'не задано';
 				$data['weight'] = $product->Вес? (float)$product->Вес : null;
 				$data['sku'] = $product->Артикул? (string)$product->Артикул : '';
 
