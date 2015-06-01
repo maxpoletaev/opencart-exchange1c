@@ -4,6 +4,7 @@ class ModelToolExchange1c extends Model {
 
 	private $CATEGORIES = array();
 	private $PROPERTIES = array();
+	private $PRODUCT_IDS = null;
 
 
 	/**
@@ -1132,15 +1133,15 @@ class ModelToolExchange1c extends Model {
 	 * @return	int|bool
 	 */
 	private function getProductIdBy1CProductId($product_id) {
-
-		$query = $this->db->query('SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"');
-
-		if ($query->num_rows) {
-			return $query->row['product_id'];
+		if(is_null($this->PRODUCT_IDS)){
+			$this->PRODUCT_IDS = array();
+			$query = $this->db->query('SELECT product_id, 1c_id FROM ' . DB_PREFIX . 'product_to_1c');
+			foreach($query->rows as $product){
+				$this->PRODUCT_IDS[$product['1c_id']] = $product['product_id'];
+			}
 		}
-		else {
-			return false;
-		}
+
+		return isset($this->PRODUCT_IDS[$product_id]) ? $this->PRODUCT_IDS[$product_id] : false;
 	}
 
 	private function getCategoryIdByName($name) {
