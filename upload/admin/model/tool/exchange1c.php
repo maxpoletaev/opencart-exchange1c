@@ -955,11 +955,14 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Функция работы с продуктом
 	 *
-	 * @param array
+	 * @param array $product
+	 * @param int $language_id
+	 * @internal param $array
+	 * @return bool
 	 */
 	private function setProduct($product, $language_id) {
 
-		if (!$product) return;
+		if (!$product) return false;
 
 		// Проверяем, связан ли 1c_id с product_id
 		$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
@@ -970,7 +973,7 @@ class ModelToolExchange1c extends Model {
 		}
 		else {
 			
-			if ($this->config->get('exchange1c_dont_use_artsync')) {
+			if ($this->config->get('exchange1c_dont_use_artsync') || empty($data['sku'])) {
 				$this->load->model('catalog/product');
 				$product_id =	$this->model_catalog_product->addProduct($data);
 			} else {
@@ -1000,13 +1003,17 @@ class ModelToolExchange1c extends Model {
 				$this->setSeoURL('product_id', $product_id, $product['name']);
 			}
 		}
+		return true;
 	}
 
 	/**
 	 * Обновляет продукт
 	 *
-	 * @param array
-	 * @param int
+	 * @param array $product
+	 * @param bool $product_id
+	 * @param int $language_id
+	 * @internal param $array
+	 * @internal param $int
 	 */
 	private function updateProduct($product, $product_id = false, $language_id) {
 
