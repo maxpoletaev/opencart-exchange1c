@@ -4,6 +4,7 @@ class ModelToolExchange1c extends Model {
 
 	private $CATEGORIES = array();
 	private $PROPERTIES = array();
+	private $PRODUCT_IDS = null;
 
 
 	/**
@@ -955,11 +956,14 @@ class ModelToolExchange1c extends Model {
 	/**
 	 * Функция работы с продуктом
 	 *
-	 * @param array
+	 * @param array $product
+	 * @param int $language_id
+	 * @internal param $array
+	 * @return bool
 	 */
 	private function setProduct($product, $language_id) {
 
-		if (!$product) return;
+		if (!$product) return false;
 
 		// Проверяем, связан ли 1c_id с product_id
 		$product_id = $this->getProductIdBy1CProductId($product['1c_id']);
@@ -970,7 +974,7 @@ class ModelToolExchange1c extends Model {
 		}
 		else {
 			
-			if ($this->config->get('exchange1c_dont_use_artsync')) {
+			if ($this->config->get('exchange1c_dont_use_artsync') || empty($data['sku'])) {
 				$this->load->model('catalog/product');
 				$product_id =	$this->model_catalog_product->addProduct($data);
 			} else {
@@ -1000,13 +1004,17 @@ class ModelToolExchange1c extends Model {
 				$this->setSeoURL('product_id', $product_id, $product['name']);
 			}
 		}
+		return true;
 	}
 
 	/**
 	 * Обновляет продукт
 	 *
-	 * @param array
-	 * @param int
+	 * @param array $product
+	 * @param bool $product_id
+	 * @param int $language_id
+	 * @internal param $array
+	 * @internal param $int
 	 */
 	private function updateProduct($product, $product_id = false, $language_id) {
 
@@ -1125,15 +1133,15 @@ class ModelToolExchange1c extends Model {
 	 * @return	int|bool
 	 */
 	private function getProductIdBy1CProductId($product_id) {
-
-		$query = $this->db->query('SELECT product_id FROM ' . DB_PREFIX . 'product_to_1c WHERE `1c_id` = "' . $product_id . '"');
-
-		if ($query->num_rows) {
-			return $query->row['product_id'];
+		if(is_null($this->PRODUCT_IDS)){
+			$this->PRODUCT_IDS = array();
+			$query = $this->db->query('SELECT product_id, 1c_id FROM ' . DB_PREFIX . 'product_to_1c');
+			foreach($query->rows as $product){
+				$this->PRODUCT_IDS[$product['1c_id']] = $product['product_id'];
+			}
 		}
-		else {
-			return false;
-		}
+
+		return isset($this->PRODUCT_IDS[$product_id]) ? $this->PRODUCT_IDS[$product_id] : false;
 	}
 
 	private function getCategoryIdByName($name) {
