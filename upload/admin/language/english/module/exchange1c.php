@@ -40,6 +40,8 @@ $_['entry_fill_parent_cats']	= 'Fill parent categories:';
 $_['entry_seo_url']		= 'Generate SEO URL: <br> (depends on <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>)';
 $_['entry_seo_url_deadcow']		= 'via Deadcow SEO';
 $_['entry_seo_url_translit']	= 'Transliterate';
+$_['entry_disable_prodziro']	= 'Disable products with ziro quanity';
+$_['entry_disable_prodnoimage']	= 'Disable products where no image';
 
 $_['entry_full_log']		= 'Enable log';
 $_['entry_apply_watermark']	= 'Apply watermark';

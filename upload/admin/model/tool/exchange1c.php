@@ -881,6 +881,18 @@ class ModelToolExchange1c extends Model {
 			,'product_attribute'    => (isset($product['product_attribute'])) ? $product['product_attribute'] : (isset($data['product_attribute']) ? $data['product_attribute']: array())
 		);
 
+        //Отключаем нулевые товары
+        if ($this->config->get('exchange1c_disable_prodziro') && $result['quantity'] == 0 ){
+            $result['status'] = 0;
+        }
+
+        if ($this->config->get('exchange1c_disable_prodnoimage') && $result['status'] != 0){
+            if (empty($result['image']) && count($result['product_image']) == 0){
+                $result['status'] = 0;
+            }
+        }
+
+
 		if (VERSION == '1.5.3.1') {
 			$result['product_tag'] = (isset($product['product_tag'])) ? $product['product_tag'] : (isset($data['product_tag']) ? $data['product_tag']: array());
 		}
@@ -1054,6 +1066,7 @@ class ModelToolExchange1c extends Model {
 		$this->load->model('catalog/product');
 
 		$product_old = $this->initProduct($product, $product_old, $language_id);
+
 
 		//Редактируем продукт
 		$product_id = $this->model_catalog_product->editProduct($product_id, $product_old);

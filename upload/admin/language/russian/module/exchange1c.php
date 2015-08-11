@@ -40,6 +40,8 @@ $_['entry_fill_parent_cats']	= 'Заполнять родительские ка
 $_['entry_seo_url']		= 'Генерировать SEO URL: <br> требуется модуль <a href="http://opencartforum.ru/files/file/332-deadcow-seo-v21-automod/" target="_blank">Deadcow SEO</a>)';
 $_['entry_seo_url_deadcow']		= 'через Deadcow SEO';
 $_['entry_seo_url_translit']	= 'Транслитерация';
+$_['entry_disable_prodziro']	= 'Отключать товар с нулевым остатком';
+$_['entry_disable_prodnoimage']	= 'Отключать товар без картинок';
 
 $_['entry_full_log']		= 'Включить подробный лог загрузки';
 $_['entry_apply_watermark']	= 'Накладывать водяные знаки при загрузке';
