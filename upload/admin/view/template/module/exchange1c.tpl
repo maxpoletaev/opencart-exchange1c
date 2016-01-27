@@ -181,7 +181,18 @@
                 </select>
               </td>
             </tr>
-
+            <tr>
+                <td><label for="exchange1c_disable_prodziro"><?php echo $entry_disable_prodziro; ?></label></td>
+                <td>
+                    <input type="checkbox" value="1" id="exchange1c_disable_prodziro" name="exchange1c_disable_prodziro" <?php echo ($exchange1c_disable_prodziro == 1)? 'checked' : ''; ?>>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="exchange1c_disable_prodnoimage"><?php echo $entry_disable_prodnoimage; ?></label></td>
+                <td>
+                    <input type="checkbox" value="1" id="exchange1c_disable_prodnoimage" name="exchange1c_disable_prodnoimage" <?php echo ($exchange1c_disable_prodnoimage == 1)? 'checked' : ''; ?>>
+                </td>
+            </tr>
             <tr>
               <td><label for="exchange1c_full_log"><?php echo $entry_full_log; ?></label></td>
               <td>

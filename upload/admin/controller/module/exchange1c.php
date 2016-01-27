@@ -39,6 +39,8 @@ class ControllerModuleExchange1c extends Controller {
 		$this->data['entry_seo_url'] = $this->language->get('entry_seo_url');
 		$this->data['entry_seo_url_deadcow'] = $this->language->get('entry_seo_url_deadcow');
 		$this->data['entry_seo_url_translit'] = $this->language->get('entry_seo_url_translit');
+        $this->data['entry_disable_prodziro'] = $this->language->get('entry_disable_prodziro');
+        $this->data['entry_disable_prodnoimage'] = $this->language->get('entry_disable_prodnoimage');
 		$this->data['entry_full_log'] = $this->language->get('entry_full_log');
 		$this->data['entry_apply_watermark'] = $this->language->get('entry_apply_watermark');
 		$this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 100, 100);
@@ -242,6 +244,20 @@ class ControllerModuleExchange1c extends Controller {
 			$this->data['exchange1c_seo_url'] = $this->config->get('exchange1c_seo_url');
 		}
 
+        if (isset($this->request->post['exchange1c_disable_prodziro'])) {
+            $this->data['exchange1c_disable_prodziro'] = $this->request->post['exchange1c_disable_prodziro'];
+        }
+        else {
+            $this->data['exchange1c_disable_prodziro'] = $this->config->get('exchange1c_disable_prodziro');
+        }
+
+        if (isset($this->request->post['exchange1c_disable_prodnoimage'])) {
+            $this->data['exchange1c_disable_prodnoimage'] = $this->request->post['exchange1c_disable_prodnoimage'];
+        }
+        else {
+            $this->data['exchange1c_disable_prodnoimage'] = $this->config->get('exchange1c_disable_prodnoimage');
+        }
+
 		if (isset($this->request->post['exchange1c_full_log'])) {
 			$this->data['exchange1c_full_log'] = $this->request->post['exchange1c_full_log'];
 		}
@@ -412,15 +428,15 @@ class ControllerModuleExchange1c extends Controller {
 				$buffer = fread($handle, 1024);
 				fclose($handle);
 
-				if (strpos($buffer, 'Классификатор')) {
+				if (strpos($buffer, 'ПакетПредложений')) {
+					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
+					$this->modeImport('offers.xml');
+				}
+				else if (strpos($buffer, 'Классификатор')) {
 					$this->modeCatalogInit(false);
 					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'import.xml');
 					$this->modeImport('import.xml');
 				
-				}
-				else if (strpos($buffer, 'ПакетПредложений')) {
-					move_uploaded_file($this->request->files['file']['tmp_name'], $cache . 'offers.xml');
-					$this->modeImport('offers.xml');
 				}
 				else {
 					$json['error'] = $this->language->get('text_upload_error');
