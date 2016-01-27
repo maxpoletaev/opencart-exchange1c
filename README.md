@@ -1,14 +1,16 @@
+**Модуль не развивается с октября 2014 года.** Пожалуйста, имейте ввиду, что с новыми версиями OpenCart и 1C могут быть проблемы. Сейчас у меня нет планов на его дальнейшее развитие.
+
 # OpenCart Exchange 1C #
 
  Модуль обмена данными с 1С 8.x в формате CommerceML2 для OpenCart
- 
+
  * Домашняя страница: http://zenwalker.ru/lab/opencart-exchange1c/
  * Видеоинструкция установки: https://www.youtube.com/watch?v=wv_-ve_p1LA
  * Исходные коды: https://github.com/ethernet1/opencart-exchange1c
  * Тема поддержки: http://opencartforum.ru/topic/15471-opencart-exchange-1c/
 
 ## Возможности ##
- 
+
  * Выгрузка полной иерархии категорий
  * Выгрузка изображений
  * Выгрузка скидок
@@ -30,4 +32,3 @@
 ## Лицензия ##
 
  Данное программное обеспечение распространяется на условиях [GNU General Public License v3.0](http://www.gnu.org/licenses/gpl.html).
- 
